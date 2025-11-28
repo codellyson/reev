@@ -1,18 +1,33 @@
 {
-  "name": "db-explorer",
+  "name": "reev",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:tracker": "cd tracker && pnpm install && tsx build.ts",
+    "migrate": "tsx lib/migrate.ts",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@headlessui/react": "^2.2.9",
+    "@next/font": "^14.2.15",
+    "@rrweb/types": "2.0.0-alpha.18",
+    "@tanstack/react-query": "5.90.5",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.555.0",
     "next": "^16.0.5",
     "pg": "^8.11.3",
     "react": "^18.3.0",
-    "react-dom": "^18.3.0"
+    "react-dom": "^18.3.0",
+    "recharts": "^3.5.0",
+    "rrweb": "2.0.0-alpha.4",
+    "rrweb-player": "1.0.0-alpha.4",
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -20,10 +35,12 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.0",
+    "dotenv": "^17.2.3",
     "eslint": "^8",
     "eslint-config-next": "^16.0.5",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
+    "tsx": "^4.7.0",
     "typescript": "^5"
   }
 }

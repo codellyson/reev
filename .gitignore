@@ -32,3 +32,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# tracker
+tracker/node_modules
+tracker/dist
+tracker/package-lock.json
+tracker/package.json
+tracker/tsconfig.json
+tracker/tsconfig.build.json
+tracker/tsconfig.build.json
