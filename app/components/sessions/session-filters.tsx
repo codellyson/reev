@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { Filter, X, ChevronDown, ChevronUp, Monitor, Smartphone, Tablet, AlertCircle, Calendar } from "lucide-react";
+import {
+  Filter,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Monitor,
+  Smartphone,
+  Tablet,
+  AlertCircle,
+  Calendar,
+} from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -73,7 +83,7 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
   const applyPreset = (preset: "today" | "last7" | "last30") => {
     const today = new Date();
     today.setHours(23, 59, 59, 999);
-    
+
     let start: Date;
     switch (preset) {
       case "today":
@@ -89,15 +99,23 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
         start.setDate(start.getDate() - 30);
         break;
     }
-    
+
     updateFilter("dateRange", { start, end: today });
   };
 
   return (
-    <div className={cn("w-80 bg-white border border-gray-200 rounded-lg overflow-hidden", className)}>
+    <div
+      className={cn(
+        "w-full sm:w-80 bg-white border border-gray-200 rounded-lg overflow-hidden",
+        className
+      )}
+    >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-base"
+        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-base focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded-t-lg"
+        aria-expanded={isOpen}
+        aria-controls="filters-content"
+        aria-label="Toggle filters"
       >
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-gray-600" />
@@ -116,7 +134,12 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
       </button>
 
       {isOpen && (
-        <div className="p-4 space-y-6 border-t border-gray-200">
+        <div
+          id="filters-content"
+          className="p-4 space-y-6 border-t border-gray-200"
+          role="region"
+          aria-label="Filter options"
+        >
           {hasActiveFilters && onReset && (
             <Button
               variant="ghost"
@@ -214,7 +237,9 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                     )}
                   >
                     <Icon className="h-4 w-4" />
-                    <span className="text-xs font-medium">{deviceLabels[device]}</span>
+                    <span className="text-xs font-medium">
+                      {deviceLabels[device]}
+                    </span>
                   </button>
                 );
               })}
@@ -228,7 +253,9 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
             <input
               type="text"
               value={filters.pageUrl || ""}
-              onChange={(e) => updateFilter("pageUrl", e.target.value || undefined)}
+              onChange={(e) =>
+                updateFilter("pageUrl", e.target.value || undefined)
+              }
               placeholder="Filter by URL..."
               className="w-full h-9 px-3 bg-white border border-gray-200 rounded-md text-sm text-black transition-base hover:border-gray-400 focus:outline-none focus:border-black placeholder:text-gray-400"
             />
@@ -243,7 +270,10 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                 type="number"
                 value={filters.minDuration || ""}
                 onChange={(e) =>
-                  updateFilter("minDuration", e.target.value ? Number(e.target.value) : undefined)
+                  updateFilter(
+                    "minDuration",
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
                 }
                 placeholder="Min"
                 className="h-9 px-3 bg-white border border-gray-200 rounded-md text-sm text-black transition-base hover:border-gray-400 focus:outline-none focus:border-black placeholder:text-gray-400"
@@ -252,7 +282,10 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                 type="number"
                 value={filters.maxDuration || ""}
                 onChange={(e) =>
-                  updateFilter("maxDuration", e.target.value ? Number(e.target.value) : undefined)
+                  updateFilter(
+                    "maxDuration",
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
                 }
                 placeholder="Max"
                 className="h-9 px-3 bg-white border border-gray-200 rounded-md text-sm text-black transition-base hover:border-gray-400 focus:outline-none focus:border-black placeholder:text-gray-400"
@@ -272,7 +305,9 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
               />
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-gray-600" />
-                <span className="text-sm font-medium text-black">Has Errors</span>
+                <span className="text-sm font-medium text-black">
+                  Has Errors
+                </span>
               </div>
             </label>
           </div>

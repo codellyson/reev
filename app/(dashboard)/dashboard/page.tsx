@@ -7,7 +7,17 @@ import { Activity, Clock } from "lucide-react";
 import { StatsCard } from "@/app/components/analytics";
 import { SessionList } from "@/app/components/sessions";
 import { useStats, useSessions } from "@/app/hooks";
-import { LoadingSpinner, ErrorBanner, EmptyState, Skeleton, SkeletonCard, SkeletonTable } from "@/app/components/ui";
+import {
+  LoadingSpinner,
+  ErrorBanner,
+  EmptyState,
+  Skeleton,
+  SkeletonCard,
+  SkeletonTable,
+  SkeletonStats,
+  SkeletonSessionRow,
+} from "@/app/components/ui";
+import { PageHeader } from "@/app/components/layout";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -37,14 +47,14 @@ export default function DashboardPage() {
       <div className="space-y-8">
         <div>
           <Skeleton className="h-7 w-32 mb-2" />
+          <Skeleton className="h-5 w-48" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <SkeletonStats cards={2} />
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
           <Skeleton className="h-6 w-40 mb-6" />
-          <SkeletonTable />
+          {[...Array(5)].map((_, i) => (
+            <SkeletonSessionRow key={i} />
+          ))}
         </div>
       </div>
     );
@@ -56,10 +66,11 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div>
-        <h1 className="text-xl font-semibold text-black">Dashboard</h1>
-        <p className="text-sm text-gray-600 mt-1">Welcome back</p>
-      </div>
+      <PageHeader
+        title="Dashboard"
+        description="Welcome back"
+        breadcrumbs={[{ label: "Dashboard" }]}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <StatsCard
@@ -74,27 +85,34 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-black">Recent Sessions</h2>
+          <h2 className="text-xl font-bold text-black">Recent Sessions</h2>
           {mappedSessions.length > 0 && (
             <Link
               href="/sessions"
-              className="text-sm text-gray-600 hover:text-black transition-base"
+              className="text-sm font-medium text-gray-600 hover:text-black transition-colors inline-flex items-center gap-1 group"
             >
-              View all →
+              <span>View all</span>
+              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
             </Link>
           )}
         </div>
         {mappedSessions.length === 0 ? (
           <EmptyState
-            icon={<Activity className="h-16 w-16" />}
+            icon={<Activity className="h-8 w-8" />}
             title="No sessions yet"
             description="Once you install the tracking code and users visit your site, sessions will appear here."
+            steps={[
+              "Add the tracker script to your website's <head> tag",
+              "Configure your project ID in the tracker",
+              "Wait for users to visit your site and interact",
+            ]}
             action={{
               label: "Get Tracking Code",
               onClick: () => router.push("/setup"),
             }}
+            variant="compact"
           />
         ) : (
           <SessionList

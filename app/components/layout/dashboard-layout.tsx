@@ -26,6 +26,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     },
   ];
 
+  const isFullWidth = pathname?.startsWith("/session/");
+
   return (
     <div className="min-h-screen bg-white">
       <TopNavbar
@@ -34,12 +36,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         user={{ name: "Analyst" }}
         onLogout={() => console.log("Logout")}
       />
-      <main className="pt-14">
-        <div className="max-w-[1440px] mx-auto px-8 py-6">
+      <main className="pt-14" role="main">
+        <div
+          className={
+            isFullWidth
+              ? "w-full"
+              : "max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
+          }
+        >
           {children}
         </div>
       </main>
     </div>
   );
 };
-

@@ -86,14 +86,15 @@ export const SessionList: React.FC<SessionListProps> = ({
     );
   };
 
-  const columns: Array<{ key?: SortField; label: string; sortable?: boolean }> = [
-    { key: "id" as SortField, label: "Session ID" },
-    { key: "duration" as SortField, label: "Duration" },
-    { key: "pageUrl" as SortField, label: "Page URL" },
-    { key: "timestamp" as SortField, label: "Timestamp" },
-    { key: "device" as SortField, label: "Device" },
-    { label: "Actions", sortable: false },
-  ];
+  const columns: Array<{ key?: SortField; label: string; sortable?: boolean }> =
+    [
+      { key: "id" as SortField, label: "Session ID" },
+      { key: "duration" as SortField, label: "Duration" },
+      { key: "pageUrl" as SortField, label: "Page URL" },
+      { key: "timestamp" as SortField, label: "Timestamp" },
+      { key: "device" as SortField, label: "Device" },
+      { label: "Actions", sortable: false },
+    ];
 
   if (loading) {
     return (
@@ -104,22 +105,51 @@ export const SessionList: React.FC<SessionListProps> = ({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
+    <div className="overflow-x-auto -mx-4 sm:mx-0">
+      <table
+        className="w-full border-collapse"
+        role="table"
+        aria-label="Sessions list"
+      >
         <thead>
-          <tr className="border-b border-gray-200">
+          <tr className="border-b-2 border-gray-200 bg-gray-50/50">
             {columns.map((col) => (
               <th
                 key={col.label}
                 className={cn(
-                  "px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider",
-                  col.sortable !== false && "cursor-pointer hover:text-black"
+                  "px-2 sm:px-4 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider",
+                  col.sortable !== false &&
+                    col.key &&
+                    "cursor-pointer hover:text-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded-sm transition-colors"
                 )}
-                onClick={() => col.sortable !== false && col.key && handleSort(col.key)}
+                onClick={() =>
+                  col.sortable !== false && col.key && handleSort(col.key)
+                }
+                onKeyDown={(e) => {
+                  if (
+                    (e.key === "Enter" || e.key === " ") &&
+                    col.sortable !== false &&
+                    col.key
+                  ) {
+                    e.preventDefault();
+                    handleSort(col.key);
+                  }
+                }}
+                tabIndex={col.sortable !== false && col.key ? 0 : undefined}
+                role="columnheader"
+                aria-sort={
+                  col.sortable !== false && col.key && sortField === col.key
+                    ? sortDirection === "asc"
+                      ? "ascending"
+                      : "descending"
+                    : "none"
+                }
               >
                 <div className="flex items-center gap-2">
                   {col.label}
-                  {col.sortable !== false && col.key && <SortIcon field={col.key} />}
+                  {col.sortable !== false && col.key && (
+                    <SortIcon field={col.key} />
+                  )}
                 </div>
               </th>
             ))}
@@ -128,7 +158,10 @@ export const SessionList: React.FC<SessionListProps> = ({
         <tbody className="bg-white">
           {sortedSessions.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="px-4 py-12 text-center text-sm text-gray-600">
+              <td
+                colSpan={columns.length}
+                className="px-4 py-12 text-center text-sm text-gray-600"
+              >
                 No sessions found
               </td>
             </tr>
@@ -136,45 +169,78 @@ export const SessionList: React.FC<SessionListProps> = ({
             sortedSessions.map((session, index) => (
               <tr
                 key={session.id}
-                className="border-b border-gray-200 hover:bg-gray-50 transition-base cursor-pointer animate-fade-in"
+                className="border-b border-gray-100 hover:bg-gradient-to-r hover:from-gray-50 hover:to-transparent transition-all duration-150 cursor-pointer animate-fade-in focus-within:bg-gray-50 group"
                 style={{ animationDelay: `${index * 20}ms` }}
                 onClick={() => onSessionClick?.(session)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSessionClick?.(session);
+                  }
+                }}
+                tabIndex={0}
+                role="row"
+                aria-label={`Session ${session.id.slice(0, 8)}`}
               >
-                <td className="px-4 py-3 text-sm font-mono text-black">
-                  {session.id.slice(0, 8)}...
+                <td className="px-2 sm:px-4 py-3 text-sm font-mono text-black">
+                  <span className="hidden sm:inline">
+                    {session.id.slice(0, 8)}...
+                  </span>
+                  <span className="sm:hidden">{session.id.slice(0, 4)}...</span>
                 </td>
-                <td className="px-4 py-3 text-sm text-black">
+                <td className="px-2 sm:px-4 py-3 text-sm text-black">
                   {formatDuration(session.duration)}
                 </td>
-                <td className="px-4 py-3 text-sm text-black max-w-xs truncate">
-                  {session.pageUrl}
+                <td className="px-2 sm:px-4 py-3 text-sm text-black max-w-xs truncate">
+                  <span className="hidden lg:inline">{session.pageUrl}</span>
+                  <span className="lg:hidden" title={session.pageUrl}>
+                    {session.pageUrl.length > 20
+                      ? `${session.pageUrl.slice(0, 20)}...`
+                      : session.pageUrl}
+                  </span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600">
-                  {format(session.timestamp, "MMM d, yyyy HH:mm")}
+                <td className="px-2 sm:px-4 py-3 text-sm text-gray-600">
+                  <span className="hidden sm:inline">
+                    {format(session.timestamp, "MMM d, yyyy HH:mm")}
+                  </span>
+                  <span className="sm:hidden">
+                    {format(session.timestamp, "MMM d, HH:mm")}
+                  </span>
                 </td>
-                <td className="px-4 py-3">
-                  <Badge variant={getDeviceBadgeVariant(session.device)} size="sm">
+                <td className="px-2 sm:px-4 py-3">
+                  <Badge
+                    variant={getDeviceBadgeVariant(session.device)}
+                    size="sm"
+                  >
                     {session.device}
                   </Badge>
                 </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                <td className="px-2 sm:px-4 py-3">
+                  <div
+                    className="flex items-center gap-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => onSessionClick?.(session)}
-                      aria-label="Play session"
+                      aria-label={`Play session ${session.id.slice(0, 8)}`}
+                      className="touch-manipulation"
                     >
-                      <Play className="h-3.5 w-3.5" />
+                      <Play className="h-3.5 w-3.5" aria-hidden="true" />
                     </Button>
                     {onDelete && (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => onDelete(session.id)}
-                        aria-label="Delete session"
+                        aria-label={`Delete session ${session.id.slice(0, 8)}`}
+                        className="touch-manipulation"
                       >
-                        <Trash2 className="h-3.5 w-3.5 text-error" />
+                        <Trash2
+                          className="h-3.5 w-3.5 text-error"
+                          aria-hidden="true"
+                        />
                       </Button>
                     )}
                   </div>
@@ -187,4 +253,3 @@ export const SessionList: React.FC<SessionListProps> = ({
     </div>
   );
 };
-

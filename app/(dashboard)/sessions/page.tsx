@@ -2,10 +2,22 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { SessionList, SessionFilters, SearchBar, ActiveFilters } from "@/app/components/sessions";
+import {
+  SessionList,
+  SessionFilters,
+  SearchBar,
+  ActiveFilters,
+} from "@/app/components/sessions";
 import { useSessions } from "@/app/hooks";
 import type { Filters } from "@/app/components/sessions/session-filters";
-import { LoadingSpinner, ErrorBanner, EmptyState, SkeletonTable } from "@/app/components/ui";
+import {
+  LoadingSpinner,
+  ErrorBanner,
+  EmptyState,
+  SkeletonTable,
+  SkeletonSessionRow,
+} from "@/app/components/ui";
+import { PageHeader } from "@/app/components/layout";
 import { List } from "lucide-react";
 
 export default function SessionsPage() {
@@ -21,30 +33,36 @@ export default function SessionsPage() {
   });
   const [searchQuery, setSearchQuery] = useState("");
 
-  const queryParams = useMemo(() => ({
-    page,
-    limit: 50,
-    ...(filters.dateRange.start &&
-      filters.dateRange.end && {
-        dateRange: {
-          start: filters.dateRange.start.toISOString(),
-          end: filters.dateRange.end.toISOString(),
-        },
-      }),
-    ...(filters.devices.length > 0 && { devices: filters.devices }),
-    ...(filters.pageUrl && { pageUrl: filters.pageUrl }),
-    ...(filters.minDuration && { minDuration: filters.minDuration }),
-    ...(filters.maxDuration && { maxDuration: filters.maxDuration }),
-    ...(filters.hasErrors !== undefined && { hasErrors: filters.hasErrors }),
-  }), [page, filters]);
+  const queryParams = useMemo(
+    () => ({
+      page,
+      limit: 50,
+      ...(filters.dateRange.start &&
+        filters.dateRange.end && {
+          dateRange: {
+            start: filters.dateRange.start.toISOString(),
+            end: filters.dateRange.end.toISOString(),
+          },
+        }),
+      ...(filters.devices.length > 0 && { devices: filters.devices }),
+      ...(filters.pageUrl && { pageUrl: filters.pageUrl }),
+      ...(filters.minDuration && { minDuration: filters.minDuration }),
+      ...(filters.maxDuration && { maxDuration: filters.maxDuration }),
+      ...(filters.hasErrors !== undefined && { hasErrors: filters.hasErrors }),
+    }),
+    [page, filters]
+  );
 
   const { data, loading, error } = useSessions(queryParams);
 
-  console.log("error", error)
+  console.log("error", error);
 
-  const handleSessionClick = useCallback((session: any) => {
-    router.push(`/session/${session.id}`);
-  }, [router]);
+  const handleSessionClick = useCallback(
+    (session: any) => {
+      router.push(`/session/${session.id}`);
+    },
+    [router]
+  );
 
   const handleResetFilters = useCallback(() => {
     setFilters({
@@ -71,29 +89,29 @@ export default function SessionsPage() {
   }, []);
 
   const mappedSessions = useMemo(() => {
-    return data?.data.map((s) => ({
-      ...s,
-      timestamp: typeof s.timestamp === "string" ? new Date(s.timestamp) : s.timestamp,
-    })) || [];
+    return (
+      data?.data.map((s) => ({
+        ...s,
+        timestamp:
+          typeof s.timestamp === "string" ? new Date(s.timestamp) : s.timestamp,
+      })) || []
+    );
   }, [data?.data]);
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-xl font-semibold text-black">Sessions</h1>
-        {data?.total ? (
-          <p className="text-sm text-gray-600 mt-1">
-            {data.total.toLocaleString()} total sessions
-          </p>
-        ) : !loading && (
-          <p className="text-sm text-gray-600 mt-1">
-            All recorded sessions
-          </p>
-        )}
-      </div>
+      <PageHeader
+        title="Sessions"
+        description={
+          data?.total
+            ? `${data.total.toLocaleString()} total sessions`
+            : "All recorded sessions"
+        }
+        breadcrumbs={[{ label: "Sessions" }]}
+      />
 
-      <div className="flex gap-6">
-        <div className="flex-1 space-y-4">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+        <div className="flex-1 space-y-4 min-w-0">
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <SearchBar
@@ -110,22 +128,32 @@ export default function SessionsPage() {
             onClearAll={handleResetFilters}
           />
 
-          {error && <ErrorBanner title="Failed to load sessions" message={error} />}
+          {error && (
+            <ErrorBanner title="Failed to load sessions" message={error} />
+          )}
 
           {loading ? (
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <SkeletonTable />
+            <div className="space-y-4">
+              {[...Array(10)].map((_, i) => (
+                <SkeletonSessionRow key={i} />
+              ))}
             </div>
           ) : mappedSessions.length === 0 ? (
-            <div className="bg-white border border-gray-200 rounded-lg">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
               <EmptyState
-                icon={<List className="h-16 w-16" />}
+                icon={<List className="h-8 w-8" />}
                 title="No sessions found"
                 description="Try adjusting your filters or check back later when sessions are recorded."
+                action={{
+                  label: "Clear Filters",
+                  onClick: handleResetFilters,
+                  variant: "secondary",
+                }}
+                variant="compact"
               />
             </div>
           ) : (
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
               <SessionList
                 sessions={mappedSessions}
                 onSessionClick={handleSessionClick}
@@ -135,22 +163,22 @@ export default function SessionsPage() {
           )}
 
           {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
+            <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl shadow-sm px-4 py-3">
+              <p className="text-sm font-medium text-gray-600">
                 Page {data.page} of {data.totalPages}
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPage(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setPage(Math.min(data.totalPages, page + 1))}
                   disabled={page === data.totalPages}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Next
                 </button>
@@ -159,13 +187,14 @@ export default function SessionsPage() {
           )}
         </div>
 
-        <SessionFilters
-          filters={filters}
-          onFiltersChange={setFilters}
-          onReset={handleResetFilters}
-        />
+        <div className="w-full lg:w-auto">
+          <SessionFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            onReset={handleResetFilters}
+          />
+        </div>
       </div>
     </div>
   );
 }
-

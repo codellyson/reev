@@ -8,4 +8,10 @@ export { ActiveFilters } from "./active-filters";
 export type { ActiveFiltersProps } from "./active-filters";
 export { SearchBar } from "./search-bar";
 export type { SearchBarProps } from "./search-bar";
+export { AdvancedFilters } from "./advanced-filters";
+export type { AdvancedFiltersProps } from "./advanced-filters";
+export { SavedFilters } from "./saved-filters";
+export { TagManager } from "./tag-manager";
+export { TagSelector, TagBadge } from "./tag-selector";
+export type { SavedFiltersProps, SavedFilter } from "./saved-filters";
 

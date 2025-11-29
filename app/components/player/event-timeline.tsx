@@ -1,7 +1,13 @@
 "use client";
 
 import React from "react";
-import { MousePointer, Navigation, AlertCircle, Scroll, Zap } from "lucide-react";
+import {
+  MousePointer,
+  Navigation,
+  AlertCircle,
+  Scroll,
+  Zap,
+} from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -68,21 +74,30 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
   return (
     <div
       className={cn(
-        "bg-white border border-gray-300 lg:border-l-0 lg:border-t rounded-lg lg:rounded-none overflow-y-auto",
+        "bg-white border border-gray-200 lg:border-l-0 lg:border-t rounded-xl lg:rounded-l-none shadow-sm overflow-y-auto",
         className
       )}
-      style={{ 
+      style={{
         width: "100%",
-        maxHeight: "600px",
-        minHeight: "300px"
+        height: "100%",
+        minHeight: "300px",
       }}
+      role="region"
+      aria-labelledby="timeline-heading"
     >
-      <div className="p-4 border-b border-gray-300 sticky top-0 bg-white z-10">
-        <h3 className="text-sm font-semibold text-gray-900">Event Timeline</h3>
-        <p className="text-xs text-gray-500 mt-1">{events.length} events</p>
+      <div className="p-4 border-b border-gray-200 sticky top-0 bg-gradient-to-b from-white to-gray-50 z-10">
+        <h3
+          className="text-sm font-bold text-gray-900"
+          id="timeline-heading"
+        >
+          Event Timeline
+        </h3>
+        <p className="text-xs font-medium text-gray-500 mt-1" aria-live="polite">
+          {events.length} {events.length === 1 ? "event" : "events"}
+        </p>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-2">
         {events.length === 0 ? (
           <p className="text-sm text-gray-500 text-center py-8">
             No events recorded
@@ -92,36 +107,62 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
             <button
               key={index}
               onClick={() => onEventClick?.(event)}
+              onKeyDown={(e) => {
+                if ((e.key === "Enter" || e.key === " ") && onEventClick) {
+                  e.preventDefault();
+                  onEventClick(event);
+                }
+              }}
               className={cn(
-                "w-full text-left p-3 rounded-md border transition-fast",
+                "w-full text-left p-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 touch-manipulation shadow-sm",
                 isActive(event)
-                  ? "border-primary-600 bg-primary-50"
-                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50",
+                  ? "border-black bg-gray-900 text-white shadow-md scale-[1.02]"
+                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md",
                 onEventClick && "cursor-pointer"
               )}
+              aria-label={`Event: ${event.type} at ${formatTimestamp(
+                event.timestamp
+              )}`}
+              aria-current={isActive(event) ? "true" : undefined}
             >
               <div className="flex items-start gap-3">
-                <div className={cn("flex-shrink-0 mt-0.5", getEventColor(event))}>
+                <div
+                  className={cn(
+                    "flex-shrink-0 mt-0.5",
+                    isActive(event) ? "text-white" : getEventColor(event)
+                  )}
+                >
                   {getEventIcon(event.type)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium text-gray-900">
+                    <span className={cn(
+                      "text-xs font-semibold",
+                      isActive(event) ? "text-white" : "text-gray-900"
+                    )}>
                       {event.type.replace("_", " ").toUpperCase()}
                     </span>
                     {event.severity && (
                       <Badge
-                        variant={event.severity === "error" ? "error" : "warning"}
+                        variant={
+                          event.severity === "error" ? "error" : "warning"
+                        }
                         size="sm"
                       >
                         {event.severity}
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-700 mb-2 line-clamp-2">
+                  <p className={cn(
+                    "text-sm mb-2 line-clamp-2",
+                    isActive(event) ? "text-gray-200" : "text-gray-700"
+                  )}>
                     {event.description}
                   </p>
-                  <p className="text-xs text-gray-500 font-mono">
+                  <p className={cn(
+                    "text-xs font-mono",
+                    isActive(event) ? "text-gray-300" : "text-gray-500"
+                  )}>
                     {formatTimestamp(event.timestamp)}
                   </p>
                 </div>
@@ -133,4 +174,3 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
     </div>
   );
 };
-

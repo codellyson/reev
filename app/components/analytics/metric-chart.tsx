@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import {
   LineChart,
   Line,
@@ -51,7 +51,10 @@ export const MetricChart: React.FC<MetricChartProps> = ({
       case "line":
         return (
           <LineChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.grid.stroke} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke={chartConfig.grid.stroke}
+            />
             <XAxis
               dataKey="date"
               tick={{ fontSize: 12, fill: "#6b7280" }}
@@ -72,7 +75,10 @@ export const MetricChart: React.FC<MetricChartProps> = ({
       case "bar":
         return (
           <BarChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.grid.stroke} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke={chartConfig.grid.stroke}
+            />
             <XAxis
               dataKey="date"
               tick={{ fontSize: 12, fill: "#6b7280" }}
@@ -86,7 +92,10 @@ export const MetricChart: React.FC<MetricChartProps> = ({
       case "area":
         return (
           <AreaChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.grid.stroke} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke={chartConfig.grid.stroke}
+            />
             <XAxis
               dataKey="date"
               tick={{ fontSize: 12, fill: "#6b7280" }}
@@ -111,10 +120,21 @@ export const MetricChart: React.FC<MetricChartProps> = ({
       {label && (
         <h3 className="text-lg font-semibold text-gray-900 mb-4">{label}</h3>
       )}
-      <ResponsiveContainer width="100%" height={height}>
-        {renderChart()}
-      </ResponsiveContainer>
+      <Suspense
+        fallback={
+          <div
+            className="flex items-center justify-center bg-gray-50 rounded-lg"
+            style={{ height }}
+            aria-label="Loading chart"
+          >
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-black border-t-transparent" />
+          </div>
+        }
+      >
+        <ResponsiveContainer width="100%" height={height}>
+          {renderChart()}
+        </ResponsiveContainer>
+      </Suspense>
     </div>
   );
 };
-

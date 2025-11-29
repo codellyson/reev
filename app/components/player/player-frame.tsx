@@ -49,12 +49,15 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
     const eventsWithNumbers = events.map((e) => ({
       type: e.eventType,
       data: e.data,
-      timestamp: typeof e.timestamp === 'string' ? parseInt(e.timestamp, 10) : e.timestamp,
+      timestamp:
+        typeof e.timestamp === "string"
+          ? parseInt(e.timestamp, 10)
+          : e.timestamp,
     }));
 
     // Extract viewport dimensions from Meta event (type 4) or use provided viewport
     let recordedViewport = viewport;
-    const metaEvent = eventsWithNumbers.find(e => e.type === 4);
+    const metaEvent = eventsWithNumbers.find((e) => e.type === 4);
     if (metaEvent?.data?.width && metaEvent?.data?.height) {
       recordedViewport = {
         width: metaEvent.data.width,
@@ -69,12 +72,6 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
       data: e.data,
       timestamp: e.timestamp - firstTimestamp,
     }));
-
-    console.log("Initializing rrweb-player with events:", {
-      count: rrwebEvents.length,
-      firstEvent: rrwebEvents[0],
-      lastEvent: rrwebEvents[rrwebEvents.length - 1],
-    });
 
     if (playerRef.current) {
       try {
@@ -94,18 +91,17 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
 
     const container = containerRef.current;
     let timeoutId: NodeJS.Timeout | null = null;
+    let resizeObserver: ResizeObserver | null = null;
 
     const initializePlayer = () => {
       if (!containerRef.current) return;
 
       try {
-        // Clear any existing content
-        containerRef.current.innerHTML = '';
-        
-        // Get container dimensions for player sizing
-        const containerWidth = containerRef.current.offsetWidth || viewport?.width || 1024;
-        const containerHeight = containerRef.current.offsetHeight || viewport?.height || 768;
-        
+        containerRef.current.innerHTML = "";
+
+        const recordedWidth = recordedViewport?.width || 1024;
+        const recordedHeight = recordedViewport?.height || 768;
+
         const player = new rrwebPlayer({
           target: containerRef.current,
           props: {
@@ -113,84 +109,69 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
             speed: speed,
             autoPlay: false,
             showController: false,
-            width: containerWidth,
-            height: containerHeight,
+            width: recordedWidth,
+            height: recordedHeight,
           },
         });
 
         playerRef.current = player;
-        console.log("Player initialized successfully", player);
-        
-        // Ensure the player scales to fill the container
-        setTimeout(() => {
-          const playerElement = containerRef.current?.querySelector('.rr-player');
-          const iframe = containerRef.current?.querySelector('iframe');
-          const wrapper = containerRef.current?.querySelector('.rr-player__frame');
-          
-          if (playerElement) {
-            (playerElement as HTMLElement).style.width = '100%';
-            (playerElement as HTMLElement).style.height = '100%';
-          }
-          
-          if (wrapper) {
-            (wrapper as HTMLElement).style.width = '100%';
-            (wrapper as HTMLElement).style.height = '100%';
-          }
-          
-          if (iframe && containerRef.current) {
-            const container = containerRef.current;
-            const containerW = container.offsetWidth;
-            const containerH = container.offsetHeight;
-            
-            // Use recorded viewport or fallback
-            const recordedWidth = recordedViewport?.width || 1024;
-            const recordedHeight = recordedViewport?.height || 768;
-            
-            // Calculate scale to fit container while maintaining aspect ratio
-            const scaleX = containerW / recordedWidth;
-            const scaleY = containerH / recordedHeight;
-            const scale = Math.min(scaleX, scaleY);
-            
-            // Set iframe to recorded size and scale it
-            iframe.style.width = `${recordedWidth}px`;
-            iframe.style.height = `${recordedHeight}px`;
-            iframe.style.border = 'none';
-            iframe.style.transform = `scale(${scale})`;
-            iframe.style.transformOrigin = 'top left';
-            
-            // Adjust container to center the scaled iframe
-            const scaledWidth = recordedWidth * scale;
-            const scaledHeight = recordedHeight * scale;
-            const offsetX = (containerW - scaledWidth) / 2;
-            const offsetY = (containerH - scaledHeight) / 2;
-            
-            if (offsetX > 0 || offsetY > 0) {
-              iframe.style.marginLeft = `${offsetX}px`;
-              iframe.style.marginTop = `${offsetY}px`;
-            }
-            
-            console.log("Player scaled:", {
-              container: { w: containerW, h: containerH },
-              recorded: { w: recordedWidth, h: recordedHeight },
-              scale,
-              scaled: { w: scaledWidth, h: scaledHeight }
-            });
-          }
-        }, 400);
 
-        // Get metadata after a short delay to ensure player is ready
+        const scaleToFit = () => {
+          if (!containerRef.current) return;
+
+          const iframe = containerRef.current.querySelector("iframe");
+          if (!iframe) return;
+
+          const container = containerRef.current;
+          const containerWidth = container.offsetWidth;
+          const containerHeight = container.offsetHeight;
+
+          if (containerWidth === 0 || containerHeight === 0) return;
+
+          const scaleX = containerWidth / recordedWidth;
+          const scaleY = containerHeight / recordedHeight;
+          const scale = Math.min(scaleX, scaleY);
+
+          iframe.style.width = `${recordedWidth}px`;
+          iframe.style.height = `${recordedHeight}px`;
+          iframe.style.transform = `scale(${scale})`;
+          iframe.style.transformOrigin = "top left";
+
+          const scaledWidth = recordedWidth * scale;
+          const scaledHeight = recordedHeight * scale;
+          const offsetX = (containerWidth - scaledWidth) / 2;
+          const offsetY = (containerHeight - scaledHeight) / 2;
+
+          if (offsetX > 0 || offsetY > 0) {
+            iframe.style.marginLeft = `${offsetX}px`;
+            iframe.style.marginTop = `${offsetY}px`;
+          } else {
+            iframe.style.marginLeft = "0";
+            iframe.style.marginTop = "0";
+          }
+        };
+
         setTimeout(() => {
+          scaleToFit();
+
           if (onDurationChange && playerRef.current) {
             try {
               const metaData = playerRef.current.getMetaData();
               const duration = metaData?.totalTime || 0;
-              console.log("Player metadata:", metaData);
               onDurationChange(duration);
             } catch (e) {
               console.warn("Error getting metadata:", e);
             }
           }
-        }, 100);
+        }, 200);
+
+        resizeObserver = new ResizeObserver(() => {
+          scaleToFit();
+        });
+
+        if (containerRef.current) {
+          resizeObserver.observe(containerRef.current);
+        }
 
         const handleStateChange = () => {
           if (onTimeUpdate && playerRef.current) {
@@ -225,6 +206,10 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
+      }
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+        resizeObserver = null;
       }
       if (playerRef.current) {
         try {
@@ -274,14 +259,14 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
     return (
       <div
         className={cn(
-          "flex items-center justify-center bg-gray-100 border border-gray-300 rounded-lg",
+          "flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 rounded-xl shadow-inner",
           className
         )}
         style={{ minHeight: "400px" }}
       >
         <div className="flex flex-col items-center gap-4">
           <LoadingSpinner size="lg" />
-          <p className="text-sm text-gray-500">Loading session replay...</p>
+          <p className="text-sm font-medium text-gray-600">Loading session replay...</p>
         </div>
       </div>
     );
@@ -291,14 +276,14 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
     return (
       <div
         className={cn(
-          "flex items-center justify-center bg-gray-100 border border-gray-300 rounded-lg",
+          "flex items-center justify-center bg-gradient-to-br from-red-50 to-gray-100 border border-red-200 rounded-xl shadow-inner",
           className
         )}
         style={{ minHeight: "400px" }}
       >
-        <div className="text-center">
-          <p className="text-sm text-error mb-2">Error loading session</p>
-          <p className="text-xs text-gray-500">{error}</p>
+        <div className="text-center bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-red-200">
+          <p className="text-sm font-semibold text-error mb-2">Error loading session</p>
+          <p className="text-xs text-gray-600">{error}</p>
         </div>
       </div>
     );
@@ -308,48 +293,41 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
     return (
       <div
         className={cn(
-          "flex items-center justify-center bg-gray-100 border border-gray-300 rounded-lg",
+          "flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 rounded-xl shadow-inner",
           className
         )}
         style={{ minHeight: "400px" }}
       >
         <div className="flex items-center justify-center h-full">
-          <p className="text-sm text-gray-500">No session data available</p>
+          <p className="text-sm font-medium text-gray-600">No session data available</p>
         </div>
       </div>
     );
   }
 
+  const isFullHeight = className?.includes("h-full");
+
   return (
     <div
       className={cn(
-        "bg-gray-100 border border-gray-300 rounded-lg overflow-hidden",
+        "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-gray-700 rounded-xl overflow-hidden shadow-lg",
         className
       )}
       style={{
         width: "100%",
-        maxWidth: "100%",
-        minHeight: "600px",
-        height: "600px",
+        height: isFullHeight ? "100%" : "600px",
+        minHeight: isFullHeight ? "100%" : "600px",
         position: "relative",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
       }}
     >
-      <div 
-        ref={containerRef} 
+      <div
+        ref={containerRef}
         className="w-full h-full"
         style={{
           width: "100%",
           height: "100%",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
         }}
       />
     </div>
   );
 };
-

@@ -4,4 +4,5 @@ export { PlayerControls } from "./player-controls";
 export type { PlayerControlsProps } from "./player-controls";
 export { EventTimeline } from "./event-timeline";
 export type { EventTimelineProps, TimelineEvent } from "./event-timeline";
+export { KeyboardShortcutsModal } from "./keyboard-shortcuts-modal";
 
