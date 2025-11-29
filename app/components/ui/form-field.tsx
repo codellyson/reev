@@ -23,7 +23,7 @@ export function FormField({
   return (
     <div className={clsx("space-y-2", className)}>
       {label && (
-        <label className="block text-sm font-medium text-gray-900 dark:text-white">
+        <label className="block text-sm font-medium text-gray-900">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -31,10 +31,10 @@ export function FormField({
 
       {children}
 
-      {hint && !error && <p className="text-xs text-gray-500 dark:text-gray-400">{hint}</p>}
+      {hint && !error && <p className="text-xs text-gray-500">{hint}</p>}
 
       {error && (
-        <div className="flex items-start gap-1.5 text-sm text-red-600 dark:text-red-400">
+        <div className="flex items-start gap-1.5 text-sm text-red-600">
           <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -52,13 +52,13 @@ export function Input({ error, className, ...props }: InputProps) {
     <input
       className={clsx(
         "w-full px-3 py-2 text-sm rounded-lg border transition-colors",
-        "bg-white dark:bg-gray-800",
-        "text-gray-900 dark:text-white",
-        "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+        "bg-white",
+        "text-gray-900",
+        "placeholder:text-gray-400",
         "focus:outline-none focus:ring-2 focus:ring-offset-0",
         error
-          ? "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500"
-          : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500",
+          ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -76,13 +76,13 @@ export function Textarea({ error, className, ...props }: TextareaProps) {
     <textarea
       className={clsx(
         "w-full px-3 py-2 text-sm rounded-lg border transition-colors resize-y",
-        "bg-white dark:bg-gray-800",
-        "text-gray-900 dark:text-white",
-        "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+        "bg-white",
+        "text-gray-900",
+        "placeholder:text-gray-400",
         "focus:outline-none focus:ring-2 focus:ring-offset-0",
         error
-          ? "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500"
-          : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500",
+          ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -100,12 +100,12 @@ export function Select({ error, className, children, ...props }: SelectProps) {
     <select
       className={clsx(
         "w-full px-3 py-2 text-sm rounded-lg border transition-colors",
-        "bg-white dark:bg-gray-800",
-        "text-gray-900 dark:text-white",
+        "bg-white",
+        "text-gray-900",
         "focus:outline-none focus:ring-2 focus:ring-offset-0",
         error
-          ? "border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500"
-          : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500",
+          ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -126,14 +126,14 @@ export function Checkbox({ label, className, ...props }: CheckboxProps) {
       <input
         type="checkbox"
         className={clsx(
-          "w-4 h-4 rounded border-gray-300 dark:border-gray-600",
+          "w-4 h-4 rounded border-gray-300",
           "text-blue-600 focus:ring-blue-500 focus:ring-2 focus:ring-offset-0",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           className
         )}
         {...props}
       />
-      <span className="text-sm text-gray-900 dark:text-white">{label}</span>
+      <span className="text-sm text-gray-900">{label}</span>
     </label>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useProjectContext } from "@/app/providers/project-provider";
 
 export interface Tag {
   id: string;
@@ -10,49 +11,61 @@ export interface Tag {
   created_at?: string;
 }
 
-export function useTags(projectId: string = "default") {
+export function useTags() {
+  const { selectedProject } = useProjectContext();
+  
   return useQuery({
-    queryKey: ["tags", projectId],
+    queryKey: ["tags", selectedProject?.id],
     queryFn: async () => {
-      const response = await fetch(`/api/tags?projectId=${projectId}`);
+      if (!selectedProject) throw new Error("No project selected");
+      const response = await fetch(`/api/tags?projectId=${selectedProject.id}`);
       if (!response.ok) throw new Error("Failed to fetch tags");
       return response.json() as Promise<Tag[]>;
     },
+    enabled: !!selectedProject,
   });
 }
 
-export function useCreateTag(projectId: string = "default") {
+export function useCreateTag() {
   const queryClient = useQueryClient();
+  const { selectedProject } = useProjectContext();
 
   return useMutation({
     mutationFn: async ({ name, color }: { name: string; color: string }) => {
+      if (!selectedProject) throw new Error("No project selected");
       const response = await fetch("/api/tags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, color, projectId }),
+        body: JSON.stringify({ name, color, projectId: selectedProject.id }),
       });
       if (!response.ok) throw new Error("Failed to create tag");
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tags", projectId] });
+      if (selectedProject) {
+        queryClient.invalidateQueries({ queryKey: ["tags", selectedProject.id] });
+      }
     },
   });
 }
 
-export function useDeleteTag(projectId: string = "default") {
+export function useDeleteTag() {
   const queryClient = useQueryClient();
+  const { selectedProject } = useProjectContext();
 
   return useMutation({
     mutationFn: async (tagId: string) => {
-      const response = await fetch(`/api/tags?id=${tagId}`, {
+      if (!selectedProject) throw new Error("No project selected");
+      const response = await fetch(`/api/tags?id=${tagId}&projectId=${selectedProject.id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete tag");
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tags", projectId] });
+      if (selectedProject) {
+        queryClient.invalidateQueries({ queryKey: ["tags", selectedProject.id] });
+      }
     },
   });
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { User } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,7 @@ export interface TopNavbarProps {
   navItems?: NavItem[];
   user?: { name: string; avatar?: string };
   onLogout?: () => void;
+  projectSwitcher?: React.ReactNode;
 }
 
 export const TopNavbar: React.FC<TopNavbarProps> = ({
@@ -24,6 +25,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   navItems,
   user,
   onLogout,
+  projectSwitcher,
 }) => {
   const pathname = usePathname();
 
@@ -66,11 +68,16 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
               })}
             </div>
           )}
+          {projectSwitcher && (
+            <div className="flex items-center">
+              {projectSwitcher}
+            </div>
+          )}
         </div>
 
         {user && (
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+            <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg">
               {user.avatar ? (
                 <img
                   src={user.avatar}
@@ -93,6 +100,16 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 {user.name}
               </span>
             </div>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-600 hover:text-black"
+                aria-label="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Sign out</span>
+              </button>
+            )}
           </div>
         )}
       </div>

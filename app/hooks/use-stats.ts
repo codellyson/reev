@@ -2,9 +2,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { Stats } from "@/types/api";
+import { useProjectContext } from "@/app/providers/project-provider";
 
-async function fetchStats(): Promise<Stats> {
-  const response = await fetch("/api/stats/today");
+async function fetchStats(projectId: string): Promise<Stats> {
+  const response = await fetch(`/api/stats/today?projectId=${projectId}`);
   const result = await response.json();
 
   if (!response.ok || !result.success) {
@@ -15,9 +16,12 @@ async function fetchStats(): Promise<Stats> {
 }
 
 export function useStats() {
+  const { selectedProject } = useProjectContext();
+  
   const query = useQuery({
-    queryKey: ["stats", "today"],
-    queryFn: fetchStats,
+    queryKey: ["stats", "today", selectedProject?.id],
+    queryFn: () => fetchStats(selectedProject!.id),
+    enabled: !!selectedProject,
   });
 
   return {

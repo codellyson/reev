@@ -52,7 +52,7 @@ export function TagSelector({
             <TagBadge key={tag.id} tag={tag} compact />
           ))}
           {selectedTags.length > 3 && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-gray-500">
               +{selectedTags.length - 3}
             </span>
           )}
@@ -76,9 +76,9 @@ export function TagSelector({
               className="fixed inset-0 z-10"
               onClick={() => setIsOpen(false)}
             />
-            <div className="absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20 p-2 max-h-64 overflow-auto">
+            <div className="absolute left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20 p-2 max-h-64 overflow-auto">
               {unselectedTags.length === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                <p className="text-sm text-gray-500 text-center py-4">
                   No more tags available
                 </p>
               ) : (
@@ -90,13 +90,13 @@ export function TagSelector({
                         onTagAdd(tag.id);
                         setIsOpen(false);
                       }}
-                      className="w-full flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-left"
+                      className="w-full flex items-center gap-2 p-2 hover:bg-gray-100 rounded transition-colors text-left"
                     >
                       <div
                         className="w-3 h-3 rounded"
                         style={{ backgroundColor: tag.color }}
                       />
-                      <span className="text-sm text-gray-900 dark:text-white">
+                      <span className="text-sm text-gray-900">
                         {tag.name}
                       </span>
                     </button>

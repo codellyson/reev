@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { transaction, query } from "@/lib/db";
+import { transaction, query, queryOne } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { sessionId, projectId, events } = body;
 
-    console.log("Received events:", { sessionId, projectId, eventCount: events?.length });
+    console.log("Received events:", { sessionId, projectId: projectId ? "provided" : "missing", eventCount: events?.length });
 
     if (!sessionId || !projectId || !events || !Array.isArray(events)) {
       console.error("Missing required fields:", { sessionId: !!sessionId, projectId: !!projectId, events: !!events });
@@ -16,12 +16,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const project = await queryOne<{ id: string; website_url: string }>(
+      `SELECT id, website_url FROM projects WHERE id = $1`,
+      [projectId]
+    );
+
+    if (!project) {
+      return NextResponse.json(
+        { success: false, error: "Invalid project ID" },
+        { status: 401 }
+      );
+    }
+
     if (events.length === 0) {
       return new NextResponse(null, { status: 204 });
     }
 
     const userAgent = request.headers.get("user-agent") || null;
     const pageUrl = extractPageUrl(events);
+
+    if (pageUrl) {
+      const projectOrigin = new URL(project.website_url).origin;
+      const eventOrigin = new URL(pageUrl).origin;
+      
+      if (eventOrigin !== projectOrigin) {
+        return NextResponse.json(
+          { success: false, error: "Events must originate from the registered website" },
+          { status: 403 }
+        );
+      }
+    }
 
     await processEvents(sessionId, projectId, events, pageUrl, userAgent);
 

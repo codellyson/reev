@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
+import { requireAuth, getUserProject } from "@/lib/auth-helpers";
 
 export async function GET(request: NextRequest) {
   try {
-    const projectId = request.nextUrl.searchParams.get("projectId") || "default";
+    const { userId } = await requireAuth(request);
+    const searchParams = request.nextUrl.searchParams;
+    const projectIdParam = searchParams.get("projectId");
+    
+    const project = await getUserProject(userId, projectIdParam || undefined);
+
+    if (!project) {
+      return NextResponse.json(
+        { error: "Project not found" },
+        { status: 404 }
+      );
+    }
 
     const result = await query(
       `SELECT 
@@ -17,11 +29,17 @@ export async function GET(request: NextRequest) {
       WHERE t.project_id = $1
       GROUP BY t.id
       ORDER BY t.name ASC`,
-      [projectId]
+      [project.id]
     );
 
-    return NextResponse.json(result.rows);
+    return NextResponse.json(result);
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
     console.error("Error fetching tags:", error);
     return NextResponse.json({ error: "Failed to fetch tags" }, { status: 500 });
   }
@@ -29,8 +47,20 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = await requireAuth(request);
     const body = await request.json();
-    const { name, color, projectId = "default" } = body;
+    const projectIdParam = body.projectId;
+    
+    const project = await getUserProject(userId, projectIdParam || undefined);
+
+    if (!project) {
+      return NextResponse.json(
+        { error: "Project not found" },
+        { status: 404 }
+      );
+    }
+
+    const { name, color } = body;
 
     if (!name || !color) {
       return NextResponse.json(
@@ -45,11 +75,17 @@ export async function POST(request: NextRequest) {
       ON CONFLICT (name, project_id) DO UPDATE
       SET color = $2
       RETURNING *`,
-      [name, color, projectId]
+      [name, color, project.id]
     );
 
-    return NextResponse.json(result.rows[0]);
+    return NextResponse.json(result[0]);
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
     console.error("Error creating tag:", error);
     return NextResponse.json({ error: "Failed to create tag" }, { status: 500 });
   }
@@ -57,16 +93,35 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const { userId } = await requireAuth(request);
+    const searchParams = request.nextUrl.searchParams;
+    const projectIdParam = searchParams.get("projectId");
+    
+    const project = await getUserProject(userId, projectIdParam || undefined);
+
+    if (!project) {
+      return NextResponse.json(
+        { error: "Project not found" },
+        { status: 404 }
+      );
+    }
+
     const tagId = request.nextUrl.searchParams.get("id");
 
     if (!tagId) {
       return NextResponse.json({ error: "Tag ID is required" }, { status: 400 });
     }
 
-    await query(`DELETE FROM tags WHERE id = $1`, [tagId]);
+    await query(`DELETE FROM tags WHERE id = $1 AND project_id = $2`, [tagId, project.id]);
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
     console.error("Error deleting tag:", error);
     return NextResponse.json({ error: "Failed to delete tag" }, { status: 500 });
   }

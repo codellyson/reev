@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { SessionQueryParams, PaginatedResponse, Session } from "@/types/api";
 import { query, queryOne } from "@/lib/db";
+import { requireAuth, getUserProject } from "@/lib/auth-helpers";
 
 function detectDevice(userAgent: string | null): "desktop" | "mobile" | "tablet" {
   if (!userAgent) return "desktop";
@@ -12,7 +13,19 @@ function detectDevice(userAgent: string | null): "desktop" | "mobile" | "tablet"
 
 export async function GET(request: NextRequest) {
   try {
+    const { userId } = await requireAuth(request);
     const searchParams = request.nextUrl.searchParams;
+    const projectIdParam = searchParams.get("projectId");
+    
+    const project = await getUserProject(userId, projectIdParam || undefined);
+
+    if (!project) {
+      return NextResponse.json(
+        { success: false, error: "Project not found" },
+        { status: 404 }
+      );
+    }
+
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "50");
     const sortBy = searchParams.get("sortBy") || "started_at";
@@ -41,10 +54,16 @@ export async function GET(request: NextRequest) {
       ...(hasErrors && { hasErrors: hasErrors === "true" }),
     };
 
-    const response = await fetchSessions(queryParams);
+    const response = await fetchSessions(queryParams, project.id);
 
     return NextResponse.json(response);
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
     console.error("Error fetching sessions:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch sessions" },
@@ -54,14 +73,15 @@ export async function GET(request: NextRequest) {
 }
 
 async function fetchSessions(
-  params: SessionQueryParams
+  params: SessionQueryParams,
+  projectId: string
 ): Promise<PaginatedResponse<Session>> {
   const { page = 1, limit = 50, sortBy = "started_at", order = "desc" } = params;
   const offset = (page - 1) * limit;
 
-  const conditions: string[] = [];
-  const values: any[] = [];
-  let paramIndex = 1;
+  const conditions: string[] = [`project_id = $1`];
+  const values: any[] = [projectId];
+  let paramIndex = 2;
 
   if (params.dateRange?.start && params.dateRange?.end) {
     conditions.push(`started_at >= $${paramIndex} AND started_at <= $${paramIndex + 1}`);

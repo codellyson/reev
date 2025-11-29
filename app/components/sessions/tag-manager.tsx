@@ -76,7 +76,7 @@ export function TagManager({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className="text-lg font-semibold text-gray-900">
           Tags
         </h3>
         <Button variant="primary" size="sm" onClick={() => setIsOpen(true)}>
@@ -87,32 +87,32 @@ export function TagManager({
 
       <div className="space-y-2">
         {tags.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
+          <p className="text-sm text-gray-500 py-4 text-center">
             No tags yet. Create one to get started.
           </p>
         ) : (
           tags.map((tag) => (
             <div
               key={tag.id}
-              className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
             >
               <div className="flex items-center gap-2">
                 <div
                   className="w-4 h-4 rounded"
                   style={{ backgroundColor: tag.color }}
                 />
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                <span className="text-sm font-medium text-gray-900">
                   {tag.name}
                 </span>
                 {tag.session_count !== undefined && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-gray-500">
                     ({tag.session_count} sessions)
                   </span>
                 )}
               </div>
               <button
                 onClick={() => handleDelete(tag.id)}
-                className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                 aria-label="Delete tag"
               >
                 <X className="w-4 h-4" />
@@ -125,10 +125,10 @@ export function TagManager({
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size="sm">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <TagIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <TagIcon className="w-5 h-5 text-blue-600" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-900">
               Create New Tag
             </h2>
           </div>
@@ -152,7 +152,7 @@ export function TagManager({
                     className={clsx(
                       "w-8 h-8 rounded transition-all",
                       selectedColor === color
-                        ? "ring-2 ring-offset-2 ring-gray-900 dark:ring-white scale-110"
+                        ? "ring-2 ring-offset-2 ring-gray-900 scale-110"
                         : "hover:scale-105"
                     )}
                     style={{ backgroundColor: color }}

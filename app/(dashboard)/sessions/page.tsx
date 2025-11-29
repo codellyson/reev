@@ -9,6 +9,7 @@ import {
   ActiveFilters,
 } from "@/app/components/sessions";
 import { useSessions } from "@/app/hooks";
+import { useProjectContext } from "@/app/providers/project-provider";
 import type { Filters } from "@/app/components/sessions/session-filters";
 import {
   LoadingSpinner,
@@ -22,6 +23,7 @@ import { List } from "lucide-react";
 
 export default function SessionsPage() {
   const router = useRouter();
+  const { selectedProject, projects, loading: projectsLoading } = useProjectContext();
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<Filters>({
     dateRange: { start: null, end: null },
@@ -55,7 +57,37 @@ export default function SessionsPage() {
 
   const { data, loading, error } = useSessions(queryParams);
 
-  console.log("error", error);
+  if (projectsLoading) {
+    return (
+      <div className="space-y-8">
+        <Skeleton className="h-8 w-48" />
+        <SkeletonTable />
+      </div>
+    );
+  }
+
+  if (!selectedProject) {
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          title="Sessions"
+          description="Select or create a project to view sessions"
+        />
+        <EmptyState
+          icon={<List className="h-8 w-8" />}
+          title="No project selected"
+          description={projects.length === 0 
+            ? "Create your first project to start tracking sessions"
+            : "Please select a project from the switcher above"}
+          action={projects.length === 0 ? {
+            label: "Create Project",
+            onClick: () => router.push("/projects/new"),
+          } : undefined}
+          variant="compact"
+        />
+      </div>
+    );
+  }
 
   const handleSessionClick = useCallback(
     (session: any) => {

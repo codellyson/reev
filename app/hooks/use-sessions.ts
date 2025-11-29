@@ -2,9 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { Session, SessionQueryParams, PaginatedResponse } from "@/types/api";
+import { useProjectContext } from "@/app/providers/project-provider";
 
-function buildQueryString(params?: SessionQueryParams): string {
+function buildQueryString(params?: SessionQueryParams, projectId?: string): string {
   const queryParams = new URLSearchParams();
+  if (projectId) queryParams.set("projectId", projectId);
   if (params?.page) queryParams.set("page", params.page.toString());
   if (params?.limit) queryParams.set("limit", params.limit.toString());
   if (params?.sortBy) queryParams.set("sortBy", params.sortBy);
@@ -21,8 +23,11 @@ function buildQueryString(params?: SessionQueryParams): string {
   return queryParams.toString();
 }
 
-async function fetchSessions(params?: SessionQueryParams): Promise<PaginatedResponse<Session>> {
-  const queryString = buildQueryString(params);
+async function fetchSessions(params?: SessionQueryParams, projectId?: string): Promise<PaginatedResponse<Session>> {
+  if (!projectId) {
+    throw new Error("No project selected");
+  }
+  const queryString = buildQueryString(params, projectId);
   const response = await fetch(`/api/sessions?${queryString}`);
   const result = await response.json();
 
@@ -34,9 +39,12 @@ async function fetchSessions(params?: SessionQueryParams): Promise<PaginatedResp
 }
 
 export function useSessions(params?: SessionQueryParams) {
+  const { selectedProject } = useProjectContext();
+  
   const query = useQuery({
-    queryKey: ["sessions", params],
-    queryFn: () => fetchSessions(params),
+    queryKey: ["sessions", params, selectedProject?.id],
+    queryFn: () => fetchSessions(params, selectedProject?.id),
+    enabled: !!selectedProject,
   });
 
   return {

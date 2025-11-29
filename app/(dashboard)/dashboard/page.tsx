@@ -7,6 +7,7 @@ import { Activity, Clock } from "lucide-react";
 import { StatsCard } from "@/app/components/analytics";
 import { SessionList } from "@/app/components/sessions";
 import { useStats, useSessions } from "@/app/hooks";
+import { useProjectContext } from "@/app/providers/project-provider";
 import {
   LoadingSpinner,
   ErrorBanner,
@@ -21,6 +22,7 @@ import { PageHeader } from "@/app/components/layout";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { selectedProject, projects, loading: projectsLoading } = useProjectContext();
   const { stats, loading: statsLoading, error: statsError } = useStats();
   const queryParams = useMemo(() => ({ limit: 10 }), []);
   const { data: sessionsData, loading: sessionsLoading } = useSessions(queryParams);
@@ -42,6 +44,38 @@ export default function DashboardPage() {
     })) || [];
   }, [sessionsData?.data]);
 
+  if (projectsLoading) {
+    return (
+      <div className="space-y-8">
+        <Skeleton className="h-8 w-48" />
+        <SkeletonStats cards={2} />
+      </div>
+    );
+  }
+
+  if (!selectedProject) {
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          title="Dashboard"
+          description="Select or create a project to get started"
+        />
+        <EmptyState
+          icon={<Activity className="h-8 w-8" />}
+          title="No project selected"
+          description={projects.length === 0 
+            ? "Create your first project to start tracking sessions"
+            : "Please select a project from the switcher above"}
+          action={projects.length === 0 ? {
+            label: "Create Project",
+            onClick: () => router.push("/projects/new"),
+          } : undefined}
+          variant="compact"
+        />
+      </div>
+    );
+  }
+
   if (statsLoading || sessionsLoading) {
     return (
       <div className="space-y-8">
@@ -50,7 +84,7 @@ export default function DashboardPage() {
           <Skeleton className="h-5 w-48" />
         </div>
         <SkeletonStats cards={2} />
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <Skeleton className="h-6 w-40 mb-6" />
           {[...Array(5)].map((_, i) => (
             <SkeletonSessionRow key={i} />

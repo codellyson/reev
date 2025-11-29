@@ -1,8 +1,31 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  email_verified TIMESTAMPTZ,
+  name VARCHAR(255),
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+CREATE TABLE IF NOT EXISTS projects (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  website_url VARCHAR(500) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_projects_user ON projects(user_id);
+
 CREATE TABLE IF NOT EXISTS sessions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  project_id VARCHAR(50) NOT NULL,
+  project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
   page_url TEXT,
   user_agent TEXT,
   started_at TIMESTAMPTZ DEFAULT NOW(),
@@ -29,7 +52,7 @@ CREATE TABLE IF NOT EXISTS tags (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(50) NOT NULL,
   color VARCHAR(7) NOT NULL,
-  project_id VARCHAR(50) NOT NULL,
+  project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(name, project_id)
 );
