@@ -167,9 +167,9 @@ export default function SetupPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/dashboard">
+            <Link href="/issues">
               <Button variant="primary">
-                Go to Dashboard
+                View Issues
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </Link>

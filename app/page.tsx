@@ -23,9 +23,9 @@ export default function HomePage() {
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </Link>
-            <Link href="/dashboard">
+            <Link href="/issues">
               <Button variant="secondary" size="lg">
-                View Dashboard
+                View Issues
               </Button>
             </Link>
           </div>

@@ -119,3 +119,8 @@ CREATE TABLE IF NOT EXISTS session_tags (
 
 CREATE INDEX IF NOT EXISTS idx_session_tags_session ON session_tags(session_id);
 CREATE INDEX IF NOT EXISTS idx_session_tags_tag ON session_tags(tag_id);
+
+-- V2: Issues-first redesign columns
+ALTER TABLE insights ADD COLUMN IF NOT EXISTS previous_metric_value NUMERIC;
+ALTER TABLE insights ADD COLUMN IF NOT EXISTS trend TEXT DEFAULT 'new';
+ALTER TABLE insights ADD COLUMN IF NOT EXISTS suggestion TEXT;

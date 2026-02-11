@@ -46,7 +46,8 @@ export async function GET(request: NextRequest) {
     const [insights, countResult] = await Promise.all([
       query(
         `SELECT id, project_id, type, severity, title, description, url,
-                metric_value, metadata, first_seen_at, last_seen_at,
+                metric_value, previous_metric_value, trend, suggestion,
+                metadata, first_seen_at, last_seen_at,
                 occurrences, status, created_at
          FROM insights
          WHERE ${where}
@@ -126,7 +127,8 @@ export async function PATCH(request: NextRequest) {
     const updated = await queryOne(
       `UPDATE insights SET status = $1, updated_at = NOW() WHERE id = $2
        RETURNING id, project_id, type, severity, title, description, url,
-                 metric_value, metadata, first_seen_at, last_seen_at,
+                 metric_value, previous_metric_value, trend, suggestion,
+                 metadata, first_seen_at, last_seen_at,
                  occurrences, status`,
       [status, id]
     );
@@ -157,6 +159,9 @@ function mapInsight(row: any) {
     description: row.description,
     url: row.url,
     metricValue: row.metric_value ? parseFloat(row.metric_value) : null,
+    previousMetricValue: row.previous_metric_value ? parseFloat(row.previous_metric_value) : null,
+    trend: row.trend || "new",
+    suggestion: row.suggestion || null,
     metadata: row.metadata,
     firstSeenAt: row.first_seen_at,
     lastSeenAt: row.last_seen_at,

@@ -18,14 +18,18 @@ export async function middleware(req: NextRequest) {
   }
 
   // Get token for protected routes
-  const token = await getToken({ 
-    req, 
-    secret: process.env.NEXTAUTH_SECRET 
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET
   });
 
   // Define protected routes
   const protectedRoutes = [
+    "/issues",
     "/dashboard",
+    "/insights",
+    "/analytics",
+    "/pages",
     "/session",
     "/sessions",
     "/settings",
@@ -38,6 +42,7 @@ export async function middleware(req: NextRequest) {
     "/api/tags",
     "/api/stats",
     "/api/projects",
+    "/api/insights",
   ];
 
   // Check if the current route is protected
@@ -74,7 +79,11 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    "/issues/:path*",
     "/dashboard/:path*",
+    "/insights/:path*",
+    "/analytics/:path*",
+    "/pages/:path*",
     "/session/:path*",
     "/sessions/:path*",
     "/settings/:path*",
@@ -84,9 +93,9 @@ export const config = {
     "/api/tags/:path*",
     "/api/stats/:path*",
     "/api/projects/:path*",
+    "/api/insights/:path*",
     "/api/auth/:path*",
     "/login",
     "/signup",
   ],
 };
-

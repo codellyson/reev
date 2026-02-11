@@ -62,11 +62,20 @@ export interface Insight {
   description: string | null;
   url: string | null;
   metricValue: number | null;
+  previousMetricValue: number | null;
+  trend: "worsening" | "improving" | "stable" | "new";
+  suggestion: string | null;
   metadata: Record<string, any>;
   firstSeenAt: string;
   lastSeenAt: string;
   occurrences: number;
   status: "active" | "acknowledged" | "resolved";
+}
+
+export interface InsightSummary {
+  total: number;
+  bySeverity: Record<string, number>;
+  trending: Record<string, number>;
 }
 
 export type InsightType =

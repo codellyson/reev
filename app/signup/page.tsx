@@ -20,7 +20,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/dashboard");
+      router.push("/issues");
     }
   }, [status, router]);
 
@@ -73,7 +73,7 @@ export default function SignupPage() {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/issues");
       router.refresh();
     } catch (err) {
       setError("An error occurred. Please try again.");

@@ -28,24 +28,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   const navItems: NavItem[] = [
     {
-      label: "Dashboard",
-      href: "/dashboard",
-    },
-    {
-      label: "Insights",
-      href: "/insights",
-    },
-    {
-      label: "Pages",
-      href: "/pages",
+      label: "Issues",
+      href: "/issues",
     },
     {
       label: "Sessions",
       href: "/sessions",
     },
     {
-      label: "Analytics",
-      href: "/analytics",
+      label: "Settings",
+      href: "/settings",
     },
   ];
 

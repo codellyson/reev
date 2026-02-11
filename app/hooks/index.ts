@@ -6,6 +6,8 @@ export { useUpdateProject } from "./use-project";
 export { useInsights, useUpdateInsight } from "./use-insights";
 export { usePages } from "./use-pages";
 export { useTrend } from "./use-trend";
+export { useInsightSessions } from "./use-insight-sessions";
+export { useInsightSummary } from "./use-insight-summary";
 export { useKeyboardShortcuts } from "./use-keyboard-shortcuts";
 export type {
   KeyboardShortcut,
