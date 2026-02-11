@@ -62,7 +62,7 @@ export const useKeyboardShortcuts = ({
 
   useEffect(() => {
     const element = target || window;
-    element.addEventListener("keydown", handleKeyDown);
-    return () => element.removeEventListener("keydown", handleKeyDown);
+    element.addEventListener("keydown", handleKeyDown as EventListener);
+    return () => element.removeEventListener("keydown", handleKeyDown as EventListener);
   }, [handleKeyDown, target]);
 };

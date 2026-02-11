@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { calculateSessionMetrics } from "@/lib/jobs/calculate-metrics";
+import { calculateMetrics } from "@/lib/jobs/calculate-metrics";
 
 export async function POST() {
   try {
-    await calculateSessionMetrics();
+    await calculateMetrics();
     return NextResponse.json({ success: true, message: "Metrics calculated successfully" });
   } catch (error) {
     console.error("Error running metrics job:", error);

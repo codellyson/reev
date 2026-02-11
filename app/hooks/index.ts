@@ -2,16 +2,15 @@ export { useSessions } from "./use-sessions";
 export { useSession } from "./use-session";
 export { useSessionEvents } from "./use-session-events";
 export { useStats } from "./use-stats";
+export { useUpdateProject } from "./use-project";
+export { useInsights, useUpdateInsight } from "./use-insights";
+export { usePages } from "./use-pages";
+export { useTrend } from "./use-trend";
 export { useKeyboardShortcuts } from "./use-keyboard-shortcuts";
 export type {
   KeyboardShortcut,
   UseKeyboardShortcutsOptions,
 } from "./use-keyboard-shortcuts";
-export {
-  usePlayerKeyboardShortcuts,
-  PLAYER_SHORTCUTS,
-} from "./use-player-keyboard-shortcuts";
-export type { UsePlayerKeyboardShortcutsOptions } from "./use-player-keyboard-shortcuts";
 export {
   useTags,
   useCreateTag,

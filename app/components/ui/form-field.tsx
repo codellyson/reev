@@ -23,18 +23,18 @@ export function FormField({
   return (
     <div className={clsx("space-y-2", className)}>
       {label && (
-        <label className="block text-sm font-medium text-gray-900">
+        <label className="block text-sm font-medium text-zinc-100">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-red-400 ml-1">*</span>}
         </label>
       )}
 
       {children}
 
-      {hint && !error && <p className="text-xs text-gray-500">{hint}</p>}
+      {hint && !error && <p className="text-xs text-zinc-500">{hint}</p>}
 
       {error && (
-        <div className="flex items-start gap-1.5 text-sm text-red-600">
+        <div className="flex items-start gap-1.5 text-sm text-red-400">
           <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -51,14 +51,14 @@ export function Input({ error, className, ...props }: InputProps) {
   return (
     <input
       className={clsx(
-        "w-full px-3 py-2 text-sm rounded-lg border transition-colors",
-        "bg-white",
-        "text-gray-900",
-        "placeholder:text-gray-400",
-        "focus:outline-none focus:ring-2 focus:ring-offset-0",
+        "w-full px-3 py-2 text-sm border transition-colors",
+        "bg-zinc-900",
+        "text-zinc-100",
+        "placeholder:text-zinc-500",
+        "focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-offset-zinc-950",
         error
-          ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
+          ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
+          : "border-zinc-700 focus:border-emerald-500 focus:ring-emerald-500/20",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -75,14 +75,14 @@ export function Textarea({ error, className, ...props }: TextareaProps) {
   return (
     <textarea
       className={clsx(
-        "w-full px-3 py-2 text-sm rounded-lg border transition-colors resize-y",
-        "bg-white",
-        "text-gray-900",
-        "placeholder:text-gray-400",
-        "focus:outline-none focus:ring-2 focus:ring-offset-0",
+        "w-full px-3 py-2 text-sm border transition-colors resize-y",
+        "bg-zinc-900",
+        "text-zinc-100",
+        "placeholder:text-zinc-500",
+        "focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-offset-zinc-950",
         error
-          ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
+          ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
+          : "border-zinc-700 focus:border-emerald-500 focus:ring-emerald-500/20",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -99,13 +99,13 @@ export function Select({ error, className, children, ...props }: SelectProps) {
   return (
     <select
       className={clsx(
-        "w-full px-3 py-2 text-sm rounded-lg border transition-colors",
-        "bg-white",
-        "text-gray-900",
-        "focus:outline-none focus:ring-2 focus:ring-offset-0",
+        "w-full px-3 py-2 text-sm border transition-colors",
+        "bg-zinc-900",
+        "text-zinc-100",
+        "focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-offset-zinc-950",
         error
-          ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-          : "border-gray-300 focus:border-blue-500 focus:ring-blue-500",
+          ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
+          : "border-zinc-700 focus:border-emerald-500 focus:ring-emerald-500/20",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -126,15 +126,14 @@ export function Checkbox({ label, className, ...props }: CheckboxProps) {
       <input
         type="checkbox"
         className={clsx(
-          "w-4 h-4 rounded border-gray-300",
-          "text-blue-600 focus:ring-blue-500 focus:ring-2 focus:ring-offset-0",
+          "w-4 h-4 border-zinc-700 bg-zinc-900",
+          "text-emerald-500 focus:ring-emerald-500/20 focus:ring-2 focus:ring-offset-0",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           className
         )}
         {...props}
       />
-      <span className="text-sm text-gray-900">{label}</span>
+      <span className="text-sm text-zinc-100">{label}</span>
     </label>
   );
 }
-

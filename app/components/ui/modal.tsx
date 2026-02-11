@@ -44,7 +44,7 @@ export const Modal: React.FC<ModalProps> = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+          <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
         </Transition.Child>
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -59,15 +59,15 @@ export const Modal: React.FC<ModalProps> = ({
           >
             <Dialog.Panel
               className={cn(
-                "w-full bg-white rounded-xl shadow-xl transform transition-all",
+                "w-full bg-zinc-900 border border-zinc-800 transform transition-all",
                 sizeClasses[size],
                 className
               )}
             >
               {(title || true) && (
-                <div className="flex items-center justify-between p-6 border-b border-gray-300">
+                <div className="flex items-center justify-between p-6 border-b border-zinc-800">
                   {title && (
-                    <Dialog.Title className="text-lg font-semibold text-gray-900">
+                    <Dialog.Title className="text-lg font-semibold text-white">
                       {title}
                     </Dialog.Title>
                   )}
@@ -86,7 +86,7 @@ export const Modal: React.FC<ModalProps> = ({
               <div className="p-6">{children}</div>
 
               {footer && (
-                <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-300">
+                <div className="flex items-center justify-end gap-3 p-6 border-t border-zinc-800">
                   {footer}
                 </div>
               )}
@@ -97,4 +97,3 @@ export const Modal: React.FC<ModalProps> = ({
     </Transition>
   );
 };
-

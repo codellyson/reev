@@ -26,10 +26,10 @@ export const Tooltip: React.FC<TooltipProps> = ({
   };
 
   const arrowClasses = {
-    top: "top-full left-1/2 -translate-x-1/2 border-t-gray-900",
-    bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-gray-900",
-    left: "left-full top-1/2 -translate-y-1/2 border-l-gray-900",
-    right: "right-full top-1/2 -translate-y-1/2 border-r-gray-900",
+    top: "top-full left-1/2 -translate-x-1/2 border-t-zinc-800",
+    bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-zinc-800",
+    left: "left-full top-1/2 -translate-y-1/2 border-l-zinc-800",
+    right: "right-full top-1/2 -translate-y-1/2 border-r-zinc-800",
   };
 
   return (
@@ -42,7 +42,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       {isVisible && (
         <div
           className={cn(
-            "absolute z-50 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-md max-w-[240px] whitespace-normal pointer-events-none",
+            "absolute z-50 bg-zinc-800 text-zinc-100 text-xs px-3 py-1.5 border border-zinc-700 max-w-[240px] whitespace-normal pointer-events-none",
             placementClasses[placement],
             className
           )}
@@ -59,4 +59,3 @@ export const Tooltip: React.FC<TooltipProps> = ({
     </div>
   );
 };
-

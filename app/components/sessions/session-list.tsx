@@ -77,12 +77,12 @@ export const SessionList: React.FC<SessionListProps> = ({
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+      return <ArrowUpDown className="h-4 w-4 text-zinc-500" />;
     }
     return sortDirection === "asc" ? (
-      <ArrowUp className="h-4 w-4 text-gray-700" />
+      <ArrowUp className="h-4 w-4 text-zinc-300" />
     ) : (
-      <ArrowDown className="h-4 w-4 text-gray-700" />
+      <ArrowDown className="h-4 w-4 text-zinc-300" />
     );
   };
 
@@ -99,7 +99,7 @@ export const SessionList: React.FC<SessionListProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-black border-t-transparent" />
+        <div className="animate-spin h-8 w-8 border-2 border-emerald-500 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -112,15 +112,15 @@ export const SessionList: React.FC<SessionListProps> = ({
         aria-label="Sessions list"
       >
         <thead>
-          <tr className="border-b-2 border-gray-200 bg-gray-50/50">
+          <tr className="border-b border-zinc-800">
             {columns.map((col) => (
               <th
                 key={col.label}
                 className={cn(
-                  "px-2 sm:px-4 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider",
+                  "px-2 sm:px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider font-mono bg-zinc-900",
                   col.sortable !== false &&
                     col.key &&
-                    "cursor-pointer hover:text-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded-sm transition-colors"
+                    "cursor-pointer hover:text-zinc-300 transition-colors"
                 )}
                 onClick={() =>
                   col.sortable !== false && col.key && handleSort(col.key)
@@ -155,12 +155,12 @@ export const SessionList: React.FC<SessionListProps> = ({
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white">
+        <tbody>
           {sortedSessions.length === 0 ? (
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-4 py-12 text-center text-sm text-gray-600"
+                className="px-4 py-12 text-center text-sm text-zinc-500"
               >
                 No sessions found
               </td>
@@ -169,7 +169,7 @@ export const SessionList: React.FC<SessionListProps> = ({
             sortedSessions.map((session, index) => (
               <tr
                 key={session.id}
-                className="border-b border-gray-100 hover:bg-gradient-to-r hover:from-gray-50 hover:to-transparent transition-all duration-150 cursor-pointer animate-fade-in focus-within:bg-gray-50 group"
+                className="border-b border-zinc-800/50 hover:bg-zinc-900/50 transition-colors cursor-pointer animate-fade-in group"
                 style={{ animationDelay: `${index * 20}ms` }}
                 onClick={() => onSessionClick?.(session)}
                 onKeyDown={(e) => {
@@ -182,16 +182,16 @@ export const SessionList: React.FC<SessionListProps> = ({
                 role="row"
                 aria-label={`Session ${session.id.slice(0, 8)}`}
               >
-                <td className="px-2 sm:px-4 py-3 text-sm font-mono text-black">
+                <td className="px-2 sm:px-4 py-3 text-sm font-mono text-zinc-100">
                   <span className="hidden sm:inline">
                     {session.id.slice(0, 8)}...
                   </span>
                   <span className="sm:hidden">{session.id.slice(0, 4)}...</span>
                 </td>
-                <td className="px-2 sm:px-4 py-3 text-sm text-black">
+                <td className="px-2 sm:px-4 py-3 text-sm text-zinc-100 font-mono">
                   {formatDuration(session.duration)}
                 </td>
-                <td className="px-2 sm:px-4 py-3 text-sm text-black max-w-xs truncate">
+                <td className="px-2 sm:px-4 py-3 text-sm text-zinc-300 max-w-xs truncate">
                   <span className="hidden lg:inline">{session.pageUrl}</span>
                   <span className="lg:hidden" title={session.pageUrl}>
                     {session.pageUrl.length > 20
@@ -199,7 +199,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                       : session.pageUrl}
                   </span>
                 </td>
-                <td className="px-2 sm:px-4 py-3 text-sm text-gray-600">
+                <td className="px-2 sm:px-4 py-3 text-sm text-zinc-400 font-mono">
                   <span className="hidden sm:inline">
                     {format(session.timestamp, "MMM d, yyyy HH:mm")}
                   </span>
@@ -238,7 +238,7 @@ export const SessionList: React.FC<SessionListProps> = ({
                         className="touch-manipulation"
                       >
                         <Trash2
-                          className="h-3.5 w-3.5 text-error"
+                          className="h-3.5 w-3.5 text-red-400"
                           aria-hidden="true"
                         />
                       </Button>

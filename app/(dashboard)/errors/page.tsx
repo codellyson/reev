@@ -35,7 +35,6 @@ export default function ErrorsPage() {
   const [filterType, setFilterType] = useState<"all" | "error" | "warning" | "info">("all");
   const [sortBy, setSortBy] = useState<"count" | "recent" | "users">("count");
 
-  // Mock error data - replace with real API data
   const errors = useMemo<ErrorGroup[]>(() => [
     {
       id: "1",
@@ -121,11 +120,11 @@ export default function ErrorsPage() {
   const getErrorColor = (type: ErrorGroup["type"]) => {
     switch (type) {
       case "error":
-        return "text-red-600 bg-red-50 border-red-200";
+        return "text-red-400 bg-red-500/10 border-red-500/20";
       case "warning":
-        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+        return "text-amber-400 bg-amber-500/10 border-amber-500/20";
       case "info":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+        return "text-blue-400 bg-blue-500/10 border-blue-500/20";
     }
   };
 
@@ -146,58 +145,58 @@ export default function ErrorsPage() {
       />
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-800">
+        <div className="bg-zinc-950 p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider font-mono">
               Total Errors
             </span>
-            <div className="w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center text-red-600 border border-gray-200">
+            <div className="w-10 h-10 bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20">
               <AlertCircle className="h-5 w-5" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-black">{stats.total.toLocaleString()}</div>
+          <div className="text-3xl font-bold text-white font-mono">{stats.total.toLocaleString()}</div>
         </div>
 
-        <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
+        <div className="bg-zinc-950 p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider font-mono">
               Unique Issues
             </span>
-            <div className="w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center text-orange-600 border border-gray-200">
+            <div className="w-10 h-10 bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20">
               <TrendingUp className="h-5 w-5" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-black">{stats.unique}</div>
+          <div className="text-3xl font-bold text-white font-mono">{stats.unique}</div>
         </div>
 
-        <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
+        <div className="bg-zinc-950 p-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider font-mono">
               Affected Sessions
             </span>
-            <div className="w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center text-blue-600 border border-gray-200">
+            <div className="w-10 h-10 bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
               <Users className="h-5 w-5" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-black">{stats.users}</div>
+          <div className="text-3xl font-bold text-white font-mono">{stats.users}</div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-4 bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <div className="flex flex-wrap items-center gap-4 bg-zinc-950 border border-zinc-800 p-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-700">Type:</span>
+          <span className="text-sm font-medium text-zinc-400">Type:</span>
           <div className="flex gap-2">
             {(["all", "error", "warning", "info"] as const).map((type) => (
               <button
                 key={type}
                 onClick={() => setFilterType(type)}
                 className={cn(
-                  "px-3 py-1.5 text-sm font-medium rounded-lg transition-all",
+                  "px-3 py-1.5 text-sm font-medium transition-all",
                   filterType === type
-                    ? "bg-black text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-emerald-500 text-zinc-900"
+                    : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                 )}
               >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -206,14 +205,14 @@ export default function ErrorsPage() {
           </div>
         </div>
 
-        <div className="h-6 w-px bg-gray-200" />
+        <div className="h-6 w-px bg-zinc-800" />
 
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-700">Sort by:</span>
+          <span className="text-sm font-medium text-zinc-400">Sort by:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="px-3 py-1.5 text-sm font-medium bg-gray-100 border-none rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
+            className="px-3 py-1.5 text-sm font-medium bg-zinc-900 border border-zinc-700 text-zinc-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
           >
             <option value="count">Most Frequent</option>
             <option value="recent">Most Recent</option>
@@ -227,46 +226,46 @@ export default function ErrorsPage() {
         {filteredErrors.map((error) => (
           <div
             key={error.id}
-            className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-200"
+            className="bg-zinc-950 border border-zinc-800 overflow-hidden"
           >
             <button
               onClick={() => setExpandedError(expandedError === error.id ? null : error.id)}
-              className="w-full p-6 text-left hover:bg-gray-50 transition-colors"
+              className="w-full p-6 text-left hover:bg-zinc-900/50 transition-colors"
             >
               <div className="flex items-start gap-4">
-                <div className={cn("p-2 rounded-lg border", getErrorColor(error.type))}>
+                <div className={cn("p-2 border", getErrorColor(error.type))}>
                   {getErrorIcon(error.type)}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4 mb-2">
-                    <h3 className="text-base font-semibold text-black line-clamp-2">
+                    <h3 className="text-base font-medium text-zinc-100 line-clamp-2">
                       {error.message}
                     </h3>
                     {expandedError === error.id ? (
-                      <ChevronDown className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                      <ChevronDown className="h-5 w-5 text-zinc-500 flex-shrink-0" />
                     ) : (
-                      <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                      <ChevronRight className="h-5 w-5 text-zinc-500 flex-shrink-0" />
                     )}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-4 text-sm">
-                    <div className="flex items-center gap-1.5 text-gray-600">
+                    <div className="flex items-center gap-1.5 text-zinc-400">
                       <TrendingUp className="h-4 w-4" />
-                      <span className="font-medium">{error.count}</span>
+                      <span className="font-medium font-mono">{error.count}</span>
                       <span>occurrences</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-gray-600">
+                    <div className="flex items-center gap-1.5 text-zinc-400">
                       <Users className="h-4 w-4" />
-                      <span className="font-medium">{error.affectedUsers}</span>
+                      <span className="font-medium font-mono">{error.affectedUsers}</span>
                       <span>users</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-gray-600">
+                    <div className="flex items-center gap-1.5 text-zinc-400">
                       <Clock className="h-4 w-4" />
-                      <span>{formatTimeAgo(error.lastSeen)}</span>
+                      <span className="font-mono">{formatTimeAgo(error.lastSeen)}</span>
                     </div>
                     {error.url && (
-                      <Badge variant="default" size="sm" className="bg-gray-100 text-gray-700">
+                      <Badge variant="default" size="sm">
                         {error.url}
                       </Badge>
                     )}
@@ -276,18 +275,18 @@ export default function ErrorsPage() {
             </button>
 
             {expandedError === error.id && (
-              <div className="border-t border-gray-200 bg-gray-50 p-6 space-y-4">
+              <div className="border-t border-zinc-800 bg-zinc-900 p-6 space-y-4">
                 {error.stackTrace && (
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-900 mb-2">Stack Trace</h4>
-                    <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs overflow-x-auto font-mono">
+                    <h4 className="text-sm font-medium text-zinc-300 mb-2 font-mono">Stack Trace</h4>
+                    <pre className="bg-zinc-950 text-zinc-300 p-4 text-xs overflow-x-auto font-mono border border-zinc-800">
                       {error.stackTrace}
                     </pre>
                   </div>
                 )}
 
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-900 mb-2">
+                  <h4 className="text-sm font-medium text-zinc-300 mb-2 font-mono">
                     Affected Sessions ({error.sessions.length})
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -295,7 +294,7 @@ export default function ErrorsPage() {
                       <button
                         key={sessionId}
                         onClick={() => router.push(`/session/${sessionId}`)}
-                        className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-mono text-black hover:bg-gray-100 hover:border-gray-300 transition-colors"
+                        className="px-3 py-1.5 bg-zinc-950 border border-zinc-800 text-xs font-mono text-zinc-300 hover:bg-zinc-800 hover:border-zinc-700 transition-colors"
                       >
                         {sessionId}
                       </button>
@@ -303,7 +302,7 @@ export default function ErrorsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 text-xs text-gray-600">
+                <div className="flex items-center gap-4 text-xs text-zinc-500 font-mono">
                   <span>First seen: {error.firstSeen.toLocaleString()}</span>
                   <span>•</span>
                   <span>Last seen: {error.lastSeen.toLocaleString()}</span>

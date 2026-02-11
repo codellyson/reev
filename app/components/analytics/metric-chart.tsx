@@ -27,17 +27,17 @@ export const MetricChart: React.FC<MetricChartProps> = ({
   data,
   type,
   label,
-  color = "#2563eb",
+  color = "#10b981",
   height = 300,
 }) => {
   const chartConfig = {
-    grid: { stroke: "#e5e7eb" },
+    grid: { stroke: "#27272a" },
     tooltip: {
-      backgroundColor: "white",
-      border: "1px solid #d1d5db",
-      borderRadius: "6px",
+      backgroundColor: "#18181b",
+      border: "1px solid #3f3f46",
+      borderRadius: "0px",
       padding: "8px 12px",
-      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+      boxShadow: "none",
     },
   };
 
@@ -57,11 +57,15 @@ export const MetricChart: React.FC<MetricChartProps> = ({
             />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 12, fill: "#6b7280" }}
-              stroke="#d1d5db"
+              tick={{ fontSize: 12, fill: "#a1a1aa" }}
+              stroke="#27272a"
             />
-            <YAxis tick={{ fontSize: 12, fill: "#6b7280" }} stroke="#d1d5db" />
-            <Tooltip contentStyle={chartConfig.tooltip} />
+            <YAxis tick={{ fontSize: 12, fill: "#a1a1aa" }} stroke="#27272a" />
+            <Tooltip
+              contentStyle={chartConfig.tooltip}
+              labelStyle={{ color: "#f4f4f5" }}
+              itemStyle={{ color: "#f4f4f5" }}
+            />
             <Line
               type="monotone"
               dataKey="value"
@@ -81,12 +85,16 @@ export const MetricChart: React.FC<MetricChartProps> = ({
             />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 12, fill: "#6b7280" }}
-              stroke="#d1d5db"
+              tick={{ fontSize: 12, fill: "#a1a1aa" }}
+              stroke="#27272a"
             />
-            <YAxis tick={{ fontSize: 12, fill: "#6b7280" }} stroke="#d1d5db" />
-            <Tooltip contentStyle={chartConfig.tooltip} />
-            <Bar dataKey="value" fill={color} radius={[4, 4, 0, 0]} />
+            <YAxis tick={{ fontSize: 12, fill: "#a1a1aa" }} stroke="#27272a" />
+            <Tooltip
+              contentStyle={chartConfig.tooltip}
+              labelStyle={{ color: "#f4f4f5" }}
+              itemStyle={{ color: "#f4f4f5" }}
+            />
+            <Bar dataKey="value" fill={color} />
           </BarChart>
         );
       case "area":
@@ -98,17 +106,21 @@ export const MetricChart: React.FC<MetricChartProps> = ({
             />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 12, fill: "#6b7280" }}
-              stroke="#d1d5db"
+              tick={{ fontSize: 12, fill: "#a1a1aa" }}
+              stroke="#27272a"
             />
-            <YAxis tick={{ fontSize: 12, fill: "#6b7280" }} stroke="#d1d5db" />
-            <Tooltip contentStyle={chartConfig.tooltip} />
+            <YAxis tick={{ fontSize: 12, fill: "#a1a1aa" }} stroke="#27272a" />
+            <Tooltip
+              contentStyle={chartConfig.tooltip}
+              labelStyle={{ color: "#f4f4f5" }}
+              itemStyle={{ color: "#f4f4f5" }}
+            />
             <Area
               type="monotone"
               dataKey="value"
               stroke={color}
               fill={color}
-              fillOpacity={0.2}
+              fillOpacity={0.15}
             />
           </AreaChart>
         );
@@ -118,16 +130,16 @@ export const MetricChart: React.FC<MetricChartProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">{label}</h3>
+        <h3 className="text-sm font-semibold text-white mb-4 font-mono uppercase tracking-wider">{label}</h3>
       )}
       <Suspense
         fallback={
           <div
-            className="flex items-center justify-center bg-gray-50 rounded-lg"
+            className="flex items-center justify-center bg-zinc-900 border border-zinc-800"
             style={{ height }}
             aria-label="Loading chart"
           >
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-black border-t-transparent" />
+            <div className="animate-spin h-8 w-8 border-2 border-emerald-500 border-t-transparent rounded-full" />
           </div>
         }
       >

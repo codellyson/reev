@@ -18,7 +18,7 @@ export interface BreadcrumbsProps {
 
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   items,
-  separator = <ChevronRight className="h-4 w-4 text-gray-500" />,
+  separator = <ChevronRight className="h-4 w-4 text-zinc-600" />,
   className,
 }) => {
   return (
@@ -39,7 +39,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
               )}
               {isLast ? (
                 <span
-                  className="font-semibold text-gray-900"
+                  className="font-semibold text-zinc-100"
                   aria-current="page"
                 >
                   {item.label}
@@ -47,13 +47,13 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
               ) : item.href ? (
                 <Link
                   href={item.href}
-                  className="text-gray-500 hover:text-gray-700 transition-fast focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded-sm"
+                  className="text-zinc-500 hover:text-zinc-300 transition-fast"
                   aria-label={`Navigate to ${item.label}`}
                 >
                   {item.label}
                 </Link>
               ) : (
-                <span className="text-gray-500">{item.label}</span>
+                <span className="text-zinc-500">{item.label}</span>
               )}
             </li>
           );

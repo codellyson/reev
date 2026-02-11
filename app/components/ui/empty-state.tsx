@@ -48,8 +48,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         {
           "py-20 px-4": variant === "default",
           "py-12 px-4": isCompact,
-          "py-16 px-8 bg-white border border-gray-200 rounded-xl shadow-sm":
-            isCard,
+          "py-16 px-8 bg-zinc-950 border border-zinc-800": isCard,
         },
         className
       )}
@@ -57,9 +56,9 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {icon && (
         <div
           className={cn(
-            "mb-6 flex items-center justify-center rounded-full",
-            isCompact ? "w-12 h-12 bg-gray-100" : "w-16 h-16 bg-gray-100",
-            "text-gray-400"
+            "mb-6 flex items-center justify-center",
+            isCompact ? "w-12 h-12 bg-zinc-800" : "w-16 h-16 bg-zinc-800",
+            "text-zinc-400"
           )}
         >
           {icon}
@@ -68,7 +67,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
       <h3
         className={cn(
-          "font-semibold text-gray-900 mb-3",
+          "font-semibold text-white mb-3",
           isCompact ? "text-lg" : "text-xl"
         )}
       >
@@ -78,7 +77,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {description && (
         <p
           className={cn(
-            "text-gray-600 max-w-md leading-relaxed",
+            "text-zinc-400 max-w-md leading-relaxed",
             isCompact ? "text-sm mb-6" : "text-base mb-8"
           )}
         >
@@ -88,14 +87,14 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
       {steps && steps.length > 0 && (
         <div className="mb-8 max-w-md w-full">
-          <div className="bg-gray-50 rounded-lg p-6 text-left">
-            <h4 className="text-sm font-semibold text-gray-900 mb-4">
+          <div className="bg-zinc-900 border border-zinc-800 p-6 text-left">
+            <h4 className="text-sm font-semibold text-white mb-4 font-mono uppercase tracking-wider">
               Get Started:
             </h4>
             <ol className="space-y-3">
               {steps.map((step, index) => (
-                <li key={index} className="flex gap-3 text-sm text-gray-600">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-semibold">
+                <li key={index} className="flex gap-3 text-sm text-zinc-400">
+                  <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-semibold font-mono">
                     {index + 1}
                   </span>
                   <span className="pt-0.5">{step}</span>
@@ -132,7 +131,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           href={helpLink.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-6 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 transition-colors"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
         >
           {helpLink.label}
           <ExternalLink className="w-3.5 h-3.5" />
@@ -141,4 +140,3 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     </div>
   );
 };
-

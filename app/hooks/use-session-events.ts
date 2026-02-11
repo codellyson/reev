@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import type { SessionEvent } from "@/types/api";
+import type { PageEvent } from "@/types/api";
 
-async function fetchSessionEvents(sessionId: string): Promise<SessionEvent[]> {
+async function fetchSessionEvents(sessionId: string): Promise<PageEvent[]> {
   const response = await fetch(`/api/sessions/${sessionId}/events`);
   const result = await response.json();
 
@@ -27,4 +27,3 @@ export function useSessionEvents(sessionId: string | null) {
     error: query.error?.message || null,
   };
 }
-

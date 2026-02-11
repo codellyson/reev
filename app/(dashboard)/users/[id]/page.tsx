@@ -45,14 +45,13 @@ export default function UserProfilePage() {
   const params = useParams();
   const userId = params.id as string;
 
-  // Mock user data - replace with real API data
   const user = useMemo<UserProfile>(() => ({
     id: userId,
     email: "user@example.com",
     firstSeen: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
     lastSeen: new Date(Date.now() - 1000 * 60 * 30),
     totalSessions: 47,
-    totalDuration: 12450, // seconds
+    totalDuration: 12450,
     devices: {
       desktop: 32,
       mobile: 12,
@@ -70,7 +69,6 @@ export default function UserProfilePage() {
     errorCount: 3,
   }), [userId]);
 
-  // Mock sessions data
   const sessions = useMemo(() => [
     {
       id: "sess_1",
@@ -108,12 +106,6 @@ export default function UserProfilePage() {
     router.push(`/session/${session.id}`);
   }, [router]);
 
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   const primaryDevice = useMemo(() => {
     const entries = Object.entries(user.devices) as [keyof typeof user.devices, number][];
     return entries.sort((a, b) => b[1] - a[1])[0][0];
@@ -136,19 +128,19 @@ export default function UserProfilePage() {
       />
 
       {/* User Info Card */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
+      <div className="bg-zinc-950 border border-zinc-800 p-6">
         <div className="flex items-start gap-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-gray-900 to-gray-700 rounded-xl flex items-center justify-center ring-2 ring-gray-200 shadow-sm flex-shrink-0">
-            <User className="h-8 w-8 text-white" />
+          <div className="w-16 h-16 bg-emerald-500 flex items-center justify-center flex-shrink-0">
+            <User className="h-8 w-8 text-zinc-900" />
           </div>
 
           <div className="flex-1 space-y-4">
             <div>
-              <h2 className="text-2xl font-bold text-black mb-1">
+              <h2 className="text-2xl font-bold text-white mb-1">
                 {user.email || "Anonymous User"}
               </h2>
               <div className="flex items-center gap-2">
-                <Badge variant="default" size="sm" className="bg-gray-100 text-gray-700 font-mono">
+                <Badge variant="default" size="sm" className="font-mono">
                   ID: {user.id}
                 </Badge>
               </div>
@@ -156,24 +148,24 @@ export default function UserProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                  <Calendar className="h-5 w-5 text-blue-600" />
+                <div className="w-10 h-10 bg-blue-500/10 flex items-center justify-center">
+                  <Calendar className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600">First Seen</p>
-                  <p className="text-sm font-semibold text-black">
+                  <p className="text-xs text-zinc-500">First Seen</p>
+                  <p className="text-sm font-medium text-zinc-100">
                     {user.firstSeen.toLocaleDateString()}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-green-600" />
+                <div className="w-10 h-10 bg-emerald-500/10 flex items-center justify-center">
+                  <Clock className="h-5 w-5 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600">Last Seen</p>
-                  <p className="text-sm font-semibold text-black">
+                  <p className="text-xs text-zinc-500">Last Seen</p>
+                  <p className="text-sm font-medium text-zinc-100">
                     {user.lastSeen.toLocaleDateString()}
                   </p>
                 </div>
@@ -181,12 +173,12 @@ export default function UserProfilePage() {
 
               {user.location && (
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
-                    <MapPin className="h-5 w-5 text-purple-600" />
+                  <div className="w-10 h-10 bg-purple-500/10 flex items-center justify-center">
+                    <MapPin className="h-5 w-5 text-purple-400" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600">Location</p>
-                    <p className="text-sm font-semibold text-black">
+                    <p className="text-xs text-zinc-500">Location</p>
+                    <p className="text-sm font-medium text-zinc-100">
                       {user.location.city ? `${user.location.city}, ` : ""}{user.location.country}
                     </p>
                   </div>
@@ -198,7 +190,7 @@ export default function UserProfilePage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-800">
         <StatsCard
           icon={<Activity className="h-5 w-5" />}
           label="Total Sessions"
@@ -230,10 +222,10 @@ export default function UserProfilePage() {
       </div>
 
       {/* Device & Browser Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-zinc-800">
         {/* Device Breakdown */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
-          <h3 className="text-lg font-bold text-black mb-4">Device Usage</h3>
+        <div className="bg-zinc-950 p-6">
+          <h3 className="text-sm font-semibold text-white mb-4 font-mono uppercase tracking-wider">Device Usage</h3>
           <div className="space-y-3">
             {Object.entries(user.devices).map(([device, count]) => {
               const Icon = device === "desktop" ? Monitor : device === "mobile" ? Smartphone : Tablet;
@@ -242,14 +234,14 @@ export default function UserProfilePage() {
                 <div key={device}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm font-medium text-black capitalize">{device}</span>
+                      <Icon className="h-4 w-4 text-zinc-400" />
+                      <span className="text-sm font-medium text-zinc-100 capitalize">{device}</span>
                     </div>
-                    <span className="text-sm font-semibold text-black">{count} ({percentage}%)</span>
+                    <span className="text-sm font-medium text-zinc-100 font-mono">{count} ({percentage}%)</span>
                   </div>
-                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-zinc-800 overflow-hidden">
                     <div
-                      className="h-full bg-black rounded-full transition-all duration-500"
+                      className="h-full bg-emerald-500 transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -260,8 +252,8 @@ export default function UserProfilePage() {
         </div>
 
         {/* Browser Breakdown */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
-          <h3 className="text-lg font-bold text-black mb-4">Browser Usage</h3>
+        <div className="bg-zinc-950 p-6">
+          <h3 className="text-sm font-semibold text-white mb-4 font-mono uppercase tracking-wider">Browser Usage</h3>
           <div className="space-y-3">
             {Object.entries(user.browsers).map(([browser, count]) => {
               const percentage = Math.round((count / user.totalSessions) * 100);
@@ -269,14 +261,14 @@ export default function UserProfilePage() {
                 <div key={browser}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Globe className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm font-medium text-black">{browser}</span>
+                      <Globe className="h-4 w-4 text-zinc-400" />
+                      <span className="text-sm font-medium text-zinc-100">{browser}</span>
                     </div>
-                    <span className="text-sm font-semibold text-black">{count} ({percentage}%)</span>
+                    <span className="text-sm font-medium text-zinc-100 font-mono">{count} ({percentage}%)</span>
                   </div>
-                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-zinc-800 overflow-hidden">
                     <div
-                      className="h-full bg-gray-600 rounded-full transition-all duration-500"
+                      className="h-full bg-zinc-500 transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -288,13 +280,13 @@ export default function UserProfilePage() {
       </div>
 
       {/* Sessions List */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
+      <div className="bg-zinc-950 border border-zinc-800 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-black">All Sessions ({sessions.length})</h3>
+          <h3 className="text-sm font-semibold text-white font-mono uppercase tracking-wider">All Sessions ({sessions.length})</h3>
           {user.errorCount > 0 && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-lg">
-              <AlertCircle className="h-4 w-4 text-red-600" />
-              <span className="text-sm font-medium text-red-600">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20">
+              <AlertCircle className="h-4 w-4 text-red-400" />
+              <span className="text-sm font-medium text-red-400">
                 {user.errorCount} sessions with errors
               </span>
             </div>

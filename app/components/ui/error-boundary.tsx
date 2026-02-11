@@ -54,22 +54,22 @@ interface DefaultErrorFallbackProps {
 
 function DefaultErrorFallback({ error, reset }: DefaultErrorFallbackProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
-        <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-          <AlertTriangle className="w-8 h-8 text-red-600" />
+    <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
+      <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 p-8 text-center">
+        <div className="w-16 h-16 mx-auto mb-4 bg-red-500/10 flex items-center justify-center">
+          <AlertTriangle className="w-8 h-8 text-red-400" />
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
-        <p className="text-gray-600 mb-6">
+        <h1 className="text-2xl font-bold text-white mb-2">Something went wrong</h1>
+        <p className="text-zinc-400 mb-6">
           We encountered an unexpected error. Please try refreshing the page.
         </p>
 
         {process.env.NODE_ENV === "development" && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-left">
-            <p className="text-sm font-mono text-red-900 break-words">{error.message}</p>
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-left">
+            <p className="text-sm font-mono text-red-400 break-words">{error.message}</p>
             {error.stack && (
-              <pre className="mt-2 text-xs text-red-800 overflow-auto max-h-40">
+              <pre className="mt-2 text-xs text-red-400/70 overflow-auto max-h-40">
                 {error.stack}
               </pre>
             )}
@@ -104,4 +104,3 @@ export function withErrorBoundary<P extends object>(
 
   return WrappedComponent;
 }
-

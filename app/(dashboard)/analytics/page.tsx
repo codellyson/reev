@@ -1,268 +1,250 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { PageHeader } from "@/app/components/layout";
 import { MetricChart } from "@/app/components/analytics/metric-chart";
 import { StatsCard } from "@/app/components/analytics";
-import { useStats } from "@/app/hooks";
+import { useStats, useTrend, usePages } from "@/app/hooks";
+import { useProjectContext } from "@/app/providers/project-provider";
 import {
-  TrendingUp,
-  Users,
-  Clock,
+  Eye,
   Activity,
-  Monitor,
-  Smartphone,
-  Tablet,
-  AlertCircle,
-  MousePointer
+  ArrowDownToLine,
+  AlertTriangle,
 } from "lucide-react";
-import { LoadingSpinner, ErrorBanner, Skeleton, SkeletonCard } from "@/app/components/ui";
+import {
+  ErrorBanner,
+  EmptyState,
+  Skeleton,
+  SkeletonCard,
+} from "@/app/components/ui";
 
 export default function AnalyticsPage() {
-  const { stats, loading, error } = useStats();
+  const { selectedProject, loading: projectsLoading } = useProjectContext();
+  const { stats, loading: statsLoading, error: statsError } = useStats();
+  const [days, setDays] = useState(7);
+  const { trend, loading: trendLoading } = useTrend(days);
 
-  // Mock data for charts - replace with real API data
-  const sessionTrendData = useMemo(() => [
-    { date: "Mon", value: 245 },
-    { date: "Tue", value: 312 },
-    { date: "Wed", value: 289 },
-    { date: "Thu", value: 401 },
-    { date: "Fri", value: 378 },
-    { date: "Sat", value: 167 },
-    { date: "Sun", value: 198 },
-  ], []);
+  const pageFilters = useMemo(() => ({ days, sortBy: "views", limit: 5 }), [days]);
+  const { pages, loading: pagesLoading } = usePages(pageFilters);
 
-  const errorTrendData = useMemo(() => [
-    { date: "Mon", value: 12 },
-    { date: "Tue", value: 18 },
-    { date: "Wed", value: 8 },
-    { date: "Thu", value: 23 },
-    { date: "Fri", value: 15 },
-    { date: "Sat", value: 5 },
-    { date: "Sun", value: 7 },
-  ], []);
+  const pageviewChartData = useMemo(() => {
+    if (!trend) return [];
+    return trend.dates.map((date, i) => ({
+      date: formatChartDate(date),
+      value: trend.pageviews[i],
+    }));
+  }, [trend]);
 
-  const durationTrendData = useMemo(() => [
-    { date: "Mon", value: 142 },
-    { date: "Tue", value: 156 },
-    { date: "Wed", value: 138 },
-    { date: "Thu", value: 165 },
-    { date: "Fri", value: 149 },
-    { date: "Sat", value: 121 },
-    { date: "Sun", value: 128 },
-  ], []);
+  const sessionsChartData = useMemo(() => {
+    if (!trend) return [];
+    return trend.dates.map((date, i) => ({
+      date: formatChartDate(date),
+      value: trend.sessions[i],
+    }));
+  }, [trend]);
 
-  const deviceBreakdown = useMemo(() => ({
-    desktop: 62,
-    mobile: 28,
-    tablet: 10,
-  }), []);
+  const errorsChartData = useMemo(() => {
+    if (!trend) return [];
+    return trend.dates.map((date, i) => ({
+      date: formatChartDate(date),
+      value: trend.errors[i],
+    }));
+  }, [trend]);
 
-  const topPages = useMemo(() => [
-    { url: "/products", sessions: 1234, avgDuration: 145 },
-    { url: "/checkout", sessions: 892, avgDuration: 203 },
-    { url: "/", sessions: 756, avgDuration: 98 },
-    { url: "/about", sessions: 543, avgDuration: 67 },
-    { url: "/contact", sessions: 321, avgDuration: 112 },
-  ], []);
+  const loading = statsLoading || trendLoading || projectsLoading;
 
-  if (loading) {
+  if (projectsLoading) {
     return (
       <div className="space-y-8">
-        <div>
-          <Skeleton className="h-7 w-32 mb-2" />
-          <Skeleton className="h-5 w-64" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Skeleton className="h-8 w-48" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-800">
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <SkeletonCard className="h-96" />
-          <SkeletonCard className="h-96" />
         </div>
       </div>
     );
   }
 
-  if (error) {
-    return <ErrorBanner title="Failed to load analytics" message={error} />;
+  if (!selectedProject) {
+    return (
+      <div className="space-y-8">
+        <PageHeader title="Analytics" description="Select a project to view analytics" />
+        <EmptyState
+          icon={<Activity className="h-8 w-8" />}
+          title="No project selected"
+          description="Select a project from the switcher above"
+          variant="compact"
+        />
+      </div>
+    );
+  }
+
+  if (statsError) {
+    return <ErrorBanner title="Failed to load analytics" message={statsError} />;
   }
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <PageHeader
-        title="Analytics"
-        description="Insights and trends for your session data"
-        breadcrumbs={[{ label: "Analytics" }]}
-      />
+      <div className="flex items-center justify-between">
+        <PageHeader
+          title="Analytics"
+          description="Traffic and performance overview"
+          breadcrumbs={[{ label: "Analytics" }]}
+        />
+        <select
+          value={days}
+          onChange={(e) => setDays(parseInt(e.target.value))}
+          className="text-sm border border-zinc-700 px-3 py-1.5 bg-zinc-900 text-zinc-300 hover:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+        >
+          <option value={7}>Last 7 days</option>
+          <option value={14}>Last 14 days</option>
+          <option value={30}>Last 30 days</option>
+        </select>
+      </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard
-          icon={<Activity className="h-5 w-5" />}
-          label="Total Sessions"
-          value={stats?.totalSessions.toLocaleString() || "0"}
-          change={12.5}
-          trend="up"
-          comparison="vs last week"
-        />
-        <StatsCard
-          icon={<Users className="h-5 w-5" />}
-          label="Unique Users"
-          value="1,234"
-          change={8.2}
-          trend="up"
-          comparison="vs last week"
-        />
-        <StatsCard
-          icon={<Clock className="h-5 w-5" />}
-          label="Avg Duration"
-          value={`${Math.floor((stats?.avgDuration || 0) / 60)}m ${(stats?.avgDuration || 0) % 60}s`}
-          change={-3.1}
-          trend="down"
-          comparison="vs last week"
-        />
-        <StatsCard
-          icon={<AlertCircle className="h-5 w-5" />}
-          label="Error Rate"
-          value="2.3%"
-          change={-15.4}
-          trend="up"
-          comparison="vs last week"
-        />
-      </div>
-
-      {/* Session Trends */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
-          <h3 className="text-lg font-bold text-black mb-6">Session Trend</h3>
-          <MetricChart
-            data={sessionTrendData}
-            type="area"
-            color="#0070f3"
-            height={300}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-800">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-800">
+          <StatsCard
+            icon={<Eye className="h-5 w-5" />}
+            label="Pageviews Today"
+            value={stats?.totalPageviews.toLocaleString() || "0"}
+          />
+          <StatsCard
+            icon={<Activity className="h-5 w-5" />}
+            label="Unique Sessions"
+            value={stats?.uniqueSessions.toLocaleString() || "0"}
+          />
+          <StatsCard
+            icon={<ArrowDownToLine className="h-5 w-5" />}
+            label="Avg Scroll Depth"
+            value={`${stats?.avgScrollDepth || 0}%`}
+          />
+          <StatsCard
+            icon={<AlertTriangle className="h-5 w-5" />}
+            label="Errors Today"
+            value={stats?.errorCount.toLocaleString() || "0"}
           />
         </div>
+      )}
 
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
-          <h3 className="text-lg font-bold text-black mb-6">Error Trend</h3>
-          <MetricChart
-            data={errorTrendData}
-            type="bar"
-            color="#ff3b30"
-            height={300}
-          />
+      {/* Trends */}
+      {trendLoading ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-zinc-800">
+          <SkeletonCard className="h-96" />
+          <SkeletonCard className="h-96" />
         </div>
-      </div>
-
-      {/* Average Duration Trend */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
-        <h3 className="text-lg font-bold text-black mb-6">Average Session Duration (seconds)</h3>
-        <MetricChart
-          data={durationTrendData}
-          type="line"
-          color="#00c853"
-          height={300}
-        />
-      </div>
-
-      {/* Device Breakdown & Top Pages */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Device Breakdown */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
-          <h3 className="text-lg font-bold text-black mb-6">Device Breakdown</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                  <Monitor className="h-5 w-5 text-blue-600" />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-zinc-800">
+            <div className="bg-zinc-950 p-6">
+              <h3 className="text-sm font-semibold text-white mb-6 font-mono uppercase tracking-wider">Pageview Trend</h3>
+              {pageviewChartData.length > 0 ? (
+                <MetricChart
+                  data={pageviewChartData}
+                  type="area"
+                  color="#10b981"
+                  height={280}
+                />
+              ) : (
+                <div className="h-[280px] flex items-center justify-center text-zinc-500 text-sm">
+                  No data for this period
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-black">Desktop</p>
-                  <p className="text-xs text-gray-600">{deviceBreakdown.desktop}% of sessions</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-lg font-bold text-black">{deviceBreakdown.desktop}%</p>
-              </div>
-            </div>
-            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-600 rounded-full transition-all duration-500"
-                style={{ width: `${deviceBreakdown.desktop}%` }}
-              />
+              )}
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                  <Smartphone className="h-5 w-5 text-green-600" />
+            <div className="bg-zinc-950 p-6">
+              <h3 className="text-sm font-semibold text-white mb-6 font-mono uppercase tracking-wider">Session Trend</h3>
+              {sessionsChartData.length > 0 ? (
+                <MetricChart
+                  data={sessionsChartData}
+                  type="line"
+                  color="#34d399"
+                  height={280}
+                />
+              ) : (
+                <div className="h-[280px] flex items-center justify-center text-zinc-500 text-sm">
+                  No data for this period
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-black">Mobile</p>
-                  <p className="text-xs text-gray-600">{deviceBreakdown.mobile}% of sessions</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-lg font-bold text-black">{deviceBreakdown.mobile}%</p>
-              </div>
-            </div>
-            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-green-600 rounded-full transition-all duration-500"
-                style={{ width: `${deviceBreakdown.mobile}%` }}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
-                  <Tablet className="h-5 w-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-black">Tablet</p>
-                  <p className="text-xs text-gray-600">{deviceBreakdown.tablet}% of sessions</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-lg font-bold text-black">{deviceBreakdown.tablet}%</p>
-              </div>
-            </div>
-            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-purple-600 rounded-full transition-all duration-500"
-                style={{ width: `${deviceBreakdown.tablet}%` }}
-              />
+              )}
             </div>
           </div>
-        </div>
 
-        {/* Top Pages */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
-          <h3 className="text-lg font-bold text-black mb-6">Top Pages</h3>
-          <div className="space-y-4">
-            {topPages.map((page, index) => (
-              <div key={page.url} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <div className="bg-zinc-950 border border-zinc-800 p-6">
+            <h3 className="text-sm font-semibold text-white mb-6 font-mono uppercase tracking-wider">Error Trend</h3>
+            {errorsChartData.length > 0 ? (
+              <MetricChart
+                data={errorsChartData}
+                type="bar"
+                color="#f87171"
+                height={280}
+              />
+            ) : (
+              <div className="h-[280px] flex items-center justify-center text-zinc-500 text-sm">
+                No data for this period
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Top Pages */}
+      {!pagesLoading && pages.length > 0 && (
+        <div className="bg-zinc-950 border border-zinc-800 p-6">
+          <h3 className="text-sm font-semibold text-white mb-6 font-mono uppercase tracking-wider">Top Pages</h3>
+          <div className="space-y-2">
+            {pages.map((page, index) => (
+              <div
+                key={page.url}
+                className="flex items-center justify-between p-3 hover:bg-zinc-900 transition-colors"
+              >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="flex-shrink-0 w-6 h-6 bg-gray-900 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  <div className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-black truncate">{page.url}</p>
-                    <p className="text-xs text-gray-600">
-                      {page.sessions} sessions · {page.avgDuration}s avg
+                    <p className="text-sm font-semibold text-zinc-100 truncate">
+                      {formatPageUrl(page.url)}
+                    </p>
+                    <p className="text-xs text-zinc-500 font-mono">
+                      {page.views} views · {page.avgScrollDepth}% scroll ·{" "}
+                      {page.errorCount} errors
                     </p>
                   </div>
                 </div>
-                <MousePointer className="h-4 w-4 text-gray-400 flex-shrink-0" />
               </div>
             ))}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
+}
+
+function formatChartDate(dateStr: string): string {
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", { weekday: "short" });
+  } catch {
+    return dateStr;
+  }
+}
+
+function formatPageUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    return u.pathname + u.search;
+  } catch {
+    return url;
+  }
 }

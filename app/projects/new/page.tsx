@@ -47,15 +47,15 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-zinc-950">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-2xl mx-auto space-y-8">
           <PageHeader
             title="Create New Project"
-            description="Set up a new project to start tracking sessions"
+            description="Set up a new project to start tracking UX insights"
           />
 
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
+          <div className="bg-zinc-900 border border-zinc-800 p-6">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <FormField label="Project Name" required error={error}>
@@ -106,4 +106,3 @@ export default function NewProjectPage() {
     </div>
   );
 }
-

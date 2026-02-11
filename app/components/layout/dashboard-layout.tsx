@@ -32,8 +32,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       href: "/dashboard",
     },
     {
+      label: "Insights",
+      href: "/insights",
+    },
+    {
+      label: "Pages",
+      href: "/pages",
+    },
+    {
       label: "Sessions",
       href: "/sessions",
+    },
+    {
+      label: "Analytics",
+      href: "/analytics",
     },
   ];
 
@@ -47,7 +59,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -58,7 +70,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-zinc-950">
       <TopNavbar
         logo={<Logo />}
         navItems={navItems}
@@ -71,7 +83,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           className={
             isFullWidth
               ? "w-full"
-              : "max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
+              : "max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8"
           }
         >
           {children}

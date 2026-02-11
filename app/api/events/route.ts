@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { transaction, query, queryOne } from "@/lib/db";
+import { transaction, queryOne } from "@/lib/db";
+
+const VALID_EVENT_TYPES = new Set([
+  "pageview",
+  "click",
+  "scroll",
+  "form",
+  "error",
+  "vitals",
+  "page_leave",
+]);
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { sessionId, projectId, events } = body;
 
-    console.log("Received events:", { sessionId, projectId: projectId ? "provided" : "missing", eventCount: events?.length });
-
     if (!sessionId || !projectId || !events || !Array.isArray(events)) {
-      console.error("Missing required fields:", { sessionId: !!sessionId, projectId: !!projectId, events: !!events });
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
@@ -32,26 +39,28 @@ export async function POST(request: NextRequest) {
       return new NextResponse(null, { status: 204 });
     }
 
-    const userAgent = request.headers.get("user-agent") || null;
     const pageUrl = extractPageUrl(events);
 
-    if (pageUrl) {
-      const projectOrigin = new URL(project.website_url).origin;
-      const eventOrigin = new URL(pageUrl).origin;
-      
-      if (eventOrigin !== projectOrigin) {
-        return NextResponse.json(
-          { success: false, error: "Events must originate from the registered website" },
-          { status: 403 }
-        );
+    if (pageUrl && process.env.NODE_ENV === "production") {
+      try {
+        const projectOrigin = new URL(project.website_url).origin;
+        const eventOrigin = new URL(pageUrl).origin;
+        if (eventOrigin !== projectOrigin) {
+          return NextResponse.json(
+            { success: false, error: "Events must originate from the registered website" },
+            { status: 403 }
+          );
+        }
+      } catch {
+        // Skip validation if URLs can't be parsed
       }
     }
 
+    const userAgent = request.headers.get("user-agent") || null;
+
     await processEvents(sessionId, projectId, events, pageUrl, userAgent);
 
-    console.log("Events processed successfully for session:", sessionId);
-
-    return new NextResponse(null, { 
+    return new NextResponse(null, {
       status: 204,
       headers: {
         "Access-Control-Allow-Origin": "*",
@@ -61,11 +70,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error processing events:", error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error details:", errorMessage);
     return NextResponse.json(
-      { success: false, error: `Failed to process events: ${errorMessage}` },
-      { 
+      { success: false, error: "Failed to process events" },
+      {
         status: 500,
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -90,10 +97,7 @@ export async function OPTIONS() {
 
 function extractPageUrl(events: any[]): string | null {
   for (const event of events) {
-    if (event.type === 4 && event.data?.href) {
-      return event.data.href;
-    }
-    if (event.data?.url) {
+    if (event.type === "pageview" && event.data?.url) {
       return event.data.url;
     }
   }
@@ -107,73 +111,63 @@ async function processEvents(
   pageUrl: string | null,
   userAgent: string | null
 ) {
-  console.log("Processing events:", { sessionId, projectId, eventCount: events.length, pageUrl, userAgent });
-  
-  try {
-    await transaction(async (client) => {
-      console.log("Transaction started, checking for existing session:", sessionId);
-      
-      const existingSession = await client.query(
-        `SELECT id FROM sessions WHERE id = $1`,
-        [sessionId]
+  await transaction(async (client) => {
+    // Upsert session
+    const existingSession = await client.query(
+      `SELECT id FROM sessions WHERE id = $1`,
+      [sessionId]
+    );
+
+    if (existingSession.rows.length === 0) {
+      await client.query(
+        `INSERT INTO sessions (id, project_id, page_url, user_agent, started_at, last_event_at)
+         VALUES ($1, $2, $3, $4, NOW(), NOW())`,
+        [sessionId, projectId, pageUrl, userAgent]
       );
+    } else {
+      await client.query(
+        `UPDATE sessions
+         SET last_event_at = NOW(),
+             page_url = COALESCE($2, page_url),
+             user_agent = COALESCE($3, user_agent)
+         WHERE id = $1`,
+        [sessionId, pageUrl, userAgent]
+      );
+    }
 
-      console.log("Existing session check result:", existingSession.rows.length);
+    // Insert into page_events
+    if (events.length > 0) {
+      const values: any[] = [];
+      const placeholders: string[] = [];
+      let paramIndex = 1;
 
-      if (existingSession.rows.length === 0) {
-        console.log("Creating new session");
-        await client.query(
-          `INSERT INTO sessions (id, project_id, page_url, user_agent, started_at, last_event_at)
-           VALUES ($1, $2, $3, $4, NOW(), NOW())`,
-          [sessionId, projectId, pageUrl, userAgent]
+      for (const event of events) {
+        const eventType = String(event.type || "unknown");
+        if (!VALID_EVENT_TYPES.has(eventType)) continue;
+
+        const url = event.data?.url || pageUrl || null;
+        const data = event.data || {};
+
+        placeholders.push(
+          `($${paramIndex}, $${paramIndex + 1}, $${paramIndex + 2}, $${paramIndex + 3}, $${paramIndex + 4})`
         );
-        console.log("Session created successfully");
-      } else {
-        console.log("Updating existing session");
-        await client.query(
-          `UPDATE sessions 
-           SET last_event_at = NOW(),
-               page_url = COALESCE($3, page_url),
-               user_agent = COALESCE($4, user_agent)
-           WHERE id = $1`,
-          [sessionId, projectId, pageUrl, userAgent]
+        values.push(
+          sessionId,
+          eventType,
+          url,
+          JSON.stringify(data),
+          event.timestamp || 0
         );
-        console.log("Session updated successfully");
+        paramIndex += 5;
       }
 
-      if (events.length > 0) {
-        console.log("Inserting events:", events.length);
-        const values: any[] = [];
-        const placeholders: string[] = [];
-        let paramIndex = 1;
-
-        for (const event of events) {
-          placeholders.push(
-            `($${paramIndex}, $${paramIndex + 1}, $${paramIndex + 2}, $${paramIndex + 3})`
-          );
-          values.push(
-            sessionId,
-            event.type,
-            JSON.stringify(event.data || {}),
-            event.timestamp || 0
-          );
-          paramIndex += 4;
-        }
-
+      if (placeholders.length > 0) {
         await client.query(
-          `INSERT INTO events (session_id, event_type, data, timestamp)
+          `INSERT INTO page_events (session_id, event_type, url, data, timestamp)
            VALUES ${placeholders.join(", ")}`,
           values
         );
-        console.log("Events inserted successfully");
-      } else {
-        console.log("No events to insert");
       }
-    });
-    console.log("Transaction completed successfully");
-  } catch (error) {
-    console.error("Error in processEvents:", error);
-    throw error;
-  }
+    }
+  });
 }
-

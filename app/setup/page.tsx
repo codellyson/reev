@@ -20,7 +20,7 @@ export default function SetupPage() {
       : "/tracker.js";
   const apiUrl =
     typeof window !== "undefined" ? window.location.origin : "";
-  
+
   const trackingCode = project
     ? `<script src="${trackerUrl}" data-project-id="${project.id}" data-api-url="${apiUrl}"></script>`
     : "";
@@ -34,12 +34,12 @@ export default function SetupPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="min-h-screen bg-zinc-950">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-2xl mx-auto space-y-8">
             <Skeleton className="h-8 w-48" />
             <Skeleton className="h-4 w-96" />
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-4">
+            <div className="bg-zinc-900 border border-zinc-800 p-6 space-y-4">
               <Skeleton className="h-6 w-32" />
               <Skeleton className="h-20 w-full" />
             </div>
@@ -51,14 +51,14 @@ export default function SetupPage() {
 
   if (error || !project) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="min-h-screen bg-zinc-950">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-2xl mx-auto space-y-8">
             <PageHeader
               title="Setup Tracking"
-              description="Get your tracking code to start recording sessions"
+              description="Get your tracking code to start collecting UX insights"
             />
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+            <div className="bg-zinc-900 border border-zinc-800 p-6">
               <EmptyState
                 title="No project found"
                 description="Create a project to get started with tracking"
@@ -76,31 +76,31 @@ export default function SetupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-zinc-950">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-2xl mx-auto space-y-8">
           <PageHeader
             title="Setup Tracking"
-            description={`Add this code to ${project.website_url} to start recording sessions`}
+            description={`Add this code to ${project.website_url} to start collecting UX insights`}
           />
 
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
+          <div className="bg-zinc-900 border border-zinc-800 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-medium text-black uppercase tracking-wider">
+              <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono">
                 Your Project ID
               </h2>
             </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-md p-4 font-mono text-sm text-black select-all break-all">
+            <div className="bg-zinc-950 border border-zinc-800 p-4 font-mono text-sm text-zinc-100 select-all break-all">
               {project.id}
             </div>
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-zinc-500">
               This ID identifies your project in the tracking code.
             </p>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
+          <div className="bg-zinc-900 border border-zinc-800 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-medium text-black uppercase tracking-wider">
+              <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono">
                 Tracking Code
               </h2>
               <Button
@@ -123,44 +123,44 @@ export default function SetupPage() {
                 )}
               </Button>
             </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-md p-4 font-mono text-xs text-black overflow-x-auto select-all">
+            <div className="bg-zinc-950 border border-zinc-800 p-4 font-mono text-xs text-zinc-100 overflow-x-auto select-all">
               <pre className="whitespace-pre-wrap">{trackingCode}</pre>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
-            <h2 className="text-sm font-medium text-black uppercase tracking-wider mb-4">
+          <div className="bg-zinc-900 border border-zinc-800 p-6">
+            <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono mb-4">
               Installation Steps
             </h2>
-            <ol className="space-y-4 text-sm text-gray-600">
+            <ol className="space-y-4 text-sm text-zinc-400">
               <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-black text-white rounded-full flex items-center justify-center text-xs font-medium">
+                <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
                   1
                 </span>
                 <span>Copy the tracking code above</span>
               </li>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-black text-white rounded-full flex items-center justify-center text-xs font-medium">
+                <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
                   2
                 </span>
                 <span>
                   Paste it before the{" "}
-                  <code className="bg-gray-100 px-1 rounded">{"</body>"}</code> tag
+                  <code className="bg-zinc-800 px-1 text-zinc-200">{"</body>"}</code> tag
                   in your HTML
                 </span>
               </li>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-black text-white rounded-full flex items-center justify-center text-xs font-medium">
+                <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
                   3
                 </span>
                 <span>Deploy your website</span>
               </li>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-black text-white rounded-full flex items-center justify-center text-xs font-medium">
+                <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
                   4
                 </span>
                 <span>
-                  Check your dashboard - sessions will appear within 30 seconds
+                  Check your dashboard - events will appear within 30 seconds
                 </span>
               </li>
             </ol>

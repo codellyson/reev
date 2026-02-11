@@ -15,9 +15,8 @@ export const SessionRow: React.FC<SessionRowProps> = ({
   onPlay,
 }) => {
   return (
-    <tr onClick={onClick} className="cursor-pointer hover:bg-gray-100">
+    <tr onClick={onClick} className="cursor-pointer hover:bg-zinc-900/50 transition-colors">
       <td>{session.id}</td>
     </tr>
   );
 };
-

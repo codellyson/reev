@@ -51,11 +51,11 @@ export const SavedFilters: React.FC<SavedFiltersProps> = ({
     currentFilters.hasErrors !== undefined;
 
   return (
-    <div className={cn("bg-white border border-gray-200 rounded-xl shadow-sm p-4", className)}>
+    <div className={cn("bg-zinc-950 border border-zinc-800 p-4", className)}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Bookmark className="h-4 w-4 text-gray-600" />
-          <h3 className="text-sm font-semibold text-black">Saved Filters</h3>
+          <Bookmark className="h-4 w-4 text-zinc-500" />
+          <h3 className="text-sm font-medium text-zinc-100">Saved Filters</h3>
         </div>
         {hasActiveFilters && !isCreating && (
           <Button
@@ -70,13 +70,13 @@ export const SavedFilters: React.FC<SavedFiltersProps> = ({
       </div>
 
       {isCreating && (
-        <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+        <div className="mb-4 p-3 bg-zinc-900 border border-zinc-800 space-y-2">
           <input
             type="text"
             value={filterName}
             onChange={(e) => setFilterName(e.target.value)}
             placeholder="Filter name..."
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-sm"
+            className="w-full px-3 py-2 border border-zinc-700 bg-zinc-950 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm placeholder:text-zinc-500"
             autoFocus
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSave();
@@ -114,9 +114,9 @@ export const SavedFilters: React.FC<SavedFiltersProps> = ({
       <div className="space-y-2">
         {savedFilters.length === 0 ? (
           <div className="text-center py-8">
-            <Bookmark className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">No saved filters yet</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <Bookmark className="h-8 w-8 text-zinc-700 mx-auto mb-2" />
+            <p className="text-sm text-zinc-500">No saved filters yet</p>
+            <p className="text-xs text-zinc-600 mt-1">
               Apply filters and save them for quick access
             </p>
           </div>
@@ -124,25 +124,25 @@ export const SavedFilters: React.FC<SavedFiltersProps> = ({
           savedFilters.map((filter) => (
             <div
               key={filter.id}
-              className="group flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all"
+              className="group flex items-center justify-between p-3 border border-zinc-800 hover:bg-zinc-900/50 hover:border-zinc-700 transition-all"
             >
               <button
                 onClick={() => onLoadFilter(filter.filters)}
                 className="flex-1 text-left"
               >
-                <p className="text-sm font-medium text-black group-hover:text-black">
+                <p className="text-sm font-medium text-zinc-100">
                   {filter.name}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-zinc-500 mt-0.5 font-mono">
                   {filter.createdAt.toLocaleDateString()}
                 </p>
               </button>
               <button
                 onClick={() => onDeleteFilter(filter.id)}
-                className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-red-50 transition-all"
+                className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/10 transition-all"
                 aria-label="Delete filter"
               >
-                <Trash2 className="h-4 w-4 text-red-600" />
+                <Trash2 className="h-4 w-4 text-red-400" />
               </button>
             </div>
           ))

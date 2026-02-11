@@ -53,22 +53,22 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-zinc-950 bg-grid">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="max-w-md mx-auto">
           <div className="mb-8">
-            <Link href="/" className="inline-block mb-8">
+            <Link href="/" className="inline-block mb-8 text-white">
               <Logo />
             </Link>
-            <h1 className="text-2xl font-bold text-black mb-2">
+            <h1 className="text-2xl font-bold text-white mb-2">
               Sign in to your account
             </h1>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-zinc-400">
               Enter your credentials to access your dashboard
             </p>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200">
+          <div className="bg-zinc-900 border border-zinc-800 p-6">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <FormField label="Email address" error={error}>
@@ -105,11 +105,11 @@ export default function LoginPage() {
                   {loading ? "Signing in..." : "Sign in"}
                 </Button>
 
-                <p className="text-center text-sm text-gray-600">
+                <p className="text-center text-sm text-zinc-400">
                   Don't have an account?{" "}
                   <Link
                     href="/signup"
-                    className="font-medium text-black hover:underline transition-colors"
+                    className="font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
                   >
                     Create one
                   </Link>
@@ -122,4 +122,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

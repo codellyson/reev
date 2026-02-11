@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { SessionEvent } from "@/types/api";
+import type { PageEvent } from "@/types/api";
 import { query } from "@/lib/db";
 
 export async function GET(
@@ -20,16 +20,17 @@ export async function GET(
   }
 }
 
-async function fetchSessionEvents(sessionId: string): Promise<SessionEvent[]> {
+async function fetchSessionEvents(sessionId: string): Promise<PageEvent[]> {
   const rows = await query<{
     id: string;
     session_id: string;
-    event_type: number;
+    event_type: string;
+    url: string | null;
     data: any;
     timestamp: number;
   }>(
-    `SELECT id, session_id, event_type, data, timestamp
-     FROM events
+    `SELECT id, session_id, event_type, url, data, timestamp
+     FROM page_events
      WHERE session_id = $1
      ORDER BY timestamp ASC`,
     [sessionId]
@@ -39,8 +40,8 @@ async function fetchSessionEvents(sessionId: string): Promise<SessionEvent[]> {
     id: row.id.toString(),
     sessionId: row.session_id,
     eventType: row.event_type,
+    url: row.url,
     data: row.data,
     timestamp: row.timestamp,
   }));
 }
-

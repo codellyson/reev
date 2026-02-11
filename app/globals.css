@@ -6,42 +6,37 @@
 
 @layer base {
   :root {
-    --black: #000000;
+    --zinc-950: #09090b;
+    --zinc-900: #18181b;
+    --zinc-800: #27272a;
+    --zinc-700: #3f3f46;
+    --zinc-600: #52525b;
+    --zinc-500: #71717a;
+    --zinc-400: #a1a1aa;
+    --zinc-300: #d4d4d8;
+    --zinc-100: #f4f4f5;
     --white: #ffffff;
-    --gray-50: #fafafa;
-    --gray-100: #f5f5f5;
-    --gray-200: #e5e5e5;
-    --gray-400: #a3a3a3;
-    --gray-600: #737373;
-    --gray-900: #171717;
-    --accent: #0070f3;
-    --accent-hover: #0761d1;
-    --accent-light: #3291ff;
-    --success: #00c853;
-    --error: #ff3b30;
-    --warning: #ff9500;
-    --player-bg: #000000;
-    --timeline: #333333;
+    --accent: #10b981;
+    --accent-hover: #34d399;
+    --accent-light: #6ee7b7;
+    --success: #34d399;
+    --error: #f87171;
+    --warning: #fbbf24;
     --transition-fast: 100ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   }
 
   * {
-    @apply border-gray-200;
+    @apply border-zinc-800;
   }
 
   body {
-    @apply bg-white text-black font-sans antialiased;
+    @apply bg-zinc-950 text-zinc-100 font-sans antialiased;
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-black ring-offset-2;
+    @apply outline-none ring-2 ring-emerald-500 ring-offset-2 ring-offset-zinc-950;
   }
 
   @keyframes fadeIn {
@@ -68,10 +63,10 @@
 
   @keyframes shimmer {
     0% {
-      transform: translateX(-100%);
+      background-position: 200% 0;
     }
     100% {
-      transform: translateX(100%);
+      background-position: -200% 0;
     }
   }
 
@@ -84,30 +79,7 @@
   }
 
   .animate-shimmer {
-    animation: shimmer 2s infinite;
-  }
-
-  /* rrweb-player styles */
-  .rr-player {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .rr-player__frame {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .rr-player__frame iframe {
-    border: none;
-    display: block;
+    animation: shimmer 3s infinite;
   }
 
   .scrollbar-hide {
@@ -123,17 +95,14 @@
     touch-action: manipulation;
   }
 
-  /* Utility classes for enhanced visual hierarchy */
-  .card-elevated {
-    @apply bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200;
-  }
-
-  .card-gradient {
-    @apply bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
-  }
-
-  .button-glass {
-    @apply bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all duration-200;
+  /* Grid background texture */
+  .bg-grid {
+    background-image: linear-gradient(
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
   }
 
   /* Smooth scrolling */

@@ -26,9 +26,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       )}
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-semibold text-black">{title}</h1>
+          <h1 className="text-2xl font-semibold text-white">{title}</h1>
           {description && (
-            <p className="text-sm text-gray-600 mt-1">{description}</p>
+            <p className="text-sm text-zinc-400 mt-1">{description}</p>
           )}
         </div>
         {actions && <div className="flex-shrink-0">{actions}</div>}

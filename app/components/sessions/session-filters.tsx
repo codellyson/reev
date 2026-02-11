@@ -106,37 +106,37 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
   return (
     <div
       className={cn(
-        "w-full sm:w-80 bg-white border border-gray-200 rounded-lg overflow-hidden",
+        "w-full sm:w-80 bg-zinc-950 border border-zinc-800 overflow-hidden",
         className
       )}
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-base focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded-t-lg"
+        className="w-full flex items-center justify-between p-4 hover:bg-zinc-900/50 transition-colors focus:outline-none"
         aria-expanded={isOpen}
         aria-controls="filters-content"
         aria-label="Toggle filters"
       >
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-600" />
-          <span className="text-sm font-medium text-black">Filters</span>
+          <Filter className="h-4 w-4 text-zinc-500" />
+          <span className="text-sm font-medium text-zinc-100">Filters</span>
           {activeFilterCount > 0 && (
-            <Badge variant="default" size="sm" className="bg-black text-white">
+            <Badge variant="default" size="sm" className="bg-emerald-500 text-zinc-900">
               {activeFilterCount}
             </Badge>
           )}
         </div>
         {isOpen ? (
-          <ChevronUp className="h-4 w-4 text-gray-600" />
+          <ChevronUp className="h-4 w-4 text-zinc-500" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-gray-600" />
+          <ChevronDown className="h-4 w-4 text-zinc-500" />
         )}
       </button>
 
       {isOpen && (
         <div
           id="filters-content"
-          className="p-4 space-y-6 border-t border-gray-200"
+          className="p-4 space-y-6 border-t border-zinc-800"
           role="region"
           aria-label="Filter options"
         >
@@ -152,26 +152,26 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
           )}
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">
+            <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3 font-mono">
               Date Range
             </label>
             <div className="space-y-2 mb-3">
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => applyPreset("today")}
-                  className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 transition-base"
+                  className="px-3 py-1.5 text-xs font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
                 >
                   Today
                 </button>
                 <button
                   onClick={() => applyPreset("last7")}
-                  className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 transition-base"
+                  className="px-3 py-1.5 text-xs font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
                 >
                   Last 7d
                 </button>
                 <button
                   onClick={() => applyPreset("last30")}
-                  className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 transition-base"
+                  className="px-3 py-1.5 text-xs font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
                 >
                   Last 30d
                 </button>
@@ -179,7 +179,7 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
             </div>
             <div className="space-y-2">
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
                 <input
                   type="date"
                   value={
@@ -193,11 +193,11 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                       start: e.target.value ? new Date(e.target.value) : null,
                     })
                   }
-                  className="w-full h-9 pl-9 pr-3 bg-white border border-gray-200 rounded-md text-sm text-black transition-base hover:border-gray-400 focus:outline-none focus:border-black"
+                  className="w-full h-9 pl-9 pr-3 bg-zinc-900 border border-zinc-700 text-sm text-zinc-100 transition-colors hover:border-zinc-600 focus:outline-none focus:border-emerald-500"
                 />
               </div>
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
                 <input
                   type="date"
                   value={
@@ -211,14 +211,14 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                       end: e.target.value ? new Date(e.target.value) : null,
                     })
                   }
-                  className="w-full h-9 pl-9 pr-3 bg-white border border-gray-200 rounded-md text-sm text-black transition-base hover:border-gray-400 focus:outline-none focus:border-black"
+                  className="w-full h-9 pl-9 pr-3 bg-zinc-900 border border-zinc-700 text-sm text-zinc-100 transition-colors hover:border-zinc-600 focus:outline-none focus:border-emerald-500"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">
+            <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3 font-mono">
               Device Type
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -230,10 +230,10 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                     key={device}
                     onClick={() => toggleDevice(device)}
                     className={cn(
-                      "flex flex-col items-center gap-1.5 px-3 py-2.5 border rounded-md transition-base",
+                      "flex flex-col items-center gap-1.5 px-3 py-2.5 border transition-colors",
                       isSelected
-                        ? "bg-black border-black text-white"
-                        : "bg-white border-gray-200 text-gray-700 hover:border-gray-400"
+                        ? "bg-emerald-500 border-emerald-500 text-zinc-900"
+                        : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -247,7 +247,7 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 font-mono">
               Page URL
             </label>
             <input
@@ -257,12 +257,12 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                 updateFilter("pageUrl", e.target.value || undefined)
               }
               placeholder="Filter by URL..."
-              className="w-full h-9 px-3 bg-white border border-gray-200 rounded-md text-sm text-black transition-base hover:border-gray-400 focus:outline-none focus:border-black placeholder:text-gray-400"
+              className="w-full h-9 px-3 bg-zinc-900 border border-zinc-700 text-sm text-zinc-100 transition-colors hover:border-zinc-600 focus:outline-none focus:border-emerald-500 placeholder:text-zinc-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2 font-mono">
               Duration (seconds)
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -276,7 +276,7 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                   )
                 }
                 placeholder="Min"
-                className="h-9 px-3 bg-white border border-gray-200 rounded-md text-sm text-black transition-base hover:border-gray-400 focus:outline-none focus:border-black placeholder:text-gray-400"
+                className="h-9 px-3 bg-zinc-900 border border-zinc-700 text-sm text-zinc-100 transition-colors hover:border-zinc-600 focus:outline-none focus:border-emerald-500 placeholder:text-zinc-500"
               />
               <input
                 type="number"
@@ -288,7 +288,7 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                   )
                 }
                 placeholder="Max"
-                className="h-9 px-3 bg-white border border-gray-200 rounded-md text-sm text-black transition-base hover:border-gray-400 focus:outline-none focus:border-black placeholder:text-gray-400"
+                className="h-9 px-3 bg-zinc-900 border border-zinc-700 text-sm text-zinc-100 transition-colors hover:border-zinc-600 focus:outline-none focus:border-emerald-500 placeholder:text-zinc-500"
               />
             </div>
           </div>
@@ -301,11 +301,11 @@ export const SessionFilters: React.FC<SessionFiltersProps> = ({
                 onChange={(e) =>
                   updateFilter("hasErrors", e.target.checked ? true : undefined)
                 }
-                className="rounded border-gray-300 text-black focus:ring-black focus:ring-offset-0"
+                className="border-zinc-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0 bg-zinc-900"
               />
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-gray-600" />
-                <span className="text-sm font-medium text-black">
+                <AlertCircle className="h-4 w-4 text-zinc-500" />
+                <span className="text-sm font-medium text-zinc-100">
                   Has Errors
                 </span>
               </div>

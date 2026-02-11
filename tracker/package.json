@@ -1,15 +1,11 @@
 {
   "name": "reev-tracker",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "dependencies": {
-    "rrweb": "2.0.0-alpha.4"
-  },
   "devDependencies": {
     "@types/node": "^20",
     "esbuild": "^0.19.0",
     "typescript": "^5"
   }
 }
-

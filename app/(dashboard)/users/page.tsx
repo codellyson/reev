@@ -18,7 +18,6 @@ interface UserSummary {
 export default function UsersPage() {
   const router = useRouter();
 
-  // Mock users data - replace with real API data
   const users = useMemo<UserSummary[]>(() => [
     {
       id: "user_1",
@@ -84,69 +83,69 @@ export default function UsersPage() {
         breadcrumbs={[{ label: "Users" }]}
       />
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
+      <div className="bg-zinc-950 border border-zinc-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b-2 border-gray-200 bg-gray-50/50">
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <tr className="border-b border-zinc-800">
+                <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider font-mono bg-zinc-900">
                   User
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider font-mono bg-zinc-900">
                   Sessions
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider font-mono bg-zinc-900">
                   Last Seen
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider font-mono bg-zinc-900">
                   Device
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider font-mono bg-zinc-900">
                   Status
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white">
+            <tbody>
               {users.map((user, index) => (
                 <tr
                   key={user.id}
                   onClick={() => handleUserClick(user.id)}
-                  className="border-b border-gray-100 hover:bg-gradient-to-r hover:from-gray-50 hover:to-transparent transition-all duration-150 cursor-pointer group animate-fade-in"
+                  className="border-b border-zinc-800/50 hover:bg-zinc-900/50 transition-colors cursor-pointer group animate-fade-in"
                   style={{ animationDelay: `${index * 20}ms` }}
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-900 to-gray-700 rounded-lg flex items-center justify-center ring-2 ring-gray-200 shadow-sm">
-                        <Users className="h-5 w-5 text-white" />
+                      <div className="w-10 h-10 bg-emerald-500 flex items-center justify-center">
+                        <Users className="h-5 w-5 text-zinc-900" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-black">
+                        <p className="text-sm font-medium text-zinc-100">
                           {user.email || "Anonymous"}
                         </p>
-                        <p className="text-xs text-gray-600 font-mono">{user.id}</p>
+                        <p className="text-xs text-zinc-500 font-mono">{user.id}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <Activity className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm font-semibold text-black">
+                      <Activity className="h-4 w-4 text-zinc-500" />
+                      <span className="text-sm font-medium text-zinc-100 font-mono">
                         {user.totalSessions}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm text-gray-700">
+                      <Clock className="h-4 w-4 text-zinc-500" />
+                      <span className="text-sm text-zinc-400 font-mono">
                         {formatTimeAgo(user.lastSeen)}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-zinc-400">
                       {getDeviceIcon(user.primaryDevice)}
-                      <span className="text-sm text-gray-700 capitalize">
+                      <span className="text-sm capitalize">
                         {user.primaryDevice}
                       </span>
                     </div>
@@ -158,7 +157,7 @@ export default function UsersPage() {
                         {user.errorCount} errors
                       </Badge>
                     ) : (
-                      <Badge variant="success" size="sm" className="bg-green-100 text-green-700">
+                      <Badge variant="success" size="sm">
                         No errors
                       </Badge>
                     )}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { usePathname } from "next/navigation";
 import { User, LogOut } from "lucide-react";
 import Link from "next/link";
@@ -31,16 +31,16 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 h-14 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm z-50"
+      className="fixed top-0 left-0 right-0 h-14 bg-zinc-950/95 backdrop-blur-sm border-b border-zinc-800 z-50"
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="flex items-center justify-between h-full px-4 sm:px-6 max-w-[1440px] mx-auto">
+      <div className="flex items-center justify-between h-full px-4 sm:px-6 max-w-5xl mx-auto">
         <div className="flex items-center gap-4 sm:gap-8 min-w-0">
           {logo && (
             <Link
               href="/"
-              className="flex items-center flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded-sm transition-opacity hover:opacity-80"
+              className="flex items-center flex-shrink-0 transition-opacity hover:opacity-80"
               aria-label="Home"
             >
               {logo}
@@ -55,10 +55,10 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "px-3 sm:px-4 py-2 text-sm rounded-lg transition-all duration-200 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2",
+                      "px-3 sm:px-4 py-2 text-sm transition-colors whitespace-nowrap",
                       isActive
-                        ? "text-black font-semibold bg-gray-100"
-                        : "text-gray-600 hover:text-black hover:bg-gray-50 font-medium"
+                        ? "text-white font-semibold bg-zinc-900"
+                        : "text-zinc-400 hover:text-white hover:bg-zinc-900 font-medium"
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >
@@ -77,24 +77,24 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
         {user && (
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg">
+            <div className="flex items-center gap-2 px-2 py-1.5">
               {user.avatar ? (
                 <img
                   src={user.avatar}
                   alt={`${user.name} avatar`}
-                  className="h-7 w-7 rounded-full ring-2 ring-gray-200"
+                  className="h-7 w-7 ring-2 ring-zinc-700"
                   aria-hidden="false"
                 />
               ) : (
                 <div
-                  className="h-7 w-7 rounded-full bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center ring-2 ring-gray-200 shadow-sm"
+                  className="h-7 w-7 bg-emerald-500 flex items-center justify-center ring-2 ring-zinc-700"
                   aria-hidden="true"
                 >
-                  <User className="h-3.5 w-3.5 text-white" />
+                  <User className="h-3.5 w-3.5 text-zinc-900" />
                 </div>
               )}
               <span
-                className="text-sm font-medium text-gray-700 hidden sm:inline"
+                className="text-sm font-medium text-zinc-300 hidden sm:inline"
                 aria-label={`Logged in as ${user.name}`}
               >
                 {user.name}
@@ -103,7 +103,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
             {onLogout && (
               <button
                 onClick={onLogout}
-                className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-600 hover:text-black"
+                className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-zinc-900 transition-colors text-sm font-medium text-zinc-400 hover:text-white"
                 aria-label="Sign out"
               >
                 <LogOut className="h-4 w-4" />

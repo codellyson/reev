@@ -12,9 +12,9 @@ import { useSessions } from "@/app/hooks";
 import { useProjectContext } from "@/app/providers/project-provider";
 import type { Filters } from "@/app/components/sessions/session-filters";
 import {
-  LoadingSpinner,
   ErrorBanner,
   EmptyState,
+  Skeleton,
   SkeletonTable,
   SkeletonSessionRow,
 } from "@/app/components/ui";
@@ -57,41 +57,9 @@ export default function SessionsPage() {
 
   const { data, loading, error } = useSessions(queryParams);
 
-  if (projectsLoading) {
-    return (
-      <div className="space-y-8">
-        <Skeleton className="h-8 w-48" />
-        <SkeletonTable />
-      </div>
-    );
-  }
-
-  if (!selectedProject) {
-    return (
-      <div className="space-y-8">
-        <PageHeader
-          title="Sessions"
-          description="Select or create a project to view sessions"
-        />
-        <EmptyState
-          icon={<List className="h-8 w-8" />}
-          title="No project selected"
-          description={projects.length === 0 
-            ? "Create your first project to start tracking sessions"
-            : "Please select a project from the switcher above"}
-          action={projects.length === 0 ? {
-            label: "Create Project",
-            onClick: () => router.push("/projects/new"),
-          } : undefined}
-          variant="compact"
-        />
-      </div>
-    );
-  }
-
   const handleSessionClick = useCallback(
     (session: any) => {
-      router.push(`/session/${session.id}`);
+      router.push(`/sessions/${session.id}`);
     },
     [router]
   );
@@ -129,6 +97,38 @@ export default function SessionsPage() {
       })) || []
     );
   }, [data?.data]);
+
+  if (projectsLoading) {
+    return (
+      <div className="space-y-8">
+        <Skeleton className="h-8 w-48" />
+        <SkeletonTable />
+      </div>
+    );
+  }
+
+  if (!selectedProject) {
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          title="Sessions"
+          description="Select or create a project to view sessions"
+        />
+        <EmptyState
+          icon={<List className="h-8 w-8" />}
+          title="No project selected"
+          description={projects.length === 0
+            ? "Create your first project to start tracking sessions"
+            : "Please select a project from the switcher above"}
+          action={projects.length === 0 ? {
+            label: "Create Project",
+            onClick: () => router.push("/projects/new"),
+          } : undefined}
+          variant="compact"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -171,7 +171,7 @@ export default function SessionsPage() {
               ))}
             </div>
           ) : mappedSessions.length === 0 ? (
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+            <div className="bg-zinc-950 border border-zinc-800">
               <EmptyState
                 icon={<List className="h-8 w-8" />}
                 title="No sessions found"
@@ -185,7 +185,7 @@ export default function SessionsPage() {
               />
             </div>
           ) : (
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
+            <div className="bg-zinc-950 border border-zinc-800 overflow-hidden">
               <SessionList
                 sessions={mappedSessions}
                 onSessionClick={handleSessionClick}
@@ -195,22 +195,22 @@ export default function SessionsPage() {
           )}
 
           {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl shadow-sm px-4 py-3">
-              <p className="text-sm font-medium text-gray-600">
+            <div className="flex items-center justify-between bg-zinc-950 border border-zinc-800 px-4 py-3">
+              <p className="text-sm font-medium text-zinc-400 font-mono">
                 Page {data.page} of {data.totalPages}
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPage(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setPage(Math.min(data.totalPages, page + 1))}
                   disabled={page === data.totalPages}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>

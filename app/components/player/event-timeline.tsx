@@ -50,15 +50,15 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
 
   const getEventColor = (event: TimelineEvent) => {
     if (event.severity === "error" || event.type === "error") {
-      return "text-error";
+      return "text-red-400";
     }
     if (event.severity === "warning") {
-      return "text-warning";
+      return "text-amber-400";
     }
     if (event.type === "rage_click") {
-      return "text-error";
+      return "text-red-400";
     }
-    return "text-info";
+    return "text-blue-400";
   };
 
   const formatTimestamp = (seconds: number): string => {
@@ -74,7 +74,7 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
   return (
     <div
       className={cn(
-        "bg-white border border-gray-200 lg:border-l-0 lg:border-t rounded-xl lg:rounded-l-none shadow-sm overflow-y-auto",
+        "bg-zinc-950 border border-zinc-800 overflow-y-auto",
         className
       )}
       style={{
@@ -85,21 +85,21 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
       role="region"
       aria-labelledby="timeline-heading"
     >
-      <div className="p-4 border-b border-gray-200 sticky top-0 bg-gradient-to-b from-white to-gray-50 z-10">
+      <div className="p-4 border-b border-zinc-800 sticky top-0 bg-zinc-950 z-10">
         <h3
-          className="text-sm font-bold text-gray-900"
+          className="text-sm font-semibold text-white font-mono uppercase tracking-wider"
           id="timeline-heading"
         >
           Event Timeline
         </h3>
-        <p className="text-xs font-medium text-gray-500 mt-1" aria-live="polite">
+        <p className="text-xs font-medium text-zinc-500 mt-1 font-mono" aria-live="polite">
           {events.length} {events.length === 1 ? "event" : "events"}
         </p>
       </div>
 
       <div className="p-4 space-y-2">
         {events.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-8">
+          <p className="text-sm text-zinc-500 text-center py-8">
             No events recorded
           </p>
         ) : (
@@ -114,10 +114,10 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
                 }
               }}
               className={cn(
-                "w-full text-left p-3 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 touch-manipulation shadow-sm",
+                "w-full text-left p-3 border transition-all duration-200 focus:outline-none touch-manipulation",
                 isActive(event)
-                  ? "border-black bg-gray-900 text-white shadow-md scale-[1.02]"
-                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md",
+                  ? "border-emerald-500 bg-emerald-500/10 text-white"
+                  : "border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/50",
                 onEventClick && "cursor-pointer"
               )}
               aria-label={`Event: ${event.type} at ${formatTimestamp(
@@ -129,7 +129,7 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
                 <div
                   className={cn(
                     "flex-shrink-0 mt-0.5",
-                    isActive(event) ? "text-white" : getEventColor(event)
+                    isActive(event) ? "text-emerald-400" : getEventColor(event)
                   )}
                 >
                   {getEventIcon(event.type)}
@@ -137,8 +137,8 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className={cn(
-                      "text-xs font-semibold",
-                      isActive(event) ? "text-white" : "text-gray-900"
+                      "text-xs font-semibold font-mono",
+                      isActive(event) ? "text-emerald-400" : "text-zinc-100"
                     )}>
                       {event.type.replace("_", " ").toUpperCase()}
                     </span>
@@ -155,13 +155,13 @@ export const EventTimeline: React.FC<EventTimelineProps> = ({
                   </div>
                   <p className={cn(
                     "text-sm mb-2 line-clamp-2",
-                    isActive(event) ? "text-gray-200" : "text-gray-700"
+                    isActive(event) ? "text-zinc-300" : "text-zinc-400"
                   )}>
                     {event.description}
                   </p>
                   <p className={cn(
                     "text-xs font-mono",
-                    isActive(event) ? "text-gray-300" : "text-gray-500"
+                    isActive(event) ? "text-zinc-400" : "text-zinc-500"
                   )}>
                     {formatTimestamp(event.timestamp)}
                   </p>

@@ -52,7 +52,7 @@ export function TagSelector({
             <TagBadge key={tag.id} tag={tag} compact />
           ))}
           {selectedTags.length > 3 && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-zinc-500">
               +{selectedTags.length - 3}
             </span>
           )}
@@ -76,9 +76,9 @@ export function TagSelector({
               className="fixed inset-0 z-10"
               onClick={() => setIsOpen(false)}
             />
-            <div className="absolute left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20 p-2 max-h-64 overflow-auto">
+            <div className="absolute left-0 mt-2 w-64 bg-zinc-900 border border-zinc-800 z-20 p-2 max-h-64 overflow-auto">
               {unselectedTags.length === 0 ? (
-                <p className="text-sm text-gray-500 text-center py-4">
+                <p className="text-sm text-zinc-500 text-center py-4">
                   No more tags available
                 </p>
               ) : (
@@ -90,13 +90,13 @@ export function TagSelector({
                         onTagAdd(tag.id);
                         setIsOpen(false);
                       }}
-                      className="w-full flex items-center gap-2 p-2 hover:bg-gray-100 rounded transition-colors text-left"
+                      className="w-full flex items-center gap-2 p-2 hover:bg-zinc-800 transition-colors text-left"
                     >
                       <div
-                        className="w-3 h-3 rounded"
+                        className="w-3 h-3"
                         style={{ backgroundColor: tag.color }}
                       />
-                      <span className="text-sm text-gray-900">
+                      <span className="text-sm text-zinc-100">
                         {tag.name}
                       </span>
                     </button>
@@ -122,7 +122,7 @@ export function TagBadge({ tag, onRemove, removable, compact }: TagBadgeProps) {
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-1.5 rounded-full text-white",
+        "inline-flex items-center gap-1.5 text-white",
         compact ? "px-2 py-0.5 text-xs" : "px-3 py-1 text-sm"
       )}
       style={{ backgroundColor: tag.color }}
@@ -131,7 +131,7 @@ export function TagBadge({ tag, onRemove, removable, compact }: TagBadgeProps) {
       {removable && onRemove && (
         <button
           onClick={onRemove}
-          className="hover:bg-white/20 rounded-full p-0.5 transition-colors"
+          className="hover:bg-white/20 p-0.5 transition-colors"
           aria-label="Remove tag"
         >
           <X className="w-3 h-3" />
@@ -140,4 +140,3 @@ export function TagBadge({ tag, onRemove, removable, compact }: TagBadgeProps) {
     </span>
   );
 }
-

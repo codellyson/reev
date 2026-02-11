@@ -101,7 +101,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
         <Badge
           key={filter.key}
           variant="default"
-          className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-700"
+          className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium"
         >
           {filter.key === "dateRange" && <Calendar className="h-3 w-3" />}
           {filter.key.startsWith("device-") && (
@@ -113,7 +113,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           <span>{filter.label}</span>
           <button
             onClick={filter.onRemove}
-            className="ml-1 hover:opacity-70 transition-base"
+            className="ml-1 hover:opacity-70 transition-opacity"
             aria-label={`Remove ${filter.label} filter`}
           >
             <X className="h-3 w-3" />
@@ -123,7 +123,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
       {activeFilters.length > 1 && (
         <button
           onClick={onClearAll}
-          className="text-xs text-gray-600 hover:text-black transition-base font-medium"
+          className="text-xs text-zinc-500 hover:text-emerald-400 transition-colors font-medium"
         >
           Clear all
         </button>
@@ -131,4 +131,3 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
     </div>
   );
 };
-

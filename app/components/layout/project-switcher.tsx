@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Plus, Check } from "lucide-react";
+import { ChevronDown, Plus, Check, Settings } from "lucide-react";
 import { useProjectContext } from "@/app/providers/project-provider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -33,7 +33,7 @@ export function ProjectSwitcher() {
     return (
       <Link
         href="/projects/new"
-        className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg transition-colors inline-flex items-center gap-2"
+        className="px-3 py-1.5 text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors inline-flex items-center gap-2"
       >
         <Plus className="h-4 w-4" />
         Create Project
@@ -45,7 +45,7 @@ export function ProjectSwitcher() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="px-3 py-1.5 text-sm font-medium text-black hover:bg-gray-50 rounded-lg transition-colors inline-flex items-center gap-2 max-w-[200px]"
+        className="px-3 py-1.5 text-sm font-medium text-zinc-100 hover:bg-zinc-900 transition-colors inline-flex items-center gap-2 max-w-[200px]"
         aria-label="Switch project"
       >
         <span className="truncate">{selectedProject?.name || "Select Project"}</span>
@@ -53,11 +53,11 @@ export function ProjectSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-auto">
+        <div className="absolute top-full left-0 mt-2 w-64 bg-zinc-900 border border-zinc-800 z-50 max-h-96 overflow-auto">
           <div className="p-2">
             {projects.length > 0 ? (
               <>
-                <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <div className="px-2 py-1.5 text-xs font-semibold text-zinc-500 uppercase tracking-wider font-mono">
                   Projects
                 </div>
                 {projects.map((project) => (
@@ -69,28 +69,38 @@ export function ProjectSwitcher() {
                       router.refresh();
                     }}
                     className={cn(
-                      "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-colors text-left",
+                      "w-full flex items-center justify-between px-2 py-2 text-sm transition-colors text-left",
                       selectedProject?.id === project.id
-                        ? "bg-gray-100 text-black font-medium"
-                        : "text-gray-700 hover:bg-gray-50"
+                        ? "bg-zinc-800 text-white font-medium"
+                        : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
                     )}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="truncate font-medium">{project.name}</div>
-                      <div className="truncate text-xs text-gray-500">{project.website_url}</div>
+                      <div className="truncate text-xs text-zinc-500">{project.website_url}</div>
                     </div>
                     {selectedProject?.id === project.id && (
-                      <Check className="h-4 w-4 text-black flex-shrink-0 ml-2" />
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0 ml-2" />
                     )}
                   </button>
                 ))}
-                <div className="border-t border-gray-200 my-1" />
+                <div className="border-t border-zinc-800 my-1" />
               </>
             ) : null}
+            {selectedProject && (
+              <Link
+                href="/settings#general"
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center gap-2 px-2 py-2 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors"
+              >
+                <Settings className="h-4 w-4" />
+                <span>Edit Project</span>
+              </Link>
+            )}
             <Link
               href="/projects/new"
               onClick={() => setIsOpen(false)}
-              className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center gap-2 px-2 py-2 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors"
             >
               <Plus className="h-4 w-4" />
               <span>Create New Project</span>
@@ -101,4 +111,3 @@ export function ProjectSwitcher() {
     </div>
   );
 }
-

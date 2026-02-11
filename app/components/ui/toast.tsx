@@ -119,28 +119,29 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
   return (
     <div
       className={clsx(
-        "flex items-start gap-3 p-4 rounded-lg shadow-lg border animate-slide-in",
+        "flex items-start gap-3 p-4 border animate-slide-in",
         "backdrop-blur-sm transition-all duration-300",
+        "bg-zinc-900",
         {
-          "bg-green-50 border-green-200 text-green-900": toast.type === "success",
-          "bg-red-50 border-red-200 text-red-900": toast.type === "error",
-          "bg-blue-50 border-blue-200 text-blue-900": toast.type === "info",
-          "bg-yellow-50 border-yellow-200 text-yellow-900": toast.type === "warning",
+          "border-emerald-500/30 text-emerald-400": toast.type === "success",
+          "border-red-500/30 text-red-400": toast.type === "error",
+          "border-blue-500/30 text-blue-400": toast.type === "info",
+          "border-amber-500/30 text-amber-400": toast.type === "warning",
         }
       )}
     >
       <Icon
         className={clsx("w-5 h-5 flex-shrink-0 mt-0.5", {
-          "text-green-600": toast.type === "success",
-          "text-red-600": toast.type === "error",
-          "text-blue-600": toast.type === "info",
-          "text-yellow-600": toast.type === "warning",
+          "text-emerald-400": toast.type === "success",
+          "text-red-400": toast.type === "error",
+          "text-blue-400": toast.type === "info",
+          "text-amber-400": toast.type === "warning",
         })}
       />
-      <p className="flex-1 text-sm font-medium">{toast.message}</p>
+      <p className="flex-1 text-sm font-medium text-zinc-100">{toast.message}</p>
       <button
         onClick={() => onRemove(toast.id)}
-        className="text-gray-400 hover:text-gray-600 transition-colors"
+        className="text-zinc-500 hover:text-zinc-300 transition-colors"
         aria-label="Close notification"
       >
         <X className="w-4 h-4" />
@@ -148,4 +149,3 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
     </div>
   );
 }
-

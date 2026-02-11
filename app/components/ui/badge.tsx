@@ -14,14 +14,14 @@ export const Badge: React.FC<BadgeProps> = ({
   size = "md",
   className,
 }) => {
-  const baseStyles = "inline-flex items-center rounded-sm font-medium";
+  const baseStyles = "inline-flex items-center font-medium";
 
   const variants = {
-    default: "bg-gray-100 text-gray-900",
-    success: "bg-[#E8F5E9] text-[#2E7D32]",
-    warning: "bg-[#FFF3E0] text-[#E65100]",
-    error: "bg-[#FFEBEE] text-[#C62828]",
-    info: "bg-gray-100 text-gray-900",
+    default: "bg-zinc-800 text-zinc-300",
+    success: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+    warning: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+    error: "bg-red-500/10 text-red-400 border border-red-500/20",
+    info: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
   };
 
   const sizes = {
@@ -35,4 +35,3 @@ export const Badge: React.FC<BadgeProps> = ({
     </span>
   );
 };
-

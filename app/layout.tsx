@@ -14,7 +14,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Reev",
-  description: "Session replay and analytics dashboard",
+  description: "Lightweight UX insights dashboard",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="antialiased font-sans">
+      <body className="antialiased font-sans bg-zinc-950 text-zinc-100">
         <NextAuthSessionProvider>
           <QueryProvider>
             <ProjectProvider>

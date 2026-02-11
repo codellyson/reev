@@ -26,18 +26,19 @@ export interface Session {
   lastEventAt: Date | string;
 }
 
-export interface SessionEvent {
+export interface PageEvent {
   id: string;
   sessionId: string;
-  eventType: number;
+  eventType: string;
+  url: string | null;
   data: Record<string, any>;
   timestamp: number;
 }
 
 export interface Stats {
-  totalSessions: number;
-  avgDuration: number;
-  bounceRate: number;
+  totalPageviews: number;
+  uniqueSessions: number;
+  avgScrollDepth: number;
   errorCount: number;
   topPages: Array<{
     url: string;
@@ -47,25 +48,47 @@ export interface Stats {
 
 export interface TrendData {
   dates: string[];
-  sessionCounts: number[];
+  pageviews: number[];
+  sessions: number[];
+  errors: number[];
 }
 
-export interface HeatmapDataPoint {
-  x: number;
-  y: number;
-  count: number;
-  intensity: number;
+export interface Insight {
+  id: string;
+  projectId: string;
+  type: InsightType;
+  severity: "low" | "medium" | "high" | "critical";
+  title: string;
+  description: string | null;
+  url: string | null;
+  metricValue: number | null;
+  metadata: Record<string, any>;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  occurrences: number;
+  status: "active" | "acknowledged" | "resolved";
 }
 
-export interface HeatmapData {
+export type InsightType =
+  | "rage_click"
+  | "scroll_dropoff"
+  | "form_abandonment"
+  | "slow_page"
+  | "error_spike";
+
+export interface PageStat {
   url: string;
-  type: "click" | "scroll" | "attention";
-  points: HeatmapDataPoint[];
-}
-
-export interface Page {
-  url: string;
-  sessionCount: number;
+  date: string;
+  views: number;
+  uniqueSessions: number;
+  avgScrollDepth: number;
+  avgTimeOnPage: number;
+  bounceCount: number;
+  rageClickCount: number;
+  errorCount: number;
+  avgLcp: number | null;
+  avgFid: number | null;
+  avgCls: number | null;
 }
 
 export interface SessionQueryParams {
@@ -83,4 +106,3 @@ export interface SessionQueryParams {
   maxDuration?: number;
   hasErrors?: boolean;
 }
-

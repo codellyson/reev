@@ -19,7 +19,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   return (
     <div className={cn("relative", className)}>
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
         <Search className="h-4 w-4" />
       </div>
       <input
@@ -27,12 +27,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full h-9 pl-10 pr-10 bg-white border border-gray-200 rounded-md text-sm text-black transition-base hover:border-gray-400 focus:outline-none focus:border-black placeholder:text-gray-400"
+        className="w-full h-9 pl-10 pr-10 bg-zinc-900 border border-zinc-700 text-sm text-zinc-100 transition-colors hover:border-zinc-600 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 placeholder:text-zinc-500"
       />
       {value && (
         <button
           onClick={() => onChange("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-fast"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
           aria-label="Clear search"
         >
           <X className="h-4 w-4" />
@@ -41,4 +41,3 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     </div>
   );
 };
-

@@ -19,7 +19,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   return (
     <div
       className={cn(
-        "animate-spin rounded-full border-2 border-black border-t-transparent",
+        "animate-spin rounded-full border-2 border-emerald-500 border-t-transparent",
         sizes[size],
         className
       )}
@@ -30,4 +30,3 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     </div>
   );
 };
-

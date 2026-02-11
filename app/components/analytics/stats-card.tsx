@@ -30,44 +30,44 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   const getTrendIcon = () => {
     switch (trend) {
       case "up":
-        return <TrendingUp className="h-4 w-4 text-success" />;
+        return <TrendingUp className="h-4 w-4 text-emerald-400" />;
       case "down":
-        return <TrendingDown className="h-4 w-4 text-error" />;
+        return <TrendingDown className="h-4 w-4 text-red-400" />;
       default:
-        return <Minus className="h-4 w-4 text-gray-500" />;
+        return <Minus className="h-4 w-4 text-zinc-500" />;
     }
   };
 
   const getChangeColor = () => {
     switch (trend) {
       case "up":
-        return "text-success";
+        return "text-emerald-400";
       case "down":
-        return "text-error";
+        return "text-red-400";
       default:
-        return "text-gray-500";
+        return "text-zinc-500";
     }
   };
 
   return (
     <div
       className={cn(
-        "bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200",
+        "bg-zinc-950 border border-zinc-800 p-6 hover:bg-zinc-900/50 transition-colors",
         className
       )}
     >
       <div className="flex items-center justify-between mb-4">
-        <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+        <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider font-mono">
           {label}
         </span>
         {icon && (
-          <div className="w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center text-gray-700 border border-gray-200">
+          <div className="w-10 h-10 bg-zinc-900 flex items-center justify-center text-emerald-400 border border-zinc-800">
             {icon}
           </div>
         )}
       </div>
       <div className="mb-2">
-        <div className="text-3xl font-bold text-black leading-tight mb-1">{value}</div>
+        <div className="text-3xl font-bold text-white leading-tight mb-1">{value}</div>
         {change !== undefined && (
           <div className={cn("flex items-center gap-1.5 mt-2", getChangeColor())}>
             {getTrendIcon()}
@@ -76,9 +76,8 @@ export const StatsCard: React.FC<StatsCardProps> = ({
         )}
       </div>
       {comparison && (
-        <p className="text-sm text-gray-600 mt-3">{comparison}</p>
+        <p className="text-sm text-zinc-400 mt-3">{comparison}</p>
       )}
     </div>
   );
 };
-

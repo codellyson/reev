@@ -31,28 +31,27 @@ export const ErrorBanner: React.FC<ErrorBannerProps> = ({
   return (
     <div
       className={cn(
-        "bg-[#FFEBEE] border-l-4 border-error p-4 rounded-r-md",
+        "bg-red-500/10 border-l-4 border-red-500 p-4",
         className
       )}
       role="alert"
     >
       <div className="flex items-start gap-3">
-        <AlertCircle className="h-5 w-5 text-error flex-shrink-0 mt-0.5" />
+        <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
-          <h4 className="text-sm font-medium text-[#C62828] mb-1">{title}</h4>
-          {message && <p className="text-sm text-[#C62828]">{message}</p>}
+          <h4 className="text-sm font-medium text-red-400 mb-1">{title}</h4>
+          {message && <p className="text-sm text-red-400/80">{message}</p>}
         </div>
         {dismissible && (
           <button
             onClick={handleDismiss}
-            className="flex-shrink-0 p-1 hover:bg-[#FFCDD2] rounded transition-base"
+            className="flex-shrink-0 p-1 hover:bg-red-500/20 transition-base"
             aria-label="Dismiss error"
           >
-            <X className="h-4 w-4 text-[#C62828]" />
+            <X className="h-4 w-4 text-red-400" />
           </button>
         )}
       </div>
     </div>
   );
 };
-
