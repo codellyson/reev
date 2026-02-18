@@ -43,7 +43,7 @@ const scaleUp = {
   visible: { opacity: 1, scale: 1, y: 0 },
 };
 
-const ease = [0.16, 1, 0.3, 1];
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 function AnimatedSection({
   children,
