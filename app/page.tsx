@@ -209,28 +209,28 @@ function Hero() {
           </div>
 
           {/* Mock popover */}
-          <div className="mt-2 bg-[#161a24] border border-[#3a4158] w-[310px] mx-auto text-left">
+          <div className="mt-2 bg-white border border-zinc-200 w-[310px] mx-auto text-left shadow-sm">
             <div className="h-[3px] bg-amber-500" />
             <div className="p-4">
               <div className="flex items-start gap-3 mb-3">
                 <span className="text-xl leading-none">&#128548;</span>
                 <div>
-                  <p className="text-[13px] font-semibold text-[#e2e6f0]">
+                  <p className="text-[13px] font-semibold text-zinc-900">
                     Not working?
                   </p>
-                  <p className="text-[12px] text-[#7a829e] leading-snug mt-1">
+                  <p className="text-[12px] text-zinc-500 leading-snug mt-1">
                     We noticed you clicked multiple times. What were you
                     expecting to happen?
                   </p>
                 </div>
               </div>
-              <div className="bg-[#11141b] border border-[#3a4158] p-2 mb-3">
-                <p className="text-[12px] text-[#7a829e] italic">
+              <div className="bg-zinc-50 border border-zinc-200 p-2 mb-3">
+                <p className="text-[12px] text-zinc-500 italic">
                   The button doesn&apos;t respond after I enter my card...
                 </p>
               </div>
               <div className="flex gap-2">
-                <div className="flex-1 text-center py-[7px] border border-[#3a4158] text-[12px] text-[#7a829e]">
+                <div className="flex-1 text-center py-[7px] border border-zinc-200 text-[12px] text-zinc-500">
                   Dismiss
                 </div>
                 <div className="flex-1 text-center py-[7px] bg-amber-500 text-[12px] text-zinc-900 font-medium">
@@ -1045,7 +1045,7 @@ export default function HomePage() {
         data-broken-image="true"
         data-form-frustration="true"
         data-popover="true"
-        data-popover-theme="dark"
+        data-popover-theme="light"
         data-max-popups="20"
         data-popover-cooldown="3000"
         strategy="lazyOnload"

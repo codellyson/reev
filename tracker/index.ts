@@ -66,27 +66,27 @@ const POPOVER_CSS = `
   --uxs-red: #e84855;
   --uxs-green: #3dd68c;
   --uxs-blue: #4e9af5;
-  --uxs-radius: 10px;
+  --uxs-radius: 14px;
 
   position: fixed;
   z-index: 2147483647;
-  width: 310px;
+  width: 320px;
   background: var(--uxs-bg);
   border: 1px solid var(--uxs-border);
   border-radius: var(--uxs-radius);
-  box-shadow: 0 12px 48px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.03);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   opacity: 0;
   pointer-events: none;
   transform-origin: var(--uxs-origin, center top);
-  transform: scale(0.9);
-  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(0.92) translateY(4px);
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: visible;
 }
 .uxs-popover.uxs-visible {
   opacity: 1;
   pointer-events: auto;
-  transform: scale(1);
+  transform: scale(1) translateY(0);
 }
 .uxs-arrow {
   position: absolute;
@@ -107,66 +107,67 @@ const POPOVER_CSS = `
   border-left: none;
   border-top: none;
 }
-.uxs-stripe { height: 3px; position: relative; z-index: 2; border-radius: var(--uxs-radius) var(--uxs-radius) 0 0; }
+.uxs-stripe { height: 2px; position: relative; z-index: 2; border-radius: var(--uxs-radius) var(--uxs-radius) 0 0; opacity: 0.8; }
 .uxs-stripe-red { background: var(--uxs-red); }
 .uxs-stripe-amber { background: var(--uxs-amber); }
 .uxs-stripe-green { background: var(--uxs-green); }
 .uxs-stripe-blue { background: var(--uxs-blue); }
 .uxs-close {
   position: absolute;
-  top: 12px;
-  right: 10px;
-  width: 22px;
-  height: 22px;
+  top: 14px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
   background: transparent;
-  border: 1px solid var(--uxs-border);
-  border-radius: 4px;
+  border: none;
+  border-radius: 6px;
   color: var(--uxs-text-muted);
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s;
+  transition: color 0.15s, background 0.15s;
   line-height: 1;
   padding: 0;
 }
 .uxs-close:hover {
   color: var(--uxs-text);
-  border-color: var(--uxs-text-sec);
+  background: var(--uxs-bg-input);
 }
 .uxs-header {
-  padding: 14px 16px 10px;
+  padding: 18px 20px 12px;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
 }
-.uxs-emoji { font-size: 20px; line-height: 1; flex-shrink: 0; }
-.uxs-header-text { padding-right: 22px; }
+.uxs-emoji { font-size: 22px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+.uxs-header-text { padding-right: 24px; }
 .uxs-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  margin: 0 0 3px;
+  margin: 0 0 4px;
   color: var(--uxs-text);
+  letter-spacing: -0.01em;
 }
 .uxs-desc {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--uxs-text-sec);
-  line-height: 1.45;
+  line-height: 1.5;
   margin: 0;
 }
-.uxs-body { padding: 0 16px 10px; }
+.uxs-body { padding: 0 20px 14px; }
 .uxs-textarea {
   width: 100%;
   background: var(--uxs-bg-input);
   border: 1px solid var(--uxs-border);
-  border-radius: 6px;
-  padding: 8px 10px;
+  border-radius: 10px;
+  padding: 10px 12px;
   color: var(--uxs-text);
   font-family: inherit;
-  font-size: 12px;
+  font-size: 13px;
   resize: none;
-  height: 48px;
+  height: 56px;
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
@@ -179,15 +180,15 @@ const POPOVER_CSS = `
 }
 .uxs-actions {
   display: flex;
-  gap: 6px;
-  padding: 0 16px 14px;
+  gap: 8px;
+  padding: 0 20px 18px;
 }
 .uxs-btn {
   flex: 1;
-  padding: 7px 12px;
-  border-radius: 6px;
+  padding: 9px 14px;
+  border-radius: 10px;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
@@ -198,6 +199,7 @@ const POPOVER_CSS = `
   background: var(--uxs-amber);
   color: #0a0c10;
   border-color: var(--uxs-amber);
+  font-weight: 600;
 }
 .uxs-btn-send:hover {
   background: var(--uxs-amber-dim);
@@ -206,11 +208,11 @@ const POPOVER_CSS = `
 .uxs-btn-dismiss {
   background: transparent;
   color: var(--uxs-text-sec);
-  border-color: var(--uxs-border);
+  border: none;
 }
 .uxs-btn-dismiss:hover {
   color: var(--uxs-text);
-  border-color: var(--uxs-text-sec);
+  background: var(--uxs-bg-input);
 }
 .uxs-highlight {
   outline: 2px solid var(--uxs-amber, #f0a830) !important;
@@ -371,10 +373,10 @@ class Popover {
     this.el.querySelector('.uxs-btn-send')?.addEventListener('click', () => this.submit());
   }
 
-  show(issue: UXIssue): boolean {
+  show(issue: UXIssue, skipCooldown = false): boolean {
     const now = Date.now();
-    if (this.shownCount >= this.config.maxPerSession) return false;
-    if (now - this.lastShown < this.config.cooldown) return false;
+    if (!skipCooldown && this.shownCount >= this.config.maxPerSession) return false;
+    if (!skipCooldown && now - this.lastShown < this.config.cooldown) return false;
     if (!issue.element || !issue.element.getBoundingClientRect) return false;
 
     this.dismiss();
@@ -491,12 +493,9 @@ class Popover {
     const popW = window.innerWidth <= 400 ? window.innerWidth - 24 : 310;
     const gap = 10;
 
-    pop.style.visibility = 'hidden';
-    pop.style.left = '-9999px';
-    pop.classList.add('uxs-visible');
+    // Measure height without toggling uxs-visible (which breaks CSS transitions on re-open).
+    // offsetHeight returns layout dimensions unaffected by CSS transforms.
     const popH = pop.offsetHeight;
-    pop.classList.remove('uxs-visible');
-    pop.style.visibility = '';
 
     const spaceBelow = window.innerHeight - rect.bottom;
     const placement = spaceBelow > popH + gap + 20 ? 'bottom' : 'top';
@@ -731,6 +730,12 @@ class ReevTracker {
     }
   }
 
+  private showPopoverForIssue(issue: UXIssue): void {
+    if (this.popover) {
+      this.popover.show(issue, true);
+    }
+  }
+
   private handleFeedback(feedback: any): void {
     this.log('Feedback received', feedback);
 
@@ -952,8 +957,7 @@ class ReevTracker {
     badge.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
-      badge.remove();
-      this.handleIssue(issue);
+      this.showPopoverForIssue(issue);
     });
 
     parent.appendChild(badge);
