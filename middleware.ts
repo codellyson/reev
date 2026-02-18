@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
     pathname === "/signup" ||
     pathname === "/" ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/tracker")
+    pathname.startsWith("/reev.js")
   ) {
     return NextResponse.next();
   }

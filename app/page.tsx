@@ -379,7 +379,7 @@ function HowItWorks() {
                     {"  "}
                     <span className="text-amber-400">src</span>
                     <span className="text-zinc-500">=</span>
-                    <span className="text-zinc-300">&quot;/tracker.js&quot;</span>
+                    <span className="text-zinc-300">&quot;/reev.js&quot;</span>
                     {"\n"}
                     {"  "}
                     <span className="text-amber-400">data-project-id</span>
@@ -763,7 +763,7 @@ function Integration() {
               <span className="text-amber-400">src</span>
               <span className="text-zinc-500">=</span>
               <span className="text-zinc-300">
-                &quot;https://your-domain.com/tracker.js&quot;
+                &quot;https://your-domain.com/reev.js&quot;
               </span>
               {"\n"}
               {"  "}
@@ -1038,7 +1038,7 @@ export default function HomePage() {
 
       {/* Load the actual tracker on this page */}
       <Script
-        src="/tracker.js"
+        src="/reev.js"
         data-project-id="landing-page-demo"
         data-rage-click="true"
         data-dead-link="true"

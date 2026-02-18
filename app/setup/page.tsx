@@ -16,8 +16,8 @@ export default function SetupPage() {
 
   const trackerUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/tracker.js`
-      : "/tracker.js";
+      ? `${window.location.origin}/reev.js`
+      : "/reev.js";
   const apiUrl =
     typeof window !== "undefined" ? window.location.origin : "";
 

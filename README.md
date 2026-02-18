@@ -65,7 +65,7 @@ That's it. Five routes.
 ## Data flow
 
 ```
-Browser (tracker.js)
+Browser (reev.js script)
   ↓ batches events every 10s
 POST /api/events
   ↓ validates project, upserts session, stores events
@@ -119,7 +119,7 @@ pnpm dev
 Add the tracker to any site:
 
 ```html
-<script src="https://your-reev-instance.com/tracker.js"
+<script src="https://your-reev-instance.com/reev.js"
         data-project-id="your-project-id"
         data-api-url="https://your-reev-instance.com">
 </script>
@@ -130,7 +130,7 @@ Add the tracker to any site:
 All features are enabled by default. Use data attributes to customize:
 
 ```html
-<script src="https://your-reev-instance.com/tracker.js"
+<script src="https://your-reev-instance.com/reev.js"
         data-project-id="your-project-id"
         data-api-url="https://your-reev-instance.com"
         data-rage-click="true"
@@ -187,11 +187,12 @@ reev/
 │   ├── auth.ts              # NextAuth configuration
 │   └── jobs/
 │       └── calculate-metrics.ts  # Insight detection engine
-├── tracker/
-│   ├── index.ts             # Tracker source (includes UX detectors + popover UI)
-│   └── build.ts             # esbuild config
+├── reevjs/
+│   ├── index.ts             # reev.js source (UX detectors + popover UI)
+│   ├── build.ts             # esbuild config
+│   └── dist/                # npm-publishable output
 ├── public/
-│   └── tracker.js           # Built tracker (~12KB)
+│   └── reev.js              # Built library (~12KB)
 └── types/
     └── api.ts               # Shared TypeScript interfaces
 ```
