@@ -80,7 +80,7 @@ export function ProjectSwitcher() {
                       <div className="truncate text-xs text-zinc-500">{project.website_url}</div>
                     </div>
                     {selectedProject?.id === project.id && (
-                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0 ml-2" />
+                      <Check className="h-4 w-4 text-orange-400 flex-shrink-0 ml-2" />
                     )}
                   </button>
                 ))}

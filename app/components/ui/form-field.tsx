@@ -58,7 +58,7 @@ export function Input({ error, className, ...props }: InputProps) {
         "focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-offset-zinc-950",
         error
           ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
-          : "border-zinc-700 focus:border-emerald-500 focus:ring-emerald-500/20",
+          : "border-zinc-700 focus:border-orange-500 focus:ring-orange-500/20",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -82,7 +82,7 @@ export function Textarea({ error, className, ...props }: TextareaProps) {
         "focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-offset-zinc-950",
         error
           ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
-          : "border-zinc-700 focus:border-emerald-500 focus:ring-emerald-500/20",
+          : "border-zinc-700 focus:border-orange-500 focus:ring-orange-500/20",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -105,7 +105,7 @@ export function Select({ error, className, children, ...props }: SelectProps) {
         "focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-offset-zinc-950",
         error
           ? "border-red-500/50 focus:border-red-500 focus:ring-red-500/20"
-          : "border-zinc-700 focus:border-emerald-500 focus:ring-emerald-500/20",
+          : "border-zinc-700 focus:border-orange-500 focus:ring-orange-500/20",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
@@ -127,7 +127,7 @@ export function Checkbox({ label, className, ...props }: CheckboxProps) {
         type="checkbox"
         className={clsx(
           "w-4 h-4 border-zinc-700 bg-zinc-900",
-          "text-emerald-500 focus:ring-emerald-500/20 focus:ring-2 focus:ring-offset-0",
+          "text-orange-500 focus:ring-orange-500/20 focus:ring-2 focus:ring-offset-0",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           className
         )}

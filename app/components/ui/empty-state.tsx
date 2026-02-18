@@ -94,7 +94,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             <ol className="space-y-3">
               {steps.map((step, index) => (
                 <li key={index} className="flex gap-3 text-sm text-zinc-400">
-                  <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-semibold font-mono">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-semibold font-mono">
                     {index + 1}
                   </span>
                   <span className="pt-0.5">{step}</span>
@@ -131,7 +131,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           href={helpLink.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-6 inline-flex items-center gap-1.5 text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm text-orange-400 hover:text-orange-300 transition-colors"
         >
           {helpLink.label}
           <ExternalLink className="w-3.5 h-3.5" />

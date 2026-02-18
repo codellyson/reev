@@ -134,13 +134,13 @@ export default function SetupPage() {
             </h2>
             <ol className="space-y-4 text-sm text-zinc-400">
               <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
+                <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold font-mono">
                   1
                 </span>
                 <span>Copy the tracking code above</span>
               </li>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
+                <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold font-mono">
                   2
                 </span>
                 <span>
@@ -150,13 +150,13 @@ export default function SetupPage() {
                 </span>
               </li>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
+                <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold font-mono">
                   3
                 </span>
                 <span>Deploy your website</span>
               </li>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
+                <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold font-mono">
                   4
                 </span>
                 <span>

@@ -124,3 +124,43 @@ CREATE INDEX IF NOT EXISTS idx_session_tags_tag ON session_tags(tag_id);
 ALTER TABLE insights ADD COLUMN IF NOT EXISTS previous_metric_value NUMERIC;
 ALTER TABLE insights ADD COLUMN IF NOT EXISTS trend TEXT DEFAULT 'new';
 ALTER TABLE insights ADD COLUMN IF NOT EXISTS suggestion TEXT;
+
+-- User frustration reports from UX issue popovers
+CREATE TABLE IF NOT EXISTS feedback (
+  id BIGSERIAL PRIMARY KEY,
+  session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  issue_type TEXT NOT NULL,
+  issue_severity TEXT,
+  issue_selector TEXT,
+  message TEXT,
+  page_url TEXT,
+  status TEXT DEFAULT 'open',
+  device TEXT,
+  browser TEXT,
+  context JSONB DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_feedback_project ON feedback(project_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_feedback_session ON feedback(session_id);
+CREATE INDEX IF NOT EXISTS idx_feedback_issue_type ON feedback(issue_type);
+CREATE INDEX IF NOT EXISTS idx_feedback_status ON feedback(project_id, status);
+
+-- Auto-grouped recurring frustration patterns
+CREATE TABLE IF NOT EXISTS patterns (
+  id BIGSERIAL PRIMARY KEY,
+  project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  issue_type TEXT NOT NULL,
+  page_url_pattern TEXT NOT NULL,
+  selector_pattern TEXT,
+  title TEXT NOT NULL,
+  report_count INTEGER DEFAULT 0,
+  first_seen_at TIMESTAMPTZ NOT NULL,
+  last_seen_at TIMESTAMPTZ NOT NULL,
+  status TEXT DEFAULT 'open',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(project_id, issue_type, page_url_pattern)
+);
+
+CREATE INDEX IF NOT EXISTS idx_patterns_project ON patterns(project_id, status, last_seen_at DESC);

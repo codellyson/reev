@@ -87,7 +87,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 />
               ) : (
                 <div
-                  className="h-7 w-7 bg-emerald-500 flex items-center justify-center ring-2 ring-zinc-700"
+                  className="h-7 w-7 bg-orange-500 flex items-center justify-center ring-2 ring-zinc-700"
                   aria-hidden="true"
                 >
                   <User className="h-3.5 w-3.5 text-zinc-900" />

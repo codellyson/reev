@@ -53,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className={cn(
                   "flex items-center gap-3 px-3 py-2 text-sm font-medium transition-fast",
                   item.active
-                    ? "bg-emerald-500/10 text-emerald-400"
+                    ? "bg-orange-500/10 text-orange-400"
                     : "text-zinc-400 hover:bg-zinc-800 hover:text-white",
                   collapsed && "justify-center"
                 )}
@@ -68,7 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <>
                     <span className="flex-1">{item.label}</span>
                     {item.badge !== undefined && item.badge > 0 && (
-                      <span className="bg-emerald-500 text-zinc-900 text-xs px-2 py-0.5 font-semibold">
+                      <span className="bg-orange-500 text-zinc-900 text-xs px-2 py-0.5 font-semibold">
                         {item.badge}
                       </span>
                     )}

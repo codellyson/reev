@@ -3,16 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { PageHeader } from "@/app/components/layout";
 import { Button, useToast } from "@/app/components/ui";
-import { TagManager } from "@/app/components/sessions";
-import { useTags, useCreateTag, useDeleteTag, useUpdateProject } from "@/app/hooks";
+import { useUpdateProject } from "@/app/hooks";
 import { useProjectContext } from "@/app/providers/project-provider";
 import { Save, Copy, Check } from "lucide-react";
 
 export default function SettingsPage() {
   const { success, error: showError } = useToast();
-  const { data: tags = [] } = useTags();
-  const createTag = useCreateTag();
-  const deleteTag = useDeleteTag();
   const { selectedProject, setSelectedProject } = useProjectContext();
   const updateProject = useUpdateProject();
 
@@ -114,7 +110,7 @@ export default function SettingsPage() {
                 onChange={(e) =>
                   setSettings({ ...settings, projectName: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-zinc-700 bg-zinc-900 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-zinc-500"
+                className="w-full px-4 py-2 border border-zinc-700 bg-zinc-900 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-zinc-500"
                 placeholder="Enter project name"
               />
             </div>
@@ -129,7 +125,7 @@ export default function SettingsPage() {
                 onChange={(e) =>
                   setSettings({ ...settings, projectDomain: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-zinc-700 bg-zinc-900 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-zinc-500"
+                className="w-full px-4 py-2 border border-zinc-700 bg-zinc-900 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-zinc-500"
                 placeholder="example.com"
               />
               <p className="text-xs text-zinc-500 mt-1">
@@ -181,30 +177,90 @@ export default function SettingsPage() {
           )}
         </div>
 
-        {/* Tag Management */}
-        <div className="bg-zinc-950 border border-zinc-800 p-6">
-          <TagManager
-            tags={tags}
-            onTagCreate={async (name, color) => {
-              try {
-                await createTag.mutateAsync({ name, color });
-                success("Tag created successfully");
-              } catch (err) {
-                showError("Failed to create tag");
-                throw err;
-              }
-            }}
-            onTagDelete={async (tagId) => {
-              try {
-                await deleteTag.mutateAsync(tagId);
-                success("Tag deleted successfully");
-              } catch (err) {
-                showError("Failed to delete tag");
-                throw err;
-              }
-            }}
-          />
-        </div>
+        {/* Tracker Configuration */}
+        {selectedProject && (
+          <div className="bg-zinc-950 border border-zinc-800 p-6">
+            <h3 className="text-sm font-semibold text-white mb-4 font-mono uppercase tracking-wider">
+              Configuration Options
+            </h3>
+            <p className="text-sm text-zinc-400 mb-4">
+              Customize the tracker with data attributes. All features are enabled by default.
+            </p>
+
+            <div className="bg-zinc-900 border border-zinc-800 p-4 font-mono text-xs text-zinc-100 overflow-x-auto mb-4">
+              <pre className="whitespace-pre-wrap">{`<script src="${trackerUrl}"
+        data-project-id="${selectedProject.id}"
+        data-api-url="${apiUrl}"
+        data-rage-click="true"
+        data-dead-link="true"
+        data-broken-image="true"
+        data-form-frustration="true"
+        data-popover="true"
+        data-popover-theme="dark"
+        data-max-popups="5"
+        data-popover-cooldown="30000"
+        data-debug="false">
+</script>`}</pre>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                UX Issue Detection
+              </h4>
+              <div className="grid gap-2 text-xs">
+                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">data-rage-click</code>
+                  <span className="text-zinc-400">Detect rapid repeated clicks on unresponsive elements (3+ clicks in 1.5s)</span>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">data-dead-link</code>
+                  <span className="text-zinc-400">Probe links when clicked to detect broken or unreachable URLs</span>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">data-broken-image</code>
+                  <span className="text-zinc-400">Scan for images that fail to load (existing + dynamically added)</span>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">data-form-frustration</code>
+                  <span className="text-zinc-400">Detect repeated clear-and-retype cycles in form fields</span>
+                </div>
+              </div>
+
+              <h4 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider mt-4">
+                Feedback Popover
+              </h4>
+              <div className="grid gap-2 text-xs">
+                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">data-popover</code>
+                  <span className="text-zinc-400">Show inline feedback popovers when issues are detected</span>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">data-popover-theme</code>
+                  <span className="text-zinc-400">Popover color theme: <code className="text-zinc-300">dark</code> or <code className="text-zinc-300">light</code></span>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">data-max-popups</code>
+                  <span className="text-zinc-400">Maximum feedback popovers per session (default: 5)</span>
+                </div>
+                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">data-popover-cooldown</code>
+                  <span className="text-zinc-400">Milliseconds between popovers (default: 30000)</span>
+                </div>
+              </div>
+
+              <h4 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider mt-4">
+                Debug
+              </h4>
+              <div className="grid gap-2 text-xs">
+                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">data-debug</code>
+                  <span className="text-zinc-400">Log all events to console for debugging</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

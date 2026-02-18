@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm build:tracker && next build",
     "build:tracker": "cd tracker && pnpm install && tsx build.ts",
     "migrate": "tsx lib/migrate.ts",
     "start": "next start",
@@ -19,6 +19,7 @@
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.34.1",
     "lucide-react": "^0.555.0",
     "next": "^16.0.5",
     "next-auth": "^4.24.5",

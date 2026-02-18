@@ -10,11 +10,11 @@ const config: Config = {
     extend: {
       colors: {
         accent: {
-          DEFAULT: "#10b981",
-          hover: "#34d399",
-          light: "#6ee7b7",
+          DEFAULT: "#f97316",
+          hover: "#fb923c",
+          light: "#fdba74",
         },
-        success: "#34d399",
+        success: "#fb923c",
         error: "#f87171",
         warning: "#fbbf24",
       },

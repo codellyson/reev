@@ -123,7 +123,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
         "backdrop-blur-sm transition-all duration-300",
         "bg-zinc-900",
         {
-          "border-emerald-500/30 text-emerald-400": toast.type === "success",
+          "border-orange-500/30 text-orange-400": toast.type === "success",
           "border-red-500/30 text-red-400": toast.type === "error",
           "border-blue-500/30 text-blue-400": toast.type === "info",
           "border-amber-500/30 text-amber-400": toast.type === "warning",
@@ -132,7 +132,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
     >
       <Icon
         className={clsx("w-5 h-5 flex-shrink-0 mt-0.5", {
-          "text-emerald-400": toast.type === "success",
+          "text-orange-400": toast.type === "success",
           "text-red-400": toast.type === "error",
           "text-blue-400": toast.type === "info",
           "text-amber-400": toast.type === "warning",

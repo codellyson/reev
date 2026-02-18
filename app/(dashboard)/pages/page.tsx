@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function PagesPage() {
-  redirect("/issues");
+  redirect("/reports");
 }

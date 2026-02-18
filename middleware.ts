@@ -25,6 +25,12 @@ export async function middleware(req: NextRequest) {
 
   // Define protected routes
   const protectedRoutes = [
+    "/reports",
+    "/patterns",
+    "/settings",
+    "/setup",
+    "/projects",
+    // Legacy routes (redirect to /reports)
     "/issues",
     "/dashboard",
     "/insights",
@@ -32,17 +38,19 @@ export async function middleware(req: NextRequest) {
     "/pages",
     "/session",
     "/sessions",
-    "/settings",
-    "/setup",
-    "/projects",
+    "/feedback",
   ];
 
   const protectedApiRoutes = [
+    "/api/reports",
+    "/api/patterns",
+    "/api/projects",
+    // Legacy
     "/api/sessions",
     "/api/tags",
     "/api/stats",
-    "/api/projects",
     "/api/insights",
+    "/api/feedback",
   ];
 
   // Check if the current route is protected
@@ -79,6 +87,11 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    "/reports/:path*",
+    "/patterns/:path*",
+    "/settings/:path*",
+    "/setup/:path*",
+    "/projects/:path*",
     "/issues/:path*",
     "/dashboard/:path*",
     "/insights/:path*",
@@ -86,14 +99,15 @@ export const config = {
     "/pages/:path*",
     "/session/:path*",
     "/sessions/:path*",
-    "/settings/:path*",
-    "/setup/:path*",
-    "/projects/:path*",
+    "/feedback/:path*",
+    "/api/reports/:path*",
+    "/api/patterns/:path*",
     "/api/sessions/:path*",
     "/api/tags/:path*",
     "/api/stats/:path*",
     "/api/projects/:path*",
     "/api/insights/:path*",
+    "/api/feedback/:path*",
     "/api/auth/:path*",
     "/login",
     "/signup",
