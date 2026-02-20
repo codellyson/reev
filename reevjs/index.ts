@@ -1673,36 +1673,8 @@ class ReevTracker {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function initTracker(): void {
-  let script = document.currentScript as HTMLScriptElement | null;
-
-  if (!script) {
-    const scripts = document.querySelectorAll<HTMLScriptElement>('script[data-project-id]');
-    if (scripts.length > 0) {
-      script = scripts[scripts.length - 1];
-    }
-  }
-
-  if (!script) return;
-
-  const projectId = script.getAttribute('data-project-id');
-  if (!projectId) return;
-
-  const apiUrl = script.getAttribute('data-api-url') || '';
-
-  // Parse config from data attributes
-  const config: TrackerConfig = {
-    projectId,
-    apiUrl,
-    rageClick: script.getAttribute('data-rage-click') !== 'false',
-    deadLink: script.getAttribute('data-dead-link') !== 'false',
-    brokenImage: script.getAttribute('data-broken-image') !== 'false',
-    formFrustration: script.getAttribute('data-form-frustration') !== 'false',
-    popover: script.getAttribute('data-popover') !== 'false',
-    popoverTheme: (script.getAttribute('data-popover-theme') as 'dark' | 'light') || 'dark',
-    maxPopupsPerSession: parseInt(script.getAttribute('data-max-popups') || '5', 10),
-    popoverCooldown: parseInt(script.getAttribute('data-popover-cooldown') || '30000', 10),
-    debug: script.getAttribute('data-debug') === 'true',
-  };
+  const config = (window as any).ReevConfig as TrackerConfig | undefined;
+  if (!config || !config.projectId) return;
 
   new ReevTracker(config);
 }

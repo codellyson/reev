@@ -33,3 +33,7 @@ export type {
   SelectProps,
   CheckboxProps,
 } from "./form-field";
+export { Tabs } from "./tabs";
+export type { TabsProps, TabItem } from "./tabs";
+export { CodeBlock } from "./code-block";
+export type { CodeBlockProps } from "./code-block";

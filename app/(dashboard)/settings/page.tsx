@@ -1,22 +1,33 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { PageHeader } from "@/app/components/layout";
-import { Button, useToast } from "@/app/components/ui";
+import { Button, useToast, Tabs, CodeBlock } from "@/app/components/ui";
 import { useUpdateProject } from "@/app/hooks";
 import { useProjectContext } from "@/app/providers/project-provider";
-import { Save, Copy, Check } from "lucide-react";
+import { Save } from "lucide-react";
+import { frameworkSnippets } from "@/app/setup/framework-snippets";
+
+const frameworkTabs = frameworkSnippets.map((s) => ({
+  id: s.id,
+  label: s.label,
+}));
 
 export default function SettingsPage() {
   const { success, error: showError } = useToast();
   const { selectedProject, setSelectedProject } = useProjectContext();
   const updateProject = useUpdateProject();
 
-  const [copied, setCopied] = useState(false);
+  const [activeFramework, setActiveFramework] = useState("html");
+  const [origin, setOrigin] = useState("");
   const [settings, setSettings] = useState({
     projectName: "",
     projectDomain: "",
   });
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   useEffect(() => {
     if (selectedProject) {
@@ -27,24 +38,48 @@ export default function SettingsPage() {
     }
   }, [selectedProject]);
 
-  const trackerUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/reev.js`
-      : "/reev.js";
-  const apiUrl =
-    typeof window !== "undefined" ? window.location.origin : "";
+  const trackerUrl = origin ? `${origin}/reev.js` : "/reev.js";
+  const apiUrl = origin;
 
-  const trackingCode = selectedProject
-    ? `<script src="${trackerUrl}" data-project-id="${selectedProject.id}" data-api-url="${apiUrl}"></script>`
-    : "";
+  const activeSnippet = useMemo(
+    () => frameworkSnippets.find((s) => s.id === activeFramework)!,
+    [activeFramework]
+  );
 
-  const handleCopyCode = async () => {
-    if (!trackingCode) return;
-    await navigator.clipboard.writeText(trackingCode);
-    setCopied(true);
-    success("Tracking code copied to clipboard");
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const code = useMemo(
+    () =>
+      selectedProject
+        ? activeSnippet.getCode(selectedProject.id, trackerUrl, apiUrl)
+        : "",
+    [selectedProject, activeSnippet, trackerUrl, apiUrl]
+  );
+
+  const configCode = useMemo(
+    () =>
+      selectedProject
+        ? [
+            "<script>",
+            "!function(c, s) {",
+            "  window.ReevConfig = c;",
+            '  s = document.createElement("script");',
+            `  s.src = "${trackerUrl}";`,
+            "  document.head.appendChild(s);",
+            "}({",
+            `  projectId: "${selectedProject.id}",`,
+            `  apiUrl: "${apiUrl}",`,
+            "  rageClick: true,",
+            "  deadLink: true,",
+            "  brokenImage: true,",
+            "  formFrustration: true,",
+            "  popover: true,",
+            '  popoverTheme: "dark",',
+            "  debug: false",
+            "});",
+            "</script>",
+          ].join("\n")
+        : "",
+    [selectedProject, trackerUrl, apiUrl]
+  );
 
   const handleSave = async () => {
     if (!selectedProject) {
@@ -137,37 +172,26 @@ export default function SettingsPage() {
 
         {/* Tracker Setup */}
         <div className="bg-zinc-950 border border-zinc-800 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-sm font-semibold text-white font-mono uppercase tracking-wider">
-              Tracker Setup
-            </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCopyCode}
-              disabled={!trackingCode}
-            >
-              {copied ? (
-                <>
-                  <Check className="h-4 w-4 mr-1.5" />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="h-4 w-4 mr-1.5" />
-                  Copy
-                </>
-              )}
-            </Button>
-          </div>
+          <h3 className="text-sm font-semibold text-white font-mono uppercase tracking-wider mb-4">
+            Tracker Setup
+          </h3>
 
           {selectedProject ? (
             <>
-              <div className="bg-zinc-900 border border-zinc-800 p-4 font-mono text-xs text-zinc-100 overflow-x-auto select-all">
-                <pre className="whitespace-pre-wrap">{trackingCode}</pre>
-              </div>
+              <Tabs
+                tabs={frameworkTabs}
+                activeTab={activeFramework}
+                onTabChange={setActiveFramework}
+                size="sm"
+                className="mb-4"
+              />
+              <CodeBlock
+                key={activeFramework}
+                code={code}
+                filename={activeSnippet.filename}
+              />
               <p className="text-xs text-zinc-500 mt-3">
-                Add this script before the <code className="bg-zinc-800 px-1 text-zinc-200">{"</body>"}</code> tag in your HTML. Events will appear within 30 seconds.
+                {activeSnippet.note}
               </p>
             </>
           ) : (
@@ -184,77 +208,43 @@ export default function SettingsPage() {
               Configuration Options
             </h3>
             <p className="text-sm text-zinc-400 mb-4">
-              Customize the tracker with data attributes. All features are enabled by default.
+              Customize the tracker with a config object. All features are enabled by default.
             </p>
 
-            <div className="bg-zinc-900 border border-zinc-800 p-4 font-mono text-xs text-zinc-100 overflow-x-auto mb-4">
-              <pre className="whitespace-pre-wrap">{`<script src="${trackerUrl}"
-        data-project-id="${selectedProject.id}"
-        data-api-url="${apiUrl}"
-        data-rage-click="true"
-        data-dead-link="true"
-        data-broken-image="true"
-        data-form-frustration="true"
-        data-popover="true"
-        data-popover-theme="dark"
-        data-max-popups="5"
-        data-popover-cooldown="30000"
-        data-debug="false">
-</script>`}</pre>
-            </div>
+            <CodeBlock code={configCode} filename="Full config example" className="mb-4" />
 
             <div className="space-y-3">
               <h4 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">
-                UX Issue Detection
+                Config Options
               </h4>
               <div className="grid gap-2 text-xs">
                 <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
-                  <code className="text-orange-400 shrink-0">data-rage-click</code>
-                  <span className="text-zinc-400">Detect rapid repeated clicks on unresponsive elements (3+ clicks in 1.5s)</span>
+                  <code className="text-orange-400 shrink-0">rageClick</code>
+                  <span className="text-zinc-400">Detect rapid repeated clicks on unresponsive elements (default: true)</span>
                 </div>
                 <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
-                  <code className="text-orange-400 shrink-0">data-dead-link</code>
-                  <span className="text-zinc-400">Probe links when clicked to detect broken or unreachable URLs</span>
+                  <code className="text-orange-400 shrink-0">deadLink</code>
+                  <span className="text-zinc-400">Probe same-origin links to detect broken URLs (default: true)</span>
                 </div>
                 <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
-                  <code className="text-orange-400 shrink-0">data-broken-image</code>
-                  <span className="text-zinc-400">Scan for images that fail to load (existing + dynamically added)</span>
+                  <code className="text-orange-400 shrink-0">brokenImage</code>
+                  <span className="text-zinc-400">Detect images that fail to load (default: true)</span>
                 </div>
                 <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
-                  <code className="text-orange-400 shrink-0">data-form-frustration</code>
-                  <span className="text-zinc-400">Detect repeated clear-and-retype cycles in form fields</span>
-                </div>
-              </div>
-
-              <h4 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider mt-4">
-                Feedback Popover
-              </h4>
-              <div className="grid gap-2 text-xs">
-                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
-                  <code className="text-orange-400 shrink-0">data-popover</code>
-                  <span className="text-zinc-400">Show inline feedback popovers when issues are detected</span>
+                  <code className="text-orange-400 shrink-0">formFrustration</code>
+                  <span className="text-zinc-400">Detect repeated clear-and-retype in form fields (default: true)</span>
                 </div>
                 <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
-                  <code className="text-orange-400 shrink-0">data-popover-theme</code>
-                  <span className="text-zinc-400">Popover color theme: <code className="text-zinc-300">dark</code> or <code className="text-zinc-300">light</code></span>
+                  <code className="text-orange-400 shrink-0">popover</code>
+                  <span className="text-zinc-400">Show inline feedback popovers on detected issues (default: true)</span>
                 </div>
                 <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
-                  <code className="text-orange-400 shrink-0">data-max-popups</code>
-                  <span className="text-zinc-400">Maximum feedback popovers per session (default: 5)</span>
+                  <code className="text-orange-400 shrink-0">popoverTheme</code>
+                  <span className="text-zinc-400"><code className="text-zinc-300">&quot;dark&quot;</code> or <code className="text-zinc-300">&quot;light&quot;</code> (default: dark)</span>
                 </div>
                 <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
-                  <code className="text-orange-400 shrink-0">data-popover-cooldown</code>
-                  <span className="text-zinc-400">Milliseconds between popovers (default: 30000)</span>
-                </div>
-              </div>
-
-              <h4 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider mt-4">
-                Debug
-              </h4>
-              <div className="grid gap-2 text-xs">
-                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
-                  <code className="text-orange-400 shrink-0">data-debug</code>
-                  <span className="text-zinc-400">Log all events to console for debugging</span>
+                  <code className="text-orange-400 shrink-0">debug</code>
+                  <span className="text-zinc-400">Log all events to console (default: false)</span>
                 </div>
               </div>
             </div>

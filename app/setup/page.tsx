@@ -1,36 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { Copy, Check, ArrowRight } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import { Button, Skeleton, EmptyState, Tabs, CodeBlock } from "@/app/components/ui";
 import { useProjectContext } from "@/app/providers/project-provider";
-import { Skeleton } from "@/app/components/ui";
 import { PageHeader } from "@/app/components/layout";
-import { EmptyState } from "@/app/components/ui";
+import { frameworkSnippets } from "./framework-snippets";
+
+const frameworkTabs = frameworkSnippets.map((s) => ({
+  id: s.id,
+  label: s.label,
+}));
 
 export default function SetupPage() {
-  const [copied, setCopied] = useState(false);
+  const [activeFramework, setActiveFramework] = useState("html");
+  const [origin, setOrigin] = useState("");
   const { selectedProject: project, loading } = useProjectContext();
   const error = !project && !loading ? "No project selected" : null;
 
-  const trackerUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/reev.js`
-      : "/reev.js";
-  const apiUrl =
-    typeof window !== "undefined" ? window.location.origin : "";
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
-  const trackingCode = project
-    ? `<script src="${trackerUrl}" data-project-id="${project.id}" data-api-url="${apiUrl}"></script>`
-    : "";
+  const trackerUrl = origin ? `${origin}/reev.js` : "/reev.js";
+  const apiUrl = origin;
 
-  const handleCopy = async () => {
-    if (!trackingCode) return;
-    await navigator.clipboard.writeText(trackingCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const activeSnippet = useMemo(
+    () => frameworkSnippets.find((s) => s.id === activeFramework)!,
+    [activeFramework]
+  );
+
+  const code = useMemo(
+    () => (project ? activeSnippet.getCode(project.id, trackerUrl, apiUrl) : ""),
+    [project, activeSnippet, trackerUrl, apiUrl]
+  );
 
   if (loading) {
     return (
@@ -41,7 +45,12 @@ export default function SetupPage() {
             <Skeleton className="h-4 w-96" />
             <div className="bg-zinc-900 border border-zinc-800 p-6 space-y-4">
               <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-20 w-full" />
+              <div className="flex gap-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-8 w-16" />
+                ))}
+              </div>
+              <Skeleton className="h-40 w-full" />
             </div>
           </div>
         </div>
@@ -64,7 +73,7 @@ export default function SetupPage() {
                 description="Create a project to get started with tracking"
                 action={{
                   label: "Create Project",
-                  onClick: () => window.location.href = "/projects/new",
+                  onClick: () => (window.location.href = "/projects/new"),
                 }}
                 variant="compact"
               />
@@ -84,12 +93,11 @@ export default function SetupPage() {
             description={`Add this code to ${project.website_url} to start collecting UX insights`}
           />
 
+          {/* Project ID */}
           <div className="bg-zinc-900 border border-zinc-800 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono">
-                Your Project ID
-              </h2>
-            </div>
+            <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono mb-4">
+              Your Project ID
+            </h2>
             <div className="bg-zinc-950 border border-zinc-800 p-4 font-mono text-sm text-zinc-100 select-all break-all">
               {project.id}
             </div>
@@ -98,71 +106,40 @@ export default function SetupPage() {
             </p>
           </div>
 
+          {/* Tracking Code */}
           <div className="bg-zinc-900 border border-zinc-800 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono">
-                Tracking Code
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopy}
-                className="gap-2"
-                disabled={!trackingCode}
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-4 w-4" />
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4" />
-                    Copy
-                  </>
-                )}
-              </Button>
-            </div>
-            <div className="bg-zinc-950 border border-zinc-800 p-4 font-mono text-xs text-zinc-100 overflow-x-auto select-all">
-              <pre className="whitespace-pre-wrap">{trackingCode}</pre>
-            </div>
+            <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono mb-4">
+              Tracking Code
+            </h2>
+            <Tabs
+              tabs={frameworkTabs}
+              activeTab={activeFramework}
+              onTabChange={setActiveFramework}
+              size="sm"
+              className="mb-4"
+            />
+            <CodeBlock
+              key={activeFramework}
+              code={code}
+              filename={activeSnippet.filename}
+            />
+            <p className="text-xs text-zinc-500 mt-3">{activeSnippet.note}</p>
           </div>
 
+          {/* Installation Steps */}
           <div className="bg-zinc-900 border border-zinc-800 p-6">
             <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono mb-4">
               Installation Steps
             </h2>
             <ol className="space-y-4 text-sm text-zinc-400">
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold font-mono">
-                  1
-                </span>
-                <span>Copy the tracking code above</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold font-mono">
-                  2
-                </span>
-                <span>
-                  Paste it before the{" "}
-                  <code className="bg-zinc-800 px-1 text-zinc-200">{"</body>"}</code> tag
-                  in your HTML
-                </span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold font-mono">
-                  3
-                </span>
-                <span>Deploy your website</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold font-mono">
-                  4
-                </span>
-                <span>
-                  Check your dashboard - events will appear within 30 seconds
-                </span>
-              </li>
+              {activeSnippet.steps.map((step, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold font-mono">
+                    {i + 1}
+                  </span>
+                  <span>{step.text}</span>
+                </li>
+              ))}
             </ol>
           </div>
 

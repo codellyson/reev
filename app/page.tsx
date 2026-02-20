@@ -14,7 +14,6 @@ import {
   Code,
   Eye,
   MessageSquare,
-  Camera,
   Terminal,
   Clock,
   Monitor,
@@ -313,10 +312,6 @@ function ProblemSection() {
                   text: '"The submit button doesn\'t respond after I enter my card" — exact words',
                 },
                 {
-                  icon: Camera,
-                  text: "Screenshot of the page at the moment of frustration",
-                },
-                {
                   icon: Terminal,
                   text: "Console errors, DOM snapshot, and user breadcrumbs attached",
                 },
@@ -375,17 +370,30 @@ function HowItWorks() {
                   <code>
                     <span className="text-zinc-500">&lt;</span>
                     <span className="text-orange-400">script</span>
+                    <span className="text-zinc-500">&gt;</span>
+                    {"\n"}
+                    <span className="text-zinc-300">{"!function(c,s){"}</span>
                     {"\n"}
                     {"  "}
-                    <span className="text-amber-400">src</span>
-                    <span className="text-zinc-500">=</span>
-                    <span className="text-zinc-300">&quot;/reev.js&quot;</span>
+                    <span className="text-amber-400">window</span>
+                    <span className="text-zinc-300">.ReevConfig=c;</span>
                     {"\n"}
                     {"  "}
-                    <span className="text-amber-400">data-project-id</span>
-                    <span className="text-zinc-500">=</span>
+                    <span className="text-zinc-300">{"s=document.createElement(\"script\");"}</span>
+                    {"\n"}
+                    {"  "}
+                    <span className="text-zinc-300">{"s.src=\"/reev.js\";"}</span>
+                    {"\n"}
+                    {"  "}
+                    <span className="text-zinc-300">{"document.head.appendChild(s)"}</span>
+                    {"\n"}
+                    <span className="text-zinc-300">{"}({"}</span>
+                    <span className="text-amber-400">projectId</span>
+                    <span className="text-zinc-500">:</span>
                     <span className="text-zinc-300">&quot;your-id&quot;</span>
-                    <span className="text-zinc-500">&gt;&lt;/</span>
+                    <span className="text-zinc-300">{"});"}</span>
+                    {"\n"}
+                    <span className="text-zinc-500">&lt;/</span>
                     <span className="text-orange-400">script</span>
                     <span className="text-zinc-500">&gt;</span>
                   </code>
@@ -658,19 +666,6 @@ function EnrichedReports() {
               Attached Context
             </p>
 
-            {/* Screenshot placeholder */}
-            <div className="flex items-center gap-3">
-              <Camera className="h-4 w-4 text-zinc-600" />
-              <div className="flex-1">
-                <p className="text-xs text-zinc-400">Screenshot captured</p>
-                <div className="mt-1 h-20 bg-zinc-950 border border-zinc-800 border-dashed flex items-center justify-center">
-                  <span className="text-xs text-zinc-700">
-                    Page screenshot at moment of frustration
-                  </span>
-                </div>
-              </div>
-            </div>
-
             {/* Console errors */}
             <div className="flex items-start gap-3">
               <Terminal className="h-4 w-4 text-zinc-600 mt-0.5" />
@@ -722,7 +717,6 @@ function EnrichedReports() {
         <div className="max-w-2xl mx-auto mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
             { icon: MessageSquare, label: "User's own words" },
-            { icon: Camera, label: "Page screenshot" },
             { icon: Code, label: "DOM snapshot" },
             { icon: Terminal, label: "Console errors" },
             { icon: Route, label: "Action breadcrumbs" },
@@ -758,60 +752,39 @@ function Integration() {
             <code>
               <span className="text-zinc-500">&lt;</span>
               <span className="text-orange-400">script</span>
+              <span className="text-zinc-500">&gt;</span>
+              {"\n"}
+              <span className="text-zinc-300">{"!function(c, s) {"}</span>
               {"\n"}
               {"  "}
-              <span className="text-amber-400">src</span>
-              <span className="text-zinc-500">=</span>
-              <span className="text-zinc-300">
-                &quot;https://your-domain.com/reev.js&quot;
-              </span>
+              <span className="text-amber-400">window</span>
+              <span className="text-zinc-300">.ReevConfig = c;</span>
               {"\n"}
               {"  "}
-              <span className="text-amber-400">data-project-id</span>
-              <span className="text-zinc-500">=</span>
-              <span className="text-zinc-300">
-                &quot;your-project-id&quot;
-              </span>
+              <span className="text-zinc-300">{"s = document.createElement(\"script\");"}</span>
               {"\n"}
               {"  "}
-              <span className="text-amber-400">data-api-url</span>
-              <span className="text-zinc-500">=</span>
-              <span className="text-zinc-300">
-                &quot;https://your-domain.com&quot;
-              </span>
-              {"\n"}
+              <span className="text-zinc-300">{"s.src = \"https://your-domain.com/reev.js\";"}</span>
               {"\n"}
               {"  "}
-              <span className="text-zinc-600">
-                &lt;!-- Optional configuration --&gt;
-              </span>
+              <span className="text-zinc-300">{"document.head.appendChild(s);"}</span>
+              {"\n"}
+              <span className="text-zinc-300">{"}({"}</span>
               {"\n"}
               {"  "}
-              <span className="text-amber-400">data-rage-click</span>
-              <span className="text-zinc-500">=</span>
-              <span className="text-zinc-300">&quot;true&quot;</span>
+              <span className="text-amber-400">projectId</span>
+              <span className="text-zinc-500">: </span>
+              <span className="text-zinc-300">&quot;your-project-id&quot;</span>
+              <span className="text-zinc-500">,</span>
               {"\n"}
               {"  "}
-              <span className="text-amber-400">data-dead-link</span>
-              <span className="text-zinc-500">=</span>
-              <span className="text-zinc-300">&quot;true&quot;</span>
+              <span className="text-amber-400">apiUrl</span>
+              <span className="text-zinc-500">: </span>
+              <span className="text-zinc-300">&quot;https://your-domain.com&quot;</span>
               {"\n"}
-              {"  "}
-              <span className="text-amber-400">data-broken-image</span>
-              <span className="text-zinc-500">=</span>
-              <span className="text-zinc-300">&quot;true&quot;</span>
+              <span className="text-zinc-300">{"});"}</span>
               {"\n"}
-              {"  "}
-              <span className="text-amber-400">data-form-frustration</span>
-              <span className="text-zinc-500">=</span>
-              <span className="text-zinc-300">&quot;true&quot;</span>
-              {"\n"}
-              {"  "}
-              <span className="text-amber-400">data-popover-theme</span>
-              <span className="text-zinc-500">=</span>
-              <span className="text-zinc-300">&quot;dark&quot;</span>
-              {"\n"}
-              <span className="text-zinc-500">&gt;&lt;/</span>
+              <span className="text-zinc-500">&lt;/</span>
               <span className="text-orange-400">script</span>
               <span className="text-zinc-500">&gt;</span>
             </code>
@@ -1038,17 +1011,11 @@ export default function HomePage() {
 
       {/* Load the actual tracker on this page */}
       <Script
-        src="/reev.js"
-        data-project-id="landing-page-demo"
-        data-rage-click="true"
-        data-dead-link="true"
-        data-broken-image="true"
-        data-form-frustration="true"
-        data-popover="true"
-        data-popover-theme="light"
-        data-max-popups="20"
-        data-popover-cooldown="3000"
+        id="reev-loader"
         strategy="lazyOnload"
+        dangerouslySetInnerHTML={{
+          __html: `!function(c,s){window.ReevConfig=c;s=document.createElement("script");s.src="/reev.js";document.head.appendChild(s)}({projectId:"landing-page-demo",apiUrl:window.location.origin,popover:true,popoverTheme:"light"});`,
+        }}
       />
     </div>
   );
