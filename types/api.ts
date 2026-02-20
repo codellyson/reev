@@ -34,7 +34,6 @@ export interface Report {
   user_agent: string | null;
   context?: {
     timeOnPage?: number | null;
-    screenshot?: string | null;
     domSnapshot?: string | null;
     consoleErrors?: Array<{ message: string; source?: string; line?: number; timestamp: number }>;
     breadcrumbs?: Array<{ action: string; target?: string; url?: string; timestamp: number }>;

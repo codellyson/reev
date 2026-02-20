@@ -379,7 +379,8 @@ class Popover {
     if (!skipCooldown && now - this.lastShown < this.config.cooldown) return false;
     if (!issue.element || !issue.element.getBoundingClientRect) return false;
 
-    this.dismiss();
+    // Force-dismiss any currently open popover (bypasses the uxs-visible guard)
+    this.forceClose();
     this.ensureDOM();
 
     const cfg = ISSUE_CONFIG[issue.type] || {
@@ -405,6 +406,11 @@ class Popover {
         textarea.placeholder = cfg.placeholder;
       }
       if (stripe) stripe.className = `uxs-stripe uxs-stripe-${cfg.color}`;
+
+      // Force a style recalculation so removing/re-adding uxs-visible
+      // restarts the CSS transition even if dismiss just ran in the same frame
+      this.el.classList.remove('uxs-visible');
+      void this.el.offsetHeight;
     }
 
     this.currentAnchor = issue.element;
@@ -415,12 +421,13 @@ class Popover {
 
     this.currentAnchor.classList.add('uxs-highlight');
     this.position();
-    requestAnimationFrame(() => {
-      this.el?.classList.add('uxs-visible');
-      // Auto-focus textarea
-      const ta = this.el?.querySelector('.uxs-textarea') as HTMLTextAreaElement | null;
-      ta?.focus();
-    });
+
+    // Add visible class synchronously — the reflow above guarantees the
+    // transition replays. Using rAF here caused a race where onOutsideClick
+    // from an earlier dismiss could fire before the popover became visible.
+    this.el?.classList.add('uxs-visible');
+    const ta = this.el?.querySelector('.uxs-textarea') as HTMLTextAreaElement | null;
+    ta?.focus();
 
     document.addEventListener('mousedown', this.onOutsideClick);
     document.addEventListener('keydown', this.onKeyDown);
@@ -430,8 +437,11 @@ class Popover {
     return true;
   }
 
-  dismiss(): void {
-    if (!this.el || !this.el.classList.contains('uxs-visible')) return;
+  // Clean up state unconditionally — does not check uxs-visible so it
+  // works even when dismiss() was already called (e.g. by onOutsideClick
+  // during the same click that opens a new popover).
+  private forceClose(): void {
+    if (!this.el) return;
     this.el.classList.remove('uxs-visible');
 
     if (this.currentAnchor) {
@@ -443,14 +453,19 @@ class Popover {
     window.removeEventListener('scroll', this.reposition, true);
     window.removeEventListener('resize', this.reposition);
 
+    this.currentAnchor = null;
+    this.currentIssue = null;
+    this.triggerElement = null;
+  }
+
+  dismiss(): void {
+    if (!this.el || !this.el.classList.contains('uxs-visible')) return;
+    this.forceClose();
+
     // Restore focus to the element that was focused before popover opened
     if (this.triggerElement && (this.triggerElement as HTMLElement).focus) {
       (this.triggerElement as HTMLElement).focus();
     }
-
-    this.currentAnchor = null;
-    this.currentIssue = null;
-    this.triggerElement = null;
   }
 
   destroy(): void {
@@ -590,9 +605,14 @@ class ReevTracker {
 
   // Dead link tracking
   private checkedLinks: WeakSet<Element> = new WeakSet();
+  private probeResults: Map<string, Promise<{ ok: boolean; status: number | string }>> = new Map();
+  private probeQueue: Array<() => Promise<void>> = [];
+  private probeDraining = false;
+  private probeDelay = 300; // ms between requests, increases on throttle
 
   // Broken image tracking
   private reportedImages: WeakSet<Element> = new WeakSet();
+  private checkedImages: WeakSet<Element> = new WeakSet();
 
   // Indicator badges for passive detections
   private badges: HTMLElement[] = [];
@@ -610,8 +630,8 @@ class ReevTracker {
   private static readonly MAX_ERRORS = 5;
   private static readonly MAX_BREADCRUMBS = 10;
 
-  // Screenshot captured at issue detection time
-  private pendingScreenshot: string | null = null;
+  // DOM snapshot captured at issue detection time
+  private pendingDomSnapshot: string | null = null;
 
   constructor(config: TrackerConfig) {
     this.projectId = config.projectId;
@@ -710,9 +730,10 @@ class ReevTracker {
   private handleIssue(issue: UXIssue): void {
     this.log('Issue detected', issue);
 
-    // Capture screenshot at the moment of frustration (before popover changes DOM)
-    this.pendingScreenshot = null;
-    this.captureScreenshot(issue.element).then((img) => { this.pendingScreenshot = img; });
+    // Capture DOM snapshot at the moment of frustration using the direct
+    // element reference (before popover changes DOM and before SPA
+    // re-renders can invalidate the selector).
+    this.pendingDomSnapshot = this.captureDomSnapshot(issue.element);
 
     // Send to API
     this.push('ux_issue', {
@@ -739,10 +760,6 @@ class ReevTracker {
   private handleFeedback(feedback: any): void {
     this.log('Feedback received', feedback);
 
-    const element = feedback.issue?.selector
-      ? document.querySelector(feedback.issue.selector)
-      : null;
-
     this.push('ux_feedback', {
       issueType: feedback.issue?.type,
       issueSeverity: feedback.issue?.severity,
@@ -751,15 +768,16 @@ class ReevTracker {
       pageUrl: feedback.pageUrl,
       deviceType: this.detectDevice(),
       browserName: this.detectBrowser(),
-      // Enriched context
+      // Enriched context — use snapshots captured at issue detection time
+      // (direct element reference) instead of re-querying the DOM via
+      // selector, which can find the wrong element after SPA re-renders.
       timeOnPage: Math.round((this.now() - this.pageEnteredAt) / 1000),
-      screenshot: this.pendingScreenshot,
-      domSnapshot: this.captureDomSnapshot(element),
+      domSnapshot: this.pendingDomSnapshot,
       consoleErrors: this.recentErrors.slice(),
       breadcrumbs: this.breadcrumbs.slice(),
     });
 
-    this.pendingScreenshot = null;
+    this.pendingDomSnapshot = null;
 
     // Also send immediately for feedback
     this.sendBatch();
@@ -809,40 +827,45 @@ class ReevTracker {
       const text = (target.textContent || '').trim().slice(0, 100);
       const now = this.now();
 
-      // Rage click detection — only on interactive elements
+      // Rage click detection — find the nearest interactive ancestor so that
+      // clicks on child elements (e.g. <span> inside <button>) are attributed
+      // to the same interactive element consistently.
       let isRage = false;
-      if (this.config.rageClick && this.isInteractive(target) && !this.rageClickCooldowns.has(target)) {
-        if (!this.clickTracker.has(target)) {
-          this.clickTracker.set(target, []);
-        }
+      if (this.config.rageClick) {
+        const interactive = this.findInteractive(target);
+        if (interactive && !this.rageClickCooldowns.has(interactive)) {
+          if (!this.clickTracker.has(interactive)) {
+            this.clickTracker.set(interactive, []);
+          }
 
-        const times = this.clickTracker.get(target)!;
-        times.push(now);
+          const times = this.clickTracker.get(interactive)!;
+          times.push(now);
 
-        // Prune clicks outside 1.5s window
-        const cutoff = now - 1500;
-        while (times.length && times[0] < cutoff) {
-          times.shift();
-        }
+          // Prune clicks outside 1.5s window
+          const cutoff = now - 1500;
+          while (times.length && times[0] < cutoff) {
+            times.shift();
+          }
 
-        if (times.length >= 3) {
-          isRage = true;
-          this.rageClickCooldowns.add(target);
-          setTimeout(() => this.rageClickCooldowns.delete(target), 5000);
-          this.clickTracker.delete(target);
+          if (times.length >= 3) {
+            isRage = true;
+            this.rageClickCooldowns.add(interactive);
+            setTimeout(() => this.rageClickCooldowns.delete(interactive), 5000);
+            this.clickTracker.delete(interactive);
 
-          this.handleIssue({
-            type: 'rage_click',
-            severity: 'medium',
-            element: target,
-            selector,
-            metadata: {
-              clickCount: times.length,
-              windowMs: 1500,
-              avgInterval: Math.round(1500 / times.length),
-            },
-            timestamp: new Date().toISOString(),
-          });
+            this.handleIssue({
+              type: 'rage_click',
+              severity: 'medium',
+              element: interactive,
+              selector: this.getSelector(interactive),
+              metadata: {
+                clickCount: times.length,
+                windowMs: 1500,
+                avgInterval: Math.round(1500 / times.length),
+              },
+              timestamp: new Date().toISOString(),
+            });
+          }
         }
       }
 
@@ -861,6 +884,16 @@ class ReevTracker {
 
     document.addEventListener('click', handler, true);
     this.observers.push(() => document.removeEventListener('click', handler, true));
+  }
+
+  // Walk up from target to find the nearest interactive ancestor
+  private findInteractive(el: Element): Element | null {
+    let current: Element | null = el;
+    while (current && current !== document.body) {
+      if (this.isInteractive(current)) return current;
+      current = current.parentElement;
+    }
+    return null;
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -889,42 +922,97 @@ class ReevTracker {
         continue;
       }
 
+      let resolvedHref: string;
       try {
         const url = new URL(href, window.location.origin);
         // Only probe same-origin links (cross-origin would be blocked by CORS)
         if (url.origin !== window.location.origin) continue;
+        resolvedHref = url.href;
       } catch {
         continue;
       }
 
       this.checkedLinks.add(link);
-      this.probeLink(link, href);
+      this.enqueueProbe(link, resolvedHref);
     }
   }
 
-  private async probeLink(el: HTMLAnchorElement, href: string): Promise<void> {
+  // Serial queue with delay — avoids overwhelming the server and triggering rate limits
+  private enqueueProbe(el: HTMLAnchorElement, resolvedHref: string): void {
+    this.probeQueue.push(async () => {
+      await this.probeLink(el, resolvedHref);
+    });
+    this.drainQueue();
+  }
+
+  private async drainQueue(): Promise<void> {
+    if (this.probeDraining) return;
+    this.probeDraining = true;
+
+    while (this.probeQueue.length > 0) {
+      const task = this.probeQueue.shift()!;
+      await task();
+      if (this.probeQueue.length > 0) {
+        await new Promise((r) => setTimeout(r, this.probeDelay));
+      }
+    }
+
+    this.probeDraining = false;
+  }
+
+  private async probeLink(el: HTMLAnchorElement, resolvedHref: string): Promise<void> {
+    // Deduplicate by URL — reuse the result if another <a> already probed this href
+    const existing = this.probeResults.get(resolvedHref);
+    if (existing) {
+      const result = await existing;
+      if (!result.ok) {
+        this.reportDeadLink(el, resolvedHref, result.status);
+      }
+      return;
+    }
+
+    const probe = this.executeProbe(resolvedHref);
+    this.probeResults.set(resolvedHref, probe);
+
+    const result = await probe;
+    if (!result.ok) {
+      this.log('Dead link found:', resolvedHref, result.status);
+      this.reportDeadLink(el, resolvedHref, result.status);
+    }
+  }
+
+  private async executeProbe(href: string): Promise<{ ok: boolean; status: number | string }> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+
     try {
-      const url = new URL(href, window.location.origin);
-
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 5000);
-
-      const response = await fetch(url.href, {
-        method: 'HEAD',
-        mode: 'same-origin',
+      // Use GET instead of HEAD — HEAD is unreliable across frameworks,
+      // CDNs, and service workers, causing false positives and doubling
+      // request count when it fails and falls back to GET.
+      const response = await fetch(href, {
+        method: 'GET',
         signal: controller.signal,
       });
-
       clearTimeout(timer);
 
-      if (!response.ok) {
-        this.log('Dead link found:', href, response.status);
-        this.reportDeadLink(el, href, response.status);
+      // Discard the body immediately — we only need the status code
+      response.body?.cancel();
+
+      // Back off if the server is rate-limiting us
+      if (response.status === 429) {
+        const retryAfter = parseInt(response.headers.get('Retry-After') || '', 10);
+        this.probeDelay = Math.max(this.probeDelay * 2, (retryAfter || 2) * 1000);
+        // Don't report rate-limited URLs as dead — we simply don't know
+        return { ok: true, status: 429 };
       }
+
+      return { ok: response.ok, status: response.ok ? 200 : response.status };
     } catch (err: any) {
-      const status = err.name === 'AbortError' ? 'TIMEOUT' : 'NETWORK_ERROR';
-      this.log('Dead link found:', href, status);
-      this.reportDeadLink(el, href, status);
+      clearTimeout(timer);
+      if (err.name === 'AbortError') {
+        return { ok: false, status: 'TIMEOUT' };
+      }
+      return { ok: false, status: 'NETWORK_ERROR' };
     }
   }
 
@@ -982,36 +1070,61 @@ class ReevTracker {
   // ─────────────────────────────────────────────────────────────────────────
 
   private trackBrokenImages(): void {
-    // Check a single image — handles all timing scenarios
-    const checkImage = (img: HTMLImageElement) => {
+    const reportIfBroken = (img: HTMLImageElement) => {
+      if (this.reportedImages.has(img)) return;
+      this.reportedImages.add(img);
+      this.log('Broken image detected:', img.src || img.getAttribute('src'));
+      this.reportBrokenImage(img);
+    };
+
+    // Attach load/error listeners — this is the primary detection mechanism.
+    // Never flag an image as broken based solely on a proactive naturalWidth
+    // check, because frameworks often render placeholder <img> elements
+    // (complete:true, naturalWidth:0) before swapping in the real src.
+    const watchImage = (img: HTMLImageElement) => {
       if (this.reportedImages.has(img)) return;
       if (!img.src && !img.getAttribute('src')) return;
 
-      if (img.complete) {
-        // Already finished loading — check if broken
-        if (img.naturalWidth === 0) {
-          this.reportedImages.add(img);
-          this.log('Broken image detected:', img.src || img.getAttribute('src'));
-          this.reportBrokenImage(img);
-        }
-      } else {
-        // Still loading — attach individual error handler
-        img.addEventListener('error', () => {
-          if (this.reportedImages.has(img)) return;
-          this.reportedImages.add(img);
-          this.log('Broken image detected (onerror):', img.src);
-          this.reportBrokenImage(img);
-        }, { once: true });
-      }
+      // Already watched — the WeakSet prevents double event binding
+      if (this.checkedImages.has(img)) return;
+      this.checkedImages.add(img);
+
+      img.addEventListener('error', () => reportIfBroken(img), { once: true });
     };
 
-    // Scan all current images
-    document.querySelectorAll<HTMLImageElement>('img').forEach(checkImage);
+    // Scan all current images and attach listeners
+    document.querySelectorAll<HTMLImageElement>('img').forEach(watchImage);
 
-    // Re-scan after window load — guarantees all images have resolved
-    if (document.readyState !== 'complete') {
+    // After all resources have loaded, do a final naturalWidth check
+    // for images that are definitively broken (complete:true, error already
+    // fired, naturalWidth still 0). This catches images whose error event
+    // we missed because they failed before our script ran.
+    const verifyAfterLoad = () => {
+      document.querySelectorAll<HTMLImageElement>('img').forEach((img) => {
+        if (this.reportedImages.has(img)) return;
+        // Skip CSS-hidden images — some browsers report naturalWidth:0 for display:none
+        if (img.offsetParent === null && getComputedStyle(img).display === 'none') return;
+
+        // An <img> with no src at all after page load is definitely broken
+        if (!img.src && !img.getAttribute('src')) {
+          reportIfBroken(img);
+          return;
+        }
+
+        if (!img.complete) return;
+        if (img.naturalWidth > 0) return;
+        reportIfBroken(img);
+      });
+    };
+
+    if (document.readyState === 'complete') {
+      // Page already fully loaded — verify after a short delay to let
+      // any framework hydration / src swaps settle
+      setTimeout(verifyAfterLoad, 1000);
+    } else {
       window.addEventListener('load', () => {
-        document.querySelectorAll<HTMLImageElement>('img').forEach(checkImage);
+        // Give frameworks a moment to finish hydrating / swapping image srcs
+        setTimeout(verifyAfterLoad, 1000);
       }, { once: true });
     }
 
@@ -1021,9 +1134,9 @@ class ReevTracker {
         for (const node of mutation.addedNodes) {
           if (!(node instanceof HTMLElement)) continue;
           if (node.tagName === 'IMG') {
-            checkImage(node as HTMLImageElement);
+            watchImage(node as HTMLImageElement);
           }
-          node.querySelectorAll?.('img').forEach(checkImage);
+          node.querySelectorAll?.('img').forEach(watchImage);
         }
       }
     });
@@ -1251,61 +1364,14 @@ class ReevTracker {
   private captureDomSnapshot(el: Element | null): string | null {
     if (!el) return null;
     try {
-      // Walk up 1 parent for context, but never past a semantic container
-      const stop = new Set(['BODY', 'HTML', 'MAIN', 'SECTION', 'ARTICLE']);
+      const stop = new Set(['BODY', 'HTML', 'MAIN', 'SECTION', 'ARTICLE', 'NAV', 'HEADER', 'FOOTER', 'UL', 'OL']);
+      const smallTags = new Set(['A', 'IMG', 'BUTTON', 'INPUT', 'SPAN', 'LABEL', 'SVG']);
       let context = el;
-      if (context.parentElement && !stop.has(context.parentElement.tagName)) {
+      if (smallTags.has(el.tagName) && context.parentElement && !stop.has(context.parentElement.tagName)) {
         context = context.parentElement;
       }
       const html = context.outerHTML;
-      return html.length > 1000 ? html.slice(0, 1000) + '...' : html;
-    } catch {
-      return null;
-    }
-  }
-
-  private async loadScript(url: string, timeoutMs: number): Promise<boolean> {
-    return new Promise((resolve) => {
-      const s = document.createElement('script');
-      const timer = setTimeout(() => { s.remove(); resolve(false); }, timeoutMs);
-      s.src = url;
-      s.onload = () => { clearTimeout(timer); resolve(true); };
-      s.onerror = () => { clearTimeout(timer); s.remove(); resolve(false); };
-      document.head.appendChild(s);
-    });
-  }
-
-  private async captureScreenshot(el: Element): Promise<string | null> {
-    try {
-      // Lazy-load html2canvas from CDN with fallback
-      if (typeof (window as any).html2canvas === 'undefined') {
-        const cdns = [
-          'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
-          'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
-        ];
-        let loaded = false;
-        for (const url of cdns) {
-          loaded = await this.loadScript(url, 3000);
-          if (loaded) break;
-        }
-        if (!loaded) return null;
-      }
-      const h2c = (window as any).html2canvas;
-      if (!h2c) return null;
-
-      // Find a meaningful container to screenshot (the element or its parent)
-      const stop = new Set(['BODY', 'HTML']);
-      let target: Element = el;
-      if (target.parentElement && !stop.has(target.parentElement.tagName)) {
-        target = target.parentElement;
-      }
-
-      const canvas = await h2c(target, {
-        scale: 0.5,
-        logging: false,
-        useCORS: true,
-      });
-      return canvas.toDataURL('image/jpeg', 0.6);
+      return html.length > 2000 ? html.slice(0, 2000) + '...' : html;
     } catch {
       return null;
     }
@@ -1518,21 +1584,34 @@ class ReevTracker {
   // ─────────────────────────────────────────────────────────────────────────
 
   private getSelector(el: Element): string {
-    if (el.id) return `#${el.id}`;
-    const tag = el.tagName.toLowerCase();
-    const cls = Array.from(el.classList)
-      .filter((c) => !c.startsWith('rr-') && !c.startsWith('uxs-'))
-      .slice(0, 2)
-      .join('.');
-    const parent = el.parentElement;
-    let index = '';
-    if (parent) {
-      const siblings = Array.from(parent.children).filter((c) => c.tagName === el.tagName);
-      if (siblings.length > 1) {
-        index = `:nth-child(${Array.from(parent.children).indexOf(el) + 1})`;
+    const parts: string[] = [];
+    let current: Element | null = el;
+
+    while (current && current !== document.body && current !== document.documentElement) {
+      if (current.id) {
+        parts.unshift(`#${current.id}`);
+        break;
       }
+
+      const tag = current.tagName.toLowerCase();
+      const parent: Element | null = current.parentElement;
+      let suffix = '';
+
+      if (parent) {
+        const thisTag = current.tagName;
+        const siblings = Array.from(parent.children);
+        const sameTagSiblings = siblings.filter((c: Element) => c.tagName === thisTag);
+        if (sameTagSiblings.length > 1) {
+          const index = sameTagSiblings.indexOf(current) + 1;
+          suffix = `:nth-of-type(${index})`;
+        }
+      }
+
+      parts.unshift(`${tag}${suffix}`);
+      current = parent;
     }
-    return `${tag}${cls ? '.' + cls : ''}${index}`;
+
+    return parts.join(' > ');
   }
 
   private isInteractive(el: Element): boolean {
@@ -1544,8 +1623,15 @@ class ReevTracker {
     }
     if (el.getAttribute('role') === 'button' || el.getAttribute('tabindex') != null) return true;
     if ((el as HTMLElement).onclick != null) return true;
+    // Only match elements that set cursor:pointer themselves, not children
+    // that merely inherit it — otherwise findInteractive stops at a child
+    // <span> instead of walking up to the actual <button>.
     const cursor = window.getComputedStyle(el).cursor;
-    return cursor === 'pointer';
+    if (cursor === 'pointer') {
+      const parentCursor = el.parentElement ? window.getComputedStyle(el.parentElement).cursor : 'auto';
+      return parentCursor !== 'pointer';
+    }
+    return false;
   }
 
   private isFormField(el: HTMLElement): boolean {

@@ -14,7 +14,6 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
-  Camera,
   Code,
   AlertTriangle,
   Footprints,
@@ -86,7 +85,6 @@ export function ReportCard({ report, onResolve, resolving }: ReportCardProps) {
   const isResolved = report.status === "resolved";
   const ctx = report.context;
   const hasContext = ctx && (
-    ctx.screenshot ||
     ctx.domSnapshot ||
     (ctx.consoleErrors && ctx.consoleErrors.length > 0) ||
     (ctx.breadcrumbs && ctx.breadcrumbs.length > 0) ||
@@ -195,21 +193,6 @@ export function ReportCard({ report, onResolve, resolving }: ReportCardProps) {
       {/* Expanded context panel */}
       {expanded && hasContext && ctx && (
         <div className="border-t border-zinc-800 px-4 py-3 space-y-3 bg-zinc-900/50">
-          {/* Screenshot */}
-          {ctx.screenshot && (
-            <div>
-              <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 uppercase tracking-wider mb-2">
-                <Camera className="h-3 w-3" />
-                Screenshot
-              </div>
-              <img
-                src={ctx.screenshot}
-                alt="Page screenshot at time of frustration"
-                className="max-w-full max-h-64 border border-zinc-800 rounded"
-              />
-            </div>
-          )}
-
           {/* DOM Snapshot */}
           {ctx.domSnapshot && (
             <div>
@@ -217,7 +200,7 @@ export function ReportCard({ report, onResolve, resolving }: ReportCardProps) {
                 <Code className="h-3 w-3" />
                 Element Snapshot
               </div>
-              <pre className="text-xs text-zinc-400 bg-zinc-950 border border-zinc-800 p-2 overflow-x-auto max-h-32 font-mono">
+              <pre className="text-xs text-zinc-400 bg-zinc-950 border border-zinc-800 p-2 rounded overflow-x-auto max-h-32 font-mono">
                 {ctx.domSnapshot}
               </pre>
             </div>

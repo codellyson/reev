@@ -226,7 +226,6 @@ async function processEvents(
             browserName: data.browserName || null,
             context: {
               timeOnPage: data.timeOnPage || null,
-              screenshot: data.screenshot || null,
               domSnapshot: data.domSnapshot || null,
               consoleErrors: data.consoleErrors || [],
               breadcrumbs: data.breadcrumbs || [],
