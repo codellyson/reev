@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm build:reevjs && next build",
+    "build": "pnpm migrate:deploy && pnpm build:reevjs && next build",
+    "migrate:deploy": "tsx lib/migrate-all.ts",
     "build:reevjs": "cd reevjs && pnpm install && tsx build.ts",
     "migrate": "tsx lib/migrate.ts",
     "start": "next start",
