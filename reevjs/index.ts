@@ -19,6 +19,9 @@ interface TrackerConfig {
   maxPopupsPerSession?: number;
   popoverCooldown?: number;
   debug?: boolean;
+  // Flow suggestions
+  suggestions?: boolean;
+  demoSuggestions?: Array<{ url: string; label: string }>;
 }
 
 interface TrackerEvent {
@@ -583,6 +586,594 @@ class Popover {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// SUGGESTION WIDGET
+// ═══════════════════════════════════════════════════════════════════════════
+
+const SUGGESTION_CSS = `
+/* ── Root — fixed to side wall, vertically centered ── */
+.uxs-suggest {
+  position: fixed;
+  z-index: 2147483646;
+  top: 50%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  pointer-events: none;
+}
+.uxs-suggest.uxs-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Right wall ── */
+.uxs-suggest-right {
+  right: 0;
+  transform: translateY(-50%) translateX(100%);
+}
+.uxs-suggest-right.uxs-visible {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ── Left wall ── */
+.uxs-suggest-left {
+  left: 0;
+  transform: translateY(-50%) translateX(-100%);
+}
+.uxs-suggest-left.uxs-visible {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ── Collapsed tab — vertical strip stuck to wall ── */
+.uxs-suggest-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 6px;
+  background: var(--uxs-bg);
+  border: 1px solid var(--uxs-border);
+  cursor: pointer;
+  user-select: none;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.uxs-suggest-right .uxs-suggest-tab {
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  box-shadow: -2px 0 16px rgba(0,0,0,0.12);
+}
+.uxs-suggest-left .uxs-suggest-tab {
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 2px 0 16px rgba(0,0,0,0.12);
+}
+.uxs-suggest-tab:hover {
+  border-color: var(--uxs-text-muted);
+}
+.uxs-suggest-tab-icon {
+  display: flex;
+  align-items: center;
+  color: var(--uxs-text-muted);
+}
+.uxs-suggest-tab-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: #3dd68c;
+  flex-shrink: 0;
+}
+.uxs-suggest-tab-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--uxs-text-muted);
+  line-height: 1;
+}
+.uxs-suggest-tab-label {
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--uxs-text-sec);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.uxs-suggest-right .uxs-suggest-tab-label {
+  transform: rotate(180deg);
+}
+
+/* ── Expanded panel — slides from side wall ── */
+.uxs-suggest-panel {
+  width: 300px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--uxs-bg);
+  border: 1px solid var(--uxs-border);
+  overflow: hidden;
+}
+.uxs-suggest-right .uxs-suggest-panel {
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  box-shadow: -4px 0 32px rgba(0,0,0,0.18), -1px 0 6px rgba(0,0,0,0.06);
+}
+.uxs-suggest-left .uxs-suggest-panel {
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 4px 0 32px rgba(0,0,0,0.18), 1px 0 6px rgba(0,0,0,0.06);
+}
+
+.uxs-suggest-header {
+  padding: 12px 12px 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid var(--uxs-border);
+  flex-shrink: 0;
+}
+.uxs-suggest-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.uxs-suggest-header-icon {
+  color: var(--uxs-text-muted);
+  display: flex;
+  align-items: center;
+}
+.uxs-suggest-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--uxs-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.uxs-suggest-close {
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--uxs-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  transition: color 0.15s, background 0.15s;
+}
+.uxs-suggest-close:hover {
+  color: var(--uxs-text);
+  background: var(--uxs-bg-input);
+}
+
+/* ── Suggestion list ── */
+.uxs-suggest-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 6px 6px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Tree group ── */
+.uxs-suggest-group {
+  margin-bottom: 2px;
+}
+.uxs-suggest-group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px 4px;
+  color: var(--uxs-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.uxs-suggest-group-header svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+.uxs-suggest-group-children {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 10px;
+}
+
+/* ── Suggestion item ── */
+.uxs-suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--uxs-text-sec);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+  line-height: 1.3;
+}
+.uxs-suggest-item:hover {
+  background: var(--uxs-bg-input);
+  color: var(--uxs-text);
+}
+.uxs-suggest-item-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--uxs-bg-input);
+  border: 1px solid var(--uxs-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--uxs-text-muted);
+  transition: color 0.15s, border-color 0.15s;
+}
+.uxs-suggest-item:hover .uxs-suggest-item-icon {
+  color: var(--uxs-text-sec);
+  border-color: var(--uxs-text-muted);
+}
+.uxs-suggest-item-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.uxs-suggest-item-arrow {
+  color: var(--uxs-text-muted);
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+.uxs-suggest-item:hover .uxs-suggest-item-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Child items */
+.uxs-suggest-group-children .uxs-suggest-item {
+  padding: 6px 10px;
+}
+.uxs-suggest-group-children .uxs-suggest-item-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+}
+.uxs-suggest-group-children .uxs-suggest-item-icon svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* ── Footer ── */
+.uxs-suggest-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  border-top: 1px solid var(--uxs-border);
+  flex-shrink: 0;
+}
+.uxs-suggest-footer-label {
+  font-size: 11px;
+  color: var(--uxs-text-muted);
+  font-weight: 400;
+}
+
+/* ── Mobile — compact side tab, hide vertical label ── */
+@media (max-width: 768px) {
+  /* Smaller tab: just icon + dot + count, no text */
+  .uxs-suggest-tab {
+    padding: 10px 5px;
+    gap: 6px;
+  }
+  .uxs-suggest-tab-label {
+    display: none;
+  }
+  /* Panel stays on the same wall side but takes more width */
+  .uxs-suggest-panel {
+    width: calc(100vw - 48px);
+    max-height: 60vh;
+  }
+}
+`;
+
+interface SuggestionData {
+  id: number;
+  url: string;
+  label: string;
+}
+
+interface SuggestionConfig {
+  enabled: boolean;
+  displayMode: 'frustration' | 'always';
+  position: string;
+  theme: string;
+  currentPath?: string;
+  suggestions: SuggestionData[];
+}
+
+class SuggestionWidget {
+  private el: HTMLElement | null = null;
+  private expanded = false;
+  private config: SuggestionConfig | null = null;
+  private stylesInjected = false;
+  private dismissed = false;
+  private onInteraction: ((type: string, suggestion: SuggestionData) => void) | null = null;
+
+  constructor(options: { onInteraction?: (type: string, suggestion: SuggestionData) => void }) {
+    this.onInteraction = options.onInteraction || null;
+  }
+
+  private injectStyles(theme: string): void {
+    if (this.stylesInjected) return;
+    this.stylesInjected = true;
+    const vars = theme === 'light' ? LIGHT_VARS : DARK_VARS;
+    const existing = document.getElementById('reev-suggest-styles');
+    if (existing) existing.remove();
+    const style = document.createElement('style');
+    style.id = 'reev-suggest-styles';
+    style.textContent = `.uxs-suggest { ${vars} }\n${SUGGESTION_CSS}`;
+    document.head.appendChild(style);
+  }
+
+  configure(config: SuggestionConfig): void {
+    this.config = config;
+    if (!config.enabled || config.suggestions.length === 0) {
+      this.hide();
+      return;
+    }
+    this.injectStyles(config.theme);
+    if (config.displayMode === 'always') {
+      this.showCollapsed();
+    }
+  }
+
+  getDisplayMode(): string | null {
+    return this.config?.displayMode ?? null;
+  }
+
+  private buildDOM(): HTMLElement {
+    const el = document.createElement('div');
+    const side = this.config?.position === 'bottom-left' ? 'uxs-suggest-left' : 'uxs-suggest-right';
+    el.className = `uxs-suggest ${side}`;
+    el.setAttribute('role', 'complementary');
+    el.setAttribute('aria-label', 'Navigation suggestions');
+    return el;
+  }
+
+  private showCollapsed(): void {
+    if (this.dismissed || !this.config) return;
+    this.cleanup();
+    this.el = this.buildDOM();
+
+    const tab = document.createElement('div');
+    tab.className = 'uxs-suggest-tab';
+    tab.title = 'Navigation suggestions';
+
+    // Compass icon
+    const icon = document.createElement('span');
+    icon.className = 'uxs-suggest-tab-icon';
+    icon.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>';
+
+    // Green activity dot
+    const dot = document.createElement('span');
+    dot.className = 'uxs-suggest-tab-dot';
+
+    // Count
+    const count = document.createElement('span');
+    count.className = 'uxs-suggest-tab-count';
+    count.textContent = String(this.config.suggestions.length);
+
+    // Vertical label
+    const label = document.createElement('span');
+    label.className = 'uxs-suggest-tab-label';
+    label.textContent = 'Navigate';
+
+    tab.appendChild(icon);
+    tab.appendChild(dot);
+    tab.appendChild(count);
+    tab.appendChild(label);
+    tab.addEventListener('click', () => this.showExpanded());
+
+    this.el.appendChild(tab);
+    document.body.appendChild(this.el);
+    requestAnimationFrame(() => {
+      this.el?.classList.add('uxs-visible');
+    });
+    this.expanded = false;
+  }
+
+  showExpanded(): void {
+    if (this.dismissed || !this.config || this.config.suggestions.length === 0) return;
+    this.cleanup();
+    this.el = this.buildDOM();
+
+    const panel = document.createElement('div');
+    panel.className = 'uxs-suggest-panel';
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'uxs-suggest-header';
+    const headerLeft = document.createElement('div');
+    headerLeft.className = 'uxs-suggest-header-left';
+    const headerIcon = document.createElement('span');
+    headerIcon.className = 'uxs-suggest-header-icon';
+    headerIcon.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>';
+    const title = document.createElement('h4');
+    title.className = 'uxs-suggest-title';
+    title.textContent = 'Suggested pages';
+    headerLeft.appendChild(headerIcon);
+    headerLeft.appendChild(title);
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'uxs-suggest-close';
+    // Arrow pointing toward the wall (right for right-wall, left for left-wall)
+    const isRight = this.config.position !== 'bottom-left';
+    closeBtn.innerHTML = isRight
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
+      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+    closeBtn.title = 'Collapse';
+    closeBtn.addEventListener('click', () => this.showCollapsed());
+    header.appendChild(headerLeft);
+    header.appendChild(closeBtn);
+    panel.appendChild(header);
+
+    // SVG icons for items
+    const arrowSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+    const linkSvg = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+    const folderSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
+
+    // Suggestion list — grouped by first path segment as a tree
+    const list = document.createElement('ul');
+    list.className = 'uxs-suggest-list';
+
+    // Group by first path segment
+    const groups = new Map<string, SuggestionData[]>();
+    const standalone: SuggestionData[] = [];
+    for (const s of this.config.suggestions) {
+      const segments = s.url.replace(/^\//, '').split('/').filter(Boolean);
+      if (segments.length > 1) {
+        const key = segments[0];
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key)!.push(s);
+      } else {
+        standalone.push(s);
+      }
+    }
+
+    // Merge: groups with only 1 child become standalone
+    for (const [key, items] of groups) {
+      if (items.length === 1) {
+        standalone.push(items[0]);
+        groups.delete(key);
+      }
+    }
+
+    const buildItem = (s: SuggestionData, useShortLabel: boolean) => {
+      const item = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.className = 'uxs-suggest-item';
+      const icon = document.createElement('span');
+      icon.className = 'uxs-suggest-item-icon';
+      icon.innerHTML = linkSvg;
+      const label = document.createElement('span');
+      label.className = 'uxs-suggest-item-label';
+      if (useShortLabel) {
+        const segments = s.url.replace(/^\//, '').split('/').filter(Boolean);
+        const shortParts = segments.slice(1);
+        label.textContent = shortParts
+          .map(seg => seg.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()))
+          .join(' > ');
+      } else {
+        label.textContent = s.label;
+      }
+      const arrow = document.createElement('span');
+      arrow.className = 'uxs-suggest-item-arrow';
+      arrow.innerHTML = arrowSvg;
+      btn.appendChild(icon);
+      btn.appendChild(label);
+      btn.appendChild(arrow);
+      btn.addEventListener('click', () => {
+        this.onInteraction?.('suggestion_clicked', s);
+        window.location.href = s.url;
+      });
+      item.appendChild(btn);
+      return item;
+    };
+
+    // Render grouped items
+    for (const [key, items] of groups) {
+      const group = document.createElement('li');
+      group.className = 'uxs-suggest-group';
+      const groupHeader = document.createElement('div');
+      groupHeader.className = 'uxs-suggest-group-header';
+      groupHeader.innerHTML = folderSvg;
+      const groupLabel = document.createElement('span');
+      groupLabel.textContent = key.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      groupHeader.appendChild(groupLabel);
+      group.appendChild(groupHeader);
+      const children = document.createElement('ul');
+      children.className = 'uxs-suggest-group-children';
+      for (const s of items) {
+        children.appendChild(buildItem(s, true));
+      }
+      group.appendChild(children);
+      list.appendChild(group);
+    }
+
+    // Render standalone items
+    for (const s of standalone) {
+      list.appendChild(buildItem(s, false));
+    }
+
+    panel.appendChild(list);
+
+    // Footer
+    const footer = document.createElement('div');
+    footer.className = 'uxs-suggest-footer';
+    const footerLabel = document.createElement('span');
+    footerLabel.className = 'uxs-suggest-footer-label';
+    const n = this.config.suggestions.length;
+    footerLabel.textContent = `${n} suggestion${n !== 1 ? 's' : ''}`;
+    footer.appendChild(footerLabel);
+    panel.appendChild(footer);
+
+    this.el.appendChild(panel);
+    document.body.appendChild(this.el);
+    requestAnimationFrame(() => {
+      this.el?.classList.add('uxs-visible');
+    });
+    this.expanded = true;
+  }
+
+  private dismiss(): void {
+    if (this.config) {
+      for (const s of this.config.suggestions) {
+        this.onInteraction?.('suggestion_dismissed', s);
+      }
+    }
+    this.dismissed = true;
+    this.hide();
+  }
+
+  hide(): void {
+    if (this.el) {
+      this.el.classList.remove('uxs-visible');
+      setTimeout(() => {
+        this.el?.remove();
+        this.el = null;
+      }, 300);
+    }
+  }
+
+  private cleanup(): void {
+    if (this.el) {
+      this.el.remove();
+      this.el = null;
+    }
+  }
+
+  onNavigate(): void {
+    this.dismissed = false;
+    this.hide();
+  }
+
+  destroy(): void {
+    this.cleanup();
+    this.config = null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // MAIN TRACKER CLASS
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -596,8 +1187,11 @@ class ReevTracker {
   private scrollTimeout: ReturnType<typeof setTimeout> | null = null;
   private pageEnteredAt: number = Date.now();
   private observers: (() => void)[] = [];
-  private config: Required<Omit<TrackerConfig, 'projectId' | 'apiUrl'>>;
+  private config: Required<Omit<TrackerConfig, 'projectId' | 'apiUrl' | 'demoSuggestions'>>;
   private popover: Popover | null = null;
+  private suggestionWidget: SuggestionWidget | null = null;
+  private currentSuggestionsUrl = '';
+  private demoSuggestions: Array<{ url: string; label: string }> | null = null;
 
   // Rage click tracking
   private clickTracker: Map<Element, number[]> = new Map();
@@ -648,7 +1242,10 @@ class ReevTracker {
       maxPopupsPerSession: config.maxPopupsPerSession ?? 5,
       popoverCooldown: config.popoverCooldown ?? 30000,
       debug: config.debug ?? false,
+      suggestions: config.suggestions ?? false,
     };
+
+    this.demoSuggestions = config.demoSuggestions || null;
 
     this.init();
   }
@@ -671,9 +1268,16 @@ class ReevTracker {
     }
   }
 
-  // Only send feedback reports. Detection runs client-side;
-  // nothing ships until the user actually submits feedback.
-  private static readonly SEND_TYPES = new Set(['ux_feedback']);
+  // Event types that are actually sent to the server.
+  // pageview: needed for auto-discovery of navigation flows.
+  // ux_feedback: user frustration reports from popovers.
+  // suggestion_*: flow suggestion interaction tracking.
+  private static readonly SEND_TYPES = new Set([
+    'ux_feedback',
+    'pageview',
+    'suggestion_clicked',
+    'suggestion_dismissed',
+  ]);
 
   private push(type: string, data: Record<string, any>): void {
     if (!ReevTracker.SEND_TYPES.has(type)) return;
@@ -714,6 +1318,22 @@ class ReevTracker {
       if (this.config.brokenImage) this.trackBrokenImages();
       if (this.config.formFrustration) this.trackFormFrustration();
 
+      // Setup suggestion widget
+      if (this.config.suggestions) {
+        this.suggestionWidget = new SuggestionWidget({
+          onInteraction: (type, suggestion) => {
+            this.push(type, {
+              suggestionId: suggestion.id,
+              targetUrl: suggestion.url,
+              targetLabel: suggestion.label,
+              pageUrl: location.href,
+            });
+            this.sendBatch();
+          },
+        });
+        this.fetchSuggestions();
+      }
+
       this.setupBatchSending();
       this.setupUnloadHandler();
 
@@ -749,6 +1369,13 @@ class ReevTracker {
     if (this.popover) {
       this.popover.show(issue);
     }
+
+    // In frustration display mode, show suggestion widget after a brief delay
+    if (this.suggestionWidget && this.suggestionWidget.getDisplayMode() === 'frustration') {
+      setTimeout(() => {
+        this.suggestionWidget?.showExpanded();
+      }, 500);
+    }
   }
 
   private showPopoverForIssue(issue: UXIssue): void {
@@ -781,6 +1408,54 @@ class ReevTracker {
 
     // Also send immediately for feedback
     this.sendBatch();
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // FLOW SUGGESTIONS
+  // ─────────────────────────────────────────────────────────────────────────
+
+  private fetchSuggestions(): void {
+    const currentUrl = location.href;
+    if (currentUrl === this.currentSuggestionsUrl) return;
+    this.currentSuggestionsUrl = currentUrl;
+
+    const applyDemoFallback = () => {
+      if (this.demoSuggestions && this.demoSuggestions.length > 0 && this.suggestionWidget) {
+        this.suggestionWidget.configure({
+          enabled: true,
+          displayMode: 'always',
+          position: 'bottom-right',
+          theme: this.config.popoverTheme || 'dark',
+          suggestions: this.demoSuggestions.map((s, i) => ({ id: -(i + 1), ...s })),
+        });
+      }
+    };
+
+    const doFetch = () => {
+      const url = `${this.apiUrl}/api/flows/suggest?projectId=${encodeURIComponent(this.projectId)}&url=${encodeURIComponent(currentUrl)}`;
+      fetch(url)
+        .then(r => r.json())
+        .then((data: SuggestionConfig) => {
+          if (this.suggestionWidget) {
+            if (data.enabled && data.suggestions.length > 0) {
+              this.suggestionWidget.configure(data);
+            } else {
+              applyDemoFallback();
+            }
+          }
+        })
+        .catch(() => {
+          this.log('Failed to fetch suggestions, using fallback');
+          applyDemoFallback();
+        });
+    };
+
+    // Non-blocking: defer until the browser is idle
+    if (typeof (window as any).requestIdleCallback !== 'undefined') {
+      (window as any).requestIdleCallback(doFetch, { timeout: 3000 });
+    } else {
+      setTimeout(doFetch, 100);
+    }
   }
 
   private detectDevice(): string {
@@ -1467,6 +2142,12 @@ class ReevTracker {
         this.maxScrollDepth = 0;
         this.pageEnteredAt = this.now();
         this.trackPageview();
+
+        // Re-fetch suggestions for new page
+        if (this.suggestionWidget) {
+          this.suggestionWidget.onNavigate();
+          this.fetchSuggestions();
+        }
       }
     };
 
@@ -1538,6 +2219,10 @@ class ReevTracker {
 
       if (this.popover) {
         this.popover.destroy();
+      }
+
+      if (this.suggestionWidget) {
+        this.suggestionWidget.destroy();
       }
 
       this.sendBatch(true);

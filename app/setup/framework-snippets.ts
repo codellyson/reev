@@ -27,7 +27,8 @@ export const frameworkSnippets: FrameworkSnippet[] = [
         "  document.head.appendChild(s);",
         "}({",
         `  projectId: "${projectId}",`,
-        `  apiUrl: "${apiUrl}"`,
+        `  apiUrl: "${apiUrl}",`,
+        "  // suggestions: true  // Enable navigation flow suggestions",
         "});",
         "</script>",
       ].join("\n"),
@@ -37,7 +38,7 @@ export const frameworkSnippets: FrameworkSnippet[] = [
       { text: "Deploy your website" },
       { text: "Check your dashboard — events appear within 30 seconds" },
     ],
-    note: "Works with any static site, WordPress, or server-rendered HTML.",
+    note: "Works with any static site, WordPress, or server-rendered HTML. Enable suggestions to show navigation hints.",
   },
   {
     id: "nextjs",

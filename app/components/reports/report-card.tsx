@@ -92,10 +92,10 @@ export function ReportCard({ report, onResolve, resolving }: ReportCardProps) {
   );
 
   return (
-    <div className={`bg-zinc-950 border transition-colors ${isResolved ? "border-zinc-800/50 opacity-60" : "border-zinc-800 hover:border-zinc-700"}`}>
-      <div className="p-4">
+    <div className={`bg-zinc-950 border transition-colors min-w-0 overflow-hidden ${isResolved ? "border-zinc-800/50 opacity-60" : "border-zinc-800 hover:border-zinc-700"}`}>
+      <div className="p-3 sm:p-4">
         {/* Top row: badges + timestamp */}
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium border ${config.color}`}>
             {config.icon}
             {config.label}
@@ -121,7 +121,7 @@ export function ReportCard({ report, onResolve, resolving }: ReportCardProps) {
             </span>
           )}
 
-          <span className="ml-auto text-xs text-zinc-600">
+          <span className="sm:ml-auto text-xs text-zinc-600">
             {formatDistanceToNow(new Date(report.created_at), { addSuffix: true })}
           </span>
         </div>
@@ -138,18 +138,18 @@ export function ReportCard({ report, onResolve, resolving }: ReportCardProps) {
         )}
 
         {/* Bottom row: page + selector + actions */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-2 text-xs text-zinc-500 min-w-0">
             {pagePath && (
-              <span className="truncate max-w-[250px] font-mono" title={report.page_url || ""}>
+              <span className="truncate max-w-[160px] sm:max-w-[250px] font-mono" title={report.page_url || ""}>
                 {pagePath}
               </span>
             )}
             {report.issue_selector && pagePath && (
-              <span className="text-zinc-700">&middot;</span>
+              <span className="text-zinc-700 hidden sm:inline">&middot;</span>
             )}
             {report.issue_selector && (
-              <code className="truncate max-w-[180px] text-zinc-600 font-mono" title={report.issue_selector}>
+              <code className="truncate max-w-[120px] sm:max-w-[180px] text-zinc-600 font-mono hidden sm:inline" title={report.issue_selector}>
                 {report.issue_selector}
               </code>
             )}
@@ -192,7 +192,7 @@ export function ReportCard({ report, onResolve, resolving }: ReportCardProps) {
 
       {/* Expanded context panel */}
       {expanded && hasContext && ctx && (
-        <div className="border-t border-zinc-800 px-4 py-3 space-y-3 bg-zinc-900/50">
+        <div className="border-t border-zinc-800 px-3 sm:px-4 py-3 space-y-3 bg-zinc-900/50 overflow-hidden">
           {/* DOM Snapshot */}
           {ctx.domSnapshot && (
             <div>
@@ -215,10 +215,10 @@ export function ReportCard({ report, onResolve, resolving }: ReportCardProps) {
               </div>
               <div className="space-y-1">
                 {ctx.consoleErrors.map((err, i) => (
-                  <div key={i} className="text-xs font-mono bg-zinc-950 border border-zinc-800 px-2 py-1.5">
-                    <span className="text-red-400">{err.message}</span>
+                  <div key={i} className="text-xs font-mono bg-zinc-950 border border-zinc-800 px-2 py-1.5 overflow-x-auto">
+                    <span className="text-red-400 break-all">{err.message}</span>
                     {err.source && (
-                      <span className="text-zinc-600 ml-2">
+                      <span className="text-zinc-600 ml-2 break-all">
                         {err.source}{err.line ? `:${err.line}` : ""}
                       </span>
                     )}

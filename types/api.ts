@@ -53,3 +53,46 @@ export interface Pattern {
   status: "open" | "resolved";
   recent_messages: string[];
 }
+
+export interface FlowSuggestion {
+  id: number;
+  project_id: string;
+  source_url_pattern: string;
+  target_url: string;
+  target_label: string;
+  source: "manual" | "auto" | "sitemap";
+  priority: number;
+  click_count: number;
+  dismiss_count: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FlowConfig {
+  id?: number;
+  project_id?: string;
+  enabled: boolean;
+  display_mode: "frustration" | "always";
+  max_suggestions: number;
+  widget_position: string;
+  widget_theme: string;
+  auto_discover: boolean;
+  min_transition_count: number;
+}
+
+export interface SitemapTreeNode {
+  path: string;
+  segment: string;
+  label: string;
+  children: SitemapTreeNode[];
+  isPage: boolean;
+}
+
+export interface SitemapData {
+  tree: SitemapTreeNode;
+  totalUrls: number;
+  truncated: boolean;
+  fetchedAt: string;
+  sitemapUrl: string;
+}

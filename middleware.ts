@@ -5,9 +5,10 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Always allow access to auth routes and public pages
+  // Always allow access to auth routes, public pages, and tracker endpoints
   if (
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/flows/suggest") ||
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname === "/" ||
@@ -27,6 +28,7 @@ export async function middleware(req: NextRequest) {
   const protectedRoutes = [
     "/reports",
     "/patterns",
+    "/flows",
     "/settings",
     "/setup",
     "/projects",
@@ -44,6 +46,7 @@ export async function middleware(req: NextRequest) {
   const protectedApiRoutes = [
     "/api/reports",
     "/api/patterns",
+    "/api/flows",
     "/api/projects",
     // Legacy
     "/api/sessions",
@@ -108,7 +111,9 @@ export const config = {
     "/api/projects/:path*",
     "/api/insights/:path*",
     "/api/feedback/:path*",
+    "/api/flows/:path*",
     "/api/auth/:path*",
+    "/flows/:path*",
     "/login",
     "/signup",
   ],

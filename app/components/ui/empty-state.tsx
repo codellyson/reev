@@ -48,7 +48,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         {
           "py-20 px-4": variant === "default",
           "py-12 px-4": isCompact,
-          "py-16 px-8 bg-zinc-950 border border-zinc-800": isCard,
+          "py-12 sm:py-16 px-4 sm:px-8 bg-zinc-950 border border-zinc-800": isCard,
         },
         className
       )}

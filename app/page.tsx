@@ -96,7 +96,7 @@ function Navbar() {
         transition: "background-color 0.2s, border-bottom 0.2s, backdrop-filter 0.2s",
       }}
     >
-      <div className="flex items-center justify-between h-full px-6 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between h-full px-4 sm:px-6 max-w-5xl mx-auto">
         <Link href="/" className="flex items-center text-white hover:opacity-80 transition-opacity">
           <Logo className="text-white" />
         </Link>
@@ -123,7 +123,7 @@ function Navbar() {
 
 function Hero() {
   return (
-    <section className="relative pt-32 pb-20 px-6">
+    <section className="relative pt-24 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto text-center">
         <motion.div
           initial="hidden"
@@ -149,7 +149,7 @@ function Hero() {
         </motion.h1>
 
         <motion.p
-          className="text-lg text-zinc-400 mb-10 leading-relaxed max-w-2xl mx-auto"
+          className="text-base sm:text-lg text-zinc-400 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto"
           initial="hidden"
           animate="visible"
           variants={fadeUp}
@@ -162,7 +162,7 @@ function Hero() {
         </motion.p>
 
         <motion.div
-          className="flex items-center justify-center gap-4 mb-20"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-14 sm:mb-20"
           initial="hidden"
           animate="visible"
           variants={fadeUp}
@@ -208,7 +208,7 @@ function Hero() {
           </div>
 
           {/* Mock popover */}
-          <div className="mt-2 bg-white border border-zinc-200 w-[310px] mx-auto text-left shadow-sm">
+          <div className="mt-2 bg-white border border-zinc-200 w-full sm:w-[310px] mx-auto text-left shadow-sm">
             <div className="h-[3px] bg-amber-500" />
             <div className="p-4">
               <div className="flex items-start gap-3 mb-3">
@@ -249,7 +249,7 @@ function Hero() {
 
 function ProblemSection() {
   return (
-    <section className="py-20 px-6 border-t border-zinc-800/50">
+    <section className="py-14 sm:py-20 px-4 sm:px-6 border-t border-zinc-800/50">
       <AnimatedSection className="max-w-5xl mx-auto">
         <div className="text-center mb-14">
           <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
@@ -263,7 +263,7 @@ function ProblemSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zinc-800">
           {/* Left: What you see today */}
-          <div className="bg-zinc-950 p-8">
+          <div className="bg-zinc-950 p-5 sm:p-8">
             <div className="flex items-center gap-2 mb-6">
               <X className="h-5 w-5 text-red-400" />
               <h3 className="text-lg font-semibold text-zinc-300">
@@ -298,7 +298,7 @@ function ProblemSection() {
           </div>
 
           {/* Right: What Reev gives you */}
-          <div className="bg-zinc-950 p-8">
+          <div className="bg-zinc-950 p-5 sm:p-8">
             <div className="flex items-center gap-2 mb-6">
               <Check className="h-5 w-5 text-orange-400" />
               <h3 className="text-lg font-semibold text-white">
@@ -338,7 +338,7 @@ function HowItWorks() {
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section id="how-it-works" className="py-20 px-6 border-t border-zinc-800/50">
+    <section id="how-it-works" className="py-14 sm:py-20 px-4 sm:px-6 border-t border-zinc-800/50">
       <div ref={ref} className="max-w-5xl mx-auto">
         <motion.div
           className="text-center mb-14"
@@ -524,7 +524,7 @@ function DetectionTypes() {
   ];
 
   return (
-    <section className="py-20 px-6 border-t border-zinc-800/50">
+    <section className="py-14 sm:py-20 px-4 sm:px-6 border-t border-zinc-800/50">
       <div ref={ref} className="max-w-5xl mx-auto">
         <motion.div
           className="text-center mb-14"
@@ -546,7 +546,7 @@ function DetectionTypes() {
           {detections.map((d, i) => (
             <motion.div
               key={i}
-              className="bg-zinc-950 p-8"
+              className="bg-zinc-950 p-5 sm:p-8"
               initial="hidden"
               animate={inView ? "visible" : "hidden"}
               variants={fadeUp}
@@ -599,7 +599,7 @@ function DetectionTypes() {
 
 function EnrichedReports() {
   return (
-    <section className="py-20 px-6 border-t border-zinc-800/50">
+    <section className="py-14 sm:py-20 px-4 sm:px-6 border-t border-zinc-800/50">
       <AnimatedSection className="max-w-5xl mx-auto">
         <div className="text-center mb-14">
           <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
@@ -614,8 +614,8 @@ function EnrichedReports() {
         {/* Mock report card */}
         <div className="max-w-2xl mx-auto bg-zinc-900 border border-zinc-800">
           {/* Report header */}
-          <div className="p-5 border-b border-zinc-800">
-            <div className="flex items-center gap-3 mb-3">
+          <div className="p-4 sm:p-5 border-b border-zinc-800">
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 flex-wrap">
               <Badge variant="warning" size="sm">
                 rage_click
               </Badge>
@@ -628,7 +628,7 @@ function EnrichedReports() {
                 <Clock className="h-3 w-3 inline mr-1" />
                 47s on page
               </span>
-              <span className="text-xs text-zinc-600 ml-auto">
+              <span className="text-xs text-zinc-600 sm:ml-auto">
                 2 minutes ago
               </span>
             </div>
@@ -641,7 +641,7 @@ function EnrichedReports() {
           </div>
 
           {/* Metadata */}
-          <div className="p-5 border-b border-zinc-800">
+          <div className="p-4 sm:p-5 border-b border-zinc-800">
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-zinc-500">
               <span>
                 <span className="text-zinc-600">Page:</span>{" "}
@@ -661,7 +661,7 @@ function EnrichedReports() {
           </div>
 
           {/* Context panel */}
-          <div className="p-5 space-y-4">
+          <div className="p-4 sm:p-5 space-y-4">
             <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
               Attached Context
             </p>
@@ -714,7 +714,7 @@ function EnrichedReports() {
         </div>
 
         {/* Features list below the card */}
-        <div className="max-w-2xl mx-auto mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="max-w-2xl mx-auto mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           {[
             { icon: MessageSquare, label: "User's own words" },
             { icon: Code, label: "DOM snapshot" },
@@ -735,7 +735,7 @@ function EnrichedReports() {
 
 function Integration() {
   return (
-    <section className="py-20 px-6 border-t border-zinc-800/50">
+    <section className="py-14 sm:py-20 px-4 sm:px-6 border-t border-zinc-800/50">
       <AnimatedSection className="max-w-5xl mx-auto">
         <div className="text-center mb-14">
           <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
@@ -748,7 +748,7 @@ function Integration() {
         </div>
 
         <div className="max-w-2xl mx-auto">
-          <pre className="bg-zinc-900 border border-zinc-800 p-5 text-sm font-mono overflow-x-auto">
+          <pre className="bg-zinc-900 border border-zinc-800 p-3 sm:p-5 text-xs sm:text-sm font-mono overflow-x-auto">
             <code>
               <span className="text-zinc-500">&lt;</span>
               <span className="text-orange-400">script</span>
@@ -848,7 +848,7 @@ function LiveDemo() {
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section id="demo" className="py-20 px-6 border-t border-zinc-800/50">
+    <section id="demo" className="py-14 sm:py-20 px-4 sm:px-6 border-t border-zinc-800/50">
       <div ref={ref} className="max-w-5xl mx-auto">
         <motion.div
           className="text-center mb-14"
@@ -935,7 +935,7 @@ function LiveDemo() {
           ].map((card, i) => (
             <motion.div
               key={i}
-              className="bg-zinc-950 p-8"
+              className="bg-zinc-950 p-5 sm:p-8"
               initial="hidden"
               animate={inView ? "visible" : "hidden"}
               variants={fadeUp}
@@ -959,7 +959,7 @@ function LiveDemo() {
 
 function CTAFooter() {
   return (
-    <section className="py-24 px-6 border-t border-zinc-800/50">
+    <section className="py-16 sm:py-24 px-4 sm:px-6 border-t border-zinc-800/50">
       <AnimatedSection className="max-w-3xl mx-auto text-center">
         <Sparkles className="h-8 w-8 text-orange-400 mx-auto mb-6" />
         <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
@@ -971,7 +971,7 @@ function CTAFooter() {
           Add Reev to your site in under a minute. Get your first feedback
           report the same day.
         </p>
-        <div className="flex items-center justify-center gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6">
           <Link href="/setup">
             <Button variant="primary" size="lg">
               Get Started
@@ -992,6 +992,103 @@ function CTAFooter() {
   );
 }
 
+function Footer() {
+  return (
+    <footer className="border-t border-zinc-800/50 bg-zinc-950">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-12">
+          {/* Brand */}
+          <div className="col-span-2 sm:col-span-1">
+            <Logo className="text-white mb-4" />
+            <p className="text-sm text-zinc-500 leading-relaxed">
+              Open-source UX feedback tool. Detect frustration, collect context, fix what matters.
+            </p>
+          </div>
+
+          {/* Product */}
+          <div>
+            <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+              Product
+            </h4>
+            <ul className="space-y-2.5">
+              {[
+                { label: "How it Works", href: "#how-it-works" },
+                { label: "Live Demo", href: "#demo" },
+                { label: "Get Started", href: "/setup" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+              Resources
+            </h4>
+            <ul className="space-y-2.5">
+              {[
+                { label: "Documentation", href: "/docs" },
+                { label: "Reports", href: "/reports" },
+                { label: "Patterns", href: "/patterns" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Project */}
+          <div>
+            <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+              Project
+            </h4>
+            <ul className="space-y-2.5">
+              {[
+                { label: "GitHub", href: "https://github.com" },
+                { label: "Self-Host Guide", href: "/docs" },
+                { label: "Settings", href: "/settings" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-12 pt-6 border-t border-zinc-800/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-zinc-600">
+            &copy; {new Date().getFullYear()} Reev. Open-source under MIT license.
+          </p>
+          <p className="text-xs text-zinc-600">
+            Built for developers who care about their users.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1005,18 +1102,10 @@ export default function HomePage() {
       <HowItWorks />
       <DetectionTypes />
       <LiveDemo />
-      <EnrichedReports />
+      {/* <EnrichedReports /> */}
       <Integration />
       <CTAFooter />
-
-      {/* Load the actual tracker on this page */}
-      <Script
-        id="reev-loader"
-        strategy="lazyOnload"
-        dangerouslySetInnerHTML={{
-          __html: `!function(c,s){window.ReevConfig=c;s=document.createElement("script");s.src="/reev.js";document.head.appendChild(s)}({projectId:"landing-page-demo",apiUrl:window.location.origin,popover:true,popoverTheme:"light"});`,
-        }}
-      />
+      <Footer />
     </div>
   );
 }

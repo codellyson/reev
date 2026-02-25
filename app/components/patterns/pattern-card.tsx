@@ -45,9 +45,9 @@ export function PatternCard({ pattern, onResolve, resolving }: PatternCardProps)
   const isResolved = pattern.status === "resolved";
 
   return (
-    <div className={`bg-zinc-950 border p-5 transition-colors ${isResolved ? "border-zinc-800/50 opacity-60" : "border-zinc-800 hover:border-zinc-700"}`}>
+    <div className={`bg-zinc-950 border p-4 sm:p-5 transition-colors ${isResolved ? "border-zinc-800/50 opacity-60" : "border-zinc-800 hover:border-zinc-700"}`}>
       {/* Header: icon + count + last seen */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-0 mb-3">
         <div className="flex items-center gap-3">
           <span className={config.color}>{config.icon}</span>
           <span className="text-sm font-semibold text-white">

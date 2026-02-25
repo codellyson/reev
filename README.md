@@ -18,6 +18,7 @@ Reev is a lightweight UX issue detector with real-time feedback collection. Inst
 The entire product is one view: a list of UX problems, grouped by severity.
 
 Each issue shows:
+
 - **What's wrong** — "Users are rage-clicking the Submit button"
 - **Where** — `/contact`
 - **Trend** — getting worse, stable, or improving
@@ -28,28 +29,28 @@ When you fix something, mark it resolved. Reev tracks whether it actually improv
 
 ## What Reev detects
 
-| Issue | How it works | Severity |
-|---|---|---|
-| **Rage clicks** | 3+ clicks on the same element within 1.5 seconds | Medium |
-| **Dead links** | Links that timeout or return errors when clicked | High |
-| **Broken images** | Images that fail to load (scans existing + watches new) | Low |
-| **Form frustration** | 3+ clear-and-retype cycles on the same field | Medium |
-| **Scroll dropoff** | Average scroll depth below 30% on pages with traffic | Medium |
-| **Form abandonment** | Less than 50% of users who start a form submit it | Medium |
-| **Slow pages** | LCP above 2.5s or CLS above 0.25 | High |
-| **Error spikes** | 3+ JavaScript errors on a page within 3 days | Critical |
+| Issue                | How it works                                            | Severity |
+| -------------------- | ------------------------------------------------------- | -------- |
+| **Rage clicks**      | 3+ clicks on the same element within 1.5 seconds        | Medium   |
+| **Dead links**       | Links that timeout or return errors when clicked        | High     |
+| **Broken images**    | Images that fail to load (scans existing + watches new) | Low      |
+| **Form frustration** | 3+ clear-and-retype cycles on the same field            | Medium   |
+| **Scroll dropoff**   | Average scroll depth below 30% on pages with traffic    | Medium   |
+| **Form abandonment** | Less than 50% of users who start a form submit it       | Medium   |
+| **Slow pages**       | LCP above 2.5s or CLS above 0.25                        | High     |
+| **Error spikes**     | 3+ JavaScript errors on a page within 3 days            | Critical |
 
 Each issue is assigned a severity and tracked over time. For real-time issues (rage clicks, dead links, broken images, form frustration), users see a feedback popover where they can describe what went wrong.
 
 ## Pages
 
-| Route | Purpose |
-|---|---|
-| `/issues` | Main view — issues grouped by severity with trends and suggestions |
-| `/feedback` | User feedback from popover submissions, grouped by issue type |
-| `/sessions` | Browse recorded sessions, filter by date/device/URL |
-| `/sessions/:id` | Session detail — event timeline showing what the user did |
-| `/settings` | Project config, tracker setup code, session tags |
+| Route           | Purpose                                                            |
+| --------------- | ------------------------------------------------------------------ |
+| `/issues`       | Main view — issues grouped by severity with trends and suggestions |
+| `/feedback`     | User feedback from popover submissions, grouped by issue type      |
+| `/sessions`     | Browse recorded sessions, filter by date/device/URL                |
+| `/sessions/:id` | Session detail — event timeline showing what the user did          |
+| `/settings`     | Project config, tracker setup code, session tags                   |
 
 That's it. Five routes.
 
@@ -119,10 +120,11 @@ pnpm dev
 Add the tracker to any site:
 
 ```html
-<script src="https://your-reev-instance.com/reev.js"
-        data-project-id="your-project-id"
-        data-api-url="https://your-reev-instance.com">
-</script>
+<script
+  src="https://your-reev-instance.com/reev.js"
+  data-project-id="your-project-id"
+  data-api-url="https://your-reev-instance.com"
+></script>
 ```
 
 ### Tracker configuration
@@ -130,32 +132,33 @@ Add the tracker to any site:
 All features are enabled by default. Use data attributes to customize:
 
 ```html
-<script src="https://your-reev-instance.com/reev.js"
-        data-project-id="your-project-id"
-        data-api-url="https://your-reev-instance.com"
-        data-rage-click="true"
-        data-dead-link="true"
-        data-broken-image="true"
-        data-form-frustration="true"
-        data-popover="true"
-        data-popover-theme="dark"
-        data-max-popups="5"
-        data-popover-cooldown="30000"
-        data-debug="false">
-</script>
+<script
+  src="https://your-reev-instance.com/reev.js"
+  data-project-id="your-project-id"
+  data-api-url="https://your-reev-instance.com"
+  data-rage-click="true"
+  data-dead-link="true"
+  data-broken-image="true"
+  data-form-frustration="true"
+  data-popover="true"
+  data-popover-theme="dark"
+  data-max-popups="5"
+  data-popover-cooldown="30000"
+  data-debug="false"
+></script>
 ```
 
-| Attribute | Default | Description |
-|---|---|---|
-| `data-rage-click` | `true` | Enable rage click detection |
-| `data-dead-link` | `true` | Enable dead link detection |
-| `data-broken-image` | `true` | Enable broken image detection |
-| `data-form-frustration` | `true` | Enable form frustration detection |
-| `data-popover` | `true` | Show feedback popovers when issues detected |
-| `data-popover-theme` | `dark` | Popover theme: `dark` or `light` |
-| `data-max-popups` | `5` | Max feedback popovers per session |
-| `data-popover-cooldown` | `30000` | ms between popovers |
-| `data-debug` | `false` | Log events to console |
+| Attribute               | Default | Description                                 |
+| ----------------------- | ------- | ------------------------------------------- |
+| `data-rage-click`       | `true`  | Enable rage click detection                 |
+| `data-dead-link`        | `true`  | Enable dead link detection                  |
+| `data-broken-image`     | `true`  | Enable broken image detection               |
+| `data-form-frustration` | `true`  | Enable form frustration detection           |
+| `data-popover`          | `true`  | Show feedback popovers when issues detected |
+| `data-popover-theme`    | `dark`  | Popover theme: `dark` or `light`            |
+| `data-max-popups`       | `5`     | Max feedback popovers per session           |
+| `data-popover-cooldown` | `30000` | ms between popovers                         |
+| `data-debug`            | `false` | Log events to console                       |
 
 ## Project structure
 
@@ -196,3 +199,18 @@ reev/
 └── types/
     └── api.ts               # Shared TypeScript interfaces
 ```
+
+---
+
+Imagine i have an app with a lot of important pages that are critical to the setup of the customer's
+experience
+
+I am thinking Reev could go in the directions of:
+
+1. **Critical Path Monitoring**: Allow users to define "critical paths" through their app (e.g. onboarding flow, checkout process). Reev would then specifically track UX issues along these paths and prioritize them in the feed.
+2. **Custom Issue Types**: Let users define custom UX issue types based on their unique app and user behavior. For example, if a SaaS product has a unique "Create Project" flow, they could define an issue type for "Project Creation Frustration" that looks for specific signals in that flow.
+3. **User Journey Mapping**: Provide a visual user journey map that shows where users drop off or encounter issues across the entire app, with the ability to drill down into specific paths or pages.
+4. **Integrations**: Integrate with popular tools like Slack, Jira, or email to send real-time alerts when critical UX issues are detected on important pages.
+   Note: To achieve this without overwhelming the leverage of this tool, I am thinking of allowing it to scan paths automatically (how do I achieve this since it's only integrated on the FE with a script not cli), except the leverager would take their time to map the flow (user journey) of each feature.
+
+I dont want to go in the direction of a full session replay tool, but I do want to provide enough context and evidence for each issue so that teams can quickly understand and fix problems without needing to watch full recordings. The focus is on actionable insights rather than raw data.

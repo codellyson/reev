@@ -73,6 +73,7 @@ export default function SettingsPage() {
             "  formFrustration: true,",
             "  popover: true,",
             '  popoverTheme: "dark",',
+            "  suggestions: false,",
             "  debug: false",
             "});",
             "</script>",
@@ -130,7 +131,7 @@ export default function SettingsPage() {
 
       <div className="space-y-6">
         {/* General Settings */}
-        <div className="bg-zinc-950 border border-zinc-800 p-6">
+        <div className="bg-zinc-950 border border-zinc-800 p-4 sm:p-6">
           <h3 className="text-sm font-semibold text-white mb-6 font-mono uppercase tracking-wider">
             General
           </h3>
@@ -171,7 +172,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Tracker Setup */}
-        <div className="bg-zinc-950 border border-zinc-800 p-6">
+        <div className="bg-zinc-950 border border-zinc-800 p-4 sm:p-6">
           <h3 className="text-sm font-semibold text-white font-mono uppercase tracking-wider mb-4">
             Tracker Setup
           </h3>
@@ -203,7 +204,7 @@ export default function SettingsPage() {
 
         {/* Tracker Configuration */}
         {selectedProject && (
-          <div className="bg-zinc-950 border border-zinc-800 p-6">
+          <div className="bg-zinc-950 border border-zinc-800 p-4 sm:p-6">
             <h3 className="text-sm font-semibold text-white mb-4 font-mono uppercase tracking-wider">
               Configuration Options
             </h3>
@@ -218,31 +219,35 @@ export default function SettingsPage() {
                 Config Options
               </h4>
               <div className="grid gap-2 text-xs">
-                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
                   <code className="text-orange-400 shrink-0">rageClick</code>
                   <span className="text-zinc-400">Detect rapid repeated clicks on unresponsive elements (default: true)</span>
                 </div>
-                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
                   <code className="text-orange-400 shrink-0">deadLink</code>
                   <span className="text-zinc-400">Probe same-origin links to detect broken URLs (default: true)</span>
                 </div>
-                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
                   <code className="text-orange-400 shrink-0">brokenImage</code>
                   <span className="text-zinc-400">Detect images that fail to load (default: true)</span>
                 </div>
-                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
                   <code className="text-orange-400 shrink-0">formFrustration</code>
                   <span className="text-zinc-400">Detect repeated clear-and-retype in form fields (default: true)</span>
                 </div>
-                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
                   <code className="text-orange-400 shrink-0">popover</code>
                   <span className="text-zinc-400">Show inline feedback popovers on detected issues (default: true)</span>
                 </div>
-                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
                   <code className="text-orange-400 shrink-0">popoverTheme</code>
                   <span className="text-zinc-400"><code className="text-zinc-300">&quot;dark&quot;</code> or <code className="text-zinc-300">&quot;light&quot;</code> (default: dark)</span>
                 </div>
-                <div className="flex items-start gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
+                  <code className="text-orange-400 shrink-0">suggestions</code>
+                  <span className="text-zinc-400">Enable Smart Navigation Suggestions widget (default: false). Configure in Flows page.</span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2 bg-zinc-900/50 border border-zinc-800/50">
                   <code className="text-orange-400 shrink-0">debug</code>
                   <span className="text-zinc-400">Log all events to console (default: false)</span>
                 </div>

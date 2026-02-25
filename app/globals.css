@@ -149,6 +149,48 @@
     scroll-behavior: smooth;
   }
 
+  /* Docs prose styles */
+  .prose-reev {
+    line-height: 1.7;
+  }
+
+  .prose-reev h1 {
+    @apply text-2xl font-bold text-white mb-2;
+  }
+
+  .prose-reev h2 {
+    @apply text-lg font-semibold text-white mt-8 mb-3;
+  }
+
+  .prose-reev h3 {
+    @apply text-sm font-medium text-zinc-300 mt-6 mb-2;
+  }
+
+  .prose-reev p {
+    @apply text-sm text-zinc-400 mb-3;
+  }
+
+  .prose-reev code {
+    @apply text-xs font-mono;
+  }
+
+  .prose-reev pre {
+    @apply text-xs font-mono overflow-x-auto;
+  }
+
+  .prose-reev a {
+    @apply text-orange-400 hover:text-orange-300 transition-colors;
+  }
+
+  .prose-reev ul,
+  .prose-reev ol {
+    @apply text-sm text-zinc-400 mb-3;
+  }
+
+  .prose-reev table {
+    @apply w-full text-left;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;

@@ -45,7 +45,7 @@ export function ProjectSwitcher() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="px-3 py-1.5 text-sm font-medium text-zinc-100 hover:bg-zinc-900 transition-colors inline-flex items-center gap-2 max-w-[200px]"
+        className="px-3 py-1.5 text-sm font-medium text-zinc-100 hover:bg-zinc-900 transition-colors inline-flex items-center gap-2 max-w-[140px] sm:max-w-[200px]"
         aria-label="Switch project"
       >
         <span className="truncate">{selectedProject?.name || "Select Project"}</span>
@@ -53,7 +53,7 @@ export function ProjectSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-64 bg-zinc-900 border border-zinc-800 z-50 max-h-96 overflow-auto">
+        <div className="absolute top-full left-0 mt-2 w-56 sm:w-64 bg-zinc-900 border border-zinc-800 z-50 max-h-96 overflow-auto">
           <div className="p-2">
             {projects.length > 0 ? (
               <>

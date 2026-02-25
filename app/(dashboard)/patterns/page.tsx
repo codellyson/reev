@@ -106,7 +106,7 @@ export default function PatternsPage() {
           </button>
         ))}
 
-        <span className="w-px h-5 bg-zinc-800 mx-1" />
+        <span className="w-px h-5 bg-zinc-800 mx-1 hidden sm:block" />
 
         {/* Type filters */}
         <button

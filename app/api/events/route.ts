@@ -12,6 +12,8 @@ const VALID_EVENT_TYPES = new Set([
   "page_leave",
   "ux_issue",
   "ux_feedback",
+  "suggestion_clicked",
+  "suggestion_dismissed",
 ]);
 
 const MAX_EVENTS_PER_BATCH = 50;
@@ -213,6 +215,20 @@ async function processEvents(
           event.timestamp || 0
         );
         paramIndex += 5;
+
+        // Update suggestion click/dismiss counts
+        if (eventType === "suggestion_clicked" && data.suggestionId) {
+          await client.query(
+            `UPDATE flow_suggestions SET click_count = click_count + 1, updated_at = NOW() WHERE id = $1`,
+            [data.suggestionId]
+          );
+        }
+        if (eventType === "suggestion_dismissed" && data.suggestionId) {
+          await client.query(
+            `UPDATE flow_suggestions SET dismiss_count = dismiss_count + 1, updated_at = NOW() WHERE id = $1`,
+            [data.suggestionId]
+          );
+        }
 
         // Collect ux_feedback events for the feedback table
         if (eventType === "ux_feedback") {

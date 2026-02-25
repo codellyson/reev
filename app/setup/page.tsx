@@ -67,7 +67,7 @@ export default function SetupPage() {
               title="Setup Tracking"
               description="Get your tracking code to start collecting UX insights"
             />
-            <div className="bg-zinc-900 border border-zinc-800 p-6">
+            <div className="bg-zinc-900 border border-zinc-800 p-4 sm:p-6">
               <EmptyState
                 title="No project found"
                 description="Create a project to get started with tracking"
@@ -94,7 +94,7 @@ export default function SetupPage() {
           />
 
           {/* Project ID */}
-          <div className="bg-zinc-900 border border-zinc-800 p-6">
+          <div className="bg-zinc-900 border border-zinc-800 p-4 sm:p-6">
             <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono mb-4">
               Your Project ID
             </h2>
@@ -107,7 +107,7 @@ export default function SetupPage() {
           </div>
 
           {/* Tracking Code */}
-          <div className="bg-zinc-900 border border-zinc-800 p-6">
+          <div className="bg-zinc-900 border border-zinc-800 p-4 sm:p-6">
             <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono mb-4">
               Tracking Code
             </h2>
@@ -127,7 +127,7 @@ export default function SetupPage() {
           </div>
 
           {/* Installation Steps */}
-          <div className="bg-zinc-900 border border-zinc-800 p-6">
+          <div className="bg-zinc-900 border border-zinc-800 p-4 sm:p-6">
             <h2 className="text-sm font-medium text-white uppercase tracking-wider font-mono mb-4">
               Installation Steps
             </h2>

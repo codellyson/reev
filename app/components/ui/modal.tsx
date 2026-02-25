@@ -26,10 +26,10 @@ export const Modal: React.FC<ModalProps> = ({
   className,
 }) => {
   const sizeClasses = {
-    sm: "max-w-md",
-    md: "max-w-lg",
-    lg: "max-w-2xl",
-    xl: "max-w-4xl",
+    sm: "max-w-[calc(100vw-2rem)] sm:max-w-md",
+    md: "max-w-[calc(100vw-2rem)] sm:max-w-lg",
+    lg: "max-w-[calc(100vw-2rem)] sm:max-w-2xl",
+    xl: "max-w-[calc(100vw-2rem)] sm:max-w-4xl",
   };
 
   return (
@@ -65,7 +65,7 @@ export const Modal: React.FC<ModalProps> = ({
               )}
             >
               {(title || true) && (
-                <div className="flex items-center justify-between p-6 border-b border-zinc-800">
+                <div className="flex items-center justify-between p-4 sm:p-6 border-b border-zinc-800">
                   {title && (
                     <Dialog.Title className="text-lg font-semibold text-white">
                       {title}
@@ -83,10 +83,10 @@ export const Modal: React.FC<ModalProps> = ({
                 </div>
               )}
 
-              <div className="p-6">{children}</div>
+              <div className="p-4 sm:p-6">{children}</div>
 
               {footer && (
-                <div className="flex items-center justify-end gap-3 p-6 border-t border-zinc-800">
+                <div className="flex items-center justify-end gap-3 p-4 sm:p-6 border-t border-zinc-800">
                   {footer}
                 </div>
               )}

@@ -36,6 +36,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       href: "/patterns",
     },
     {
+      label: "Flows",
+      href: "/flows",
+    },
+    {
       label: "Settings",
       href: "/settings",
     },
